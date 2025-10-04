@@ -1,0 +1,9 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^auto_sync\.bat$
+^auto_sync\.sh$
+^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

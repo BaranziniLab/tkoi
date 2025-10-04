@@ -1,0 +1,26 @@
+#' Enzyme Commission (EC) Number Annotations
+#'
+#' A reference annotation table mapping Enzyme Commission (EC) numbers to enzyme names. This dataset is used in the tKOI framework to annotate biological network nodes associated with enzymatic activity.
+#'
+#' @format A data frame with 8764 rows and 2 columns:
+#' \describe{
+#'   \item{identifier}{A character string representing the EC number (e.g., "1.1.1.196"). EC numbers classify enzymes by the chemical reactions they catalyze.}
+#'   \item{name}{The full enzyme name (e.g., "15-hydroxyprostaglandin-D dehydrogenase (NADP+)"). If missing (`NA`), the enzyme has an identifier but no corresponding name in the source.}
+#' }
+#'
+#' @details
+#' EC numbers are a standardized nomenclature for enzymes, maintained by the IUBMB. This dataset supports functional interpretation of nodes in the tKOI network with enzymatic roles.
+#' The `identifier` column is used to link to graph nodes of type "EC", and the `name` column provides descriptive labels for downstream analysis and visualization.
+#'
+#' @source IUBMB Enzyme Nomenclature \url{https://enzyme.expasy.org/}
+#'
+#' @examples
+#' data(ec_annotation)
+#' subset(ec_annotation, grepl("hydroxylase", name, ignore.case = TRUE))
+#'
+#' @seealso \code{\link[tkoi]{complex_annotation}}, \code{\link[tkoi]{run_tkoi}}, \code{\link[tkoi]{protein_annotation}}
+#'
+#' @keywords dataset enzyme EC annotation
+"ec_annotation"
+
+

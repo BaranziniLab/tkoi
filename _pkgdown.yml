@@ -1,0 +1,68 @@
+template:
+  bootstrap: 5
+  bootswatch: flatly
+  logo: man/figures/logo.png
+  bslib:
+    pkgdown-nav-height: 60px
+
+home:
+  title: "tKOI"
+  tagline: "Transcriptomic Knowledge-Graph Omics Integration"
+  links:
+    - text: GitHub
+      href: https://github.com/Broccolito/tkoi
+
+navbar:
+  structure:
+    left:
+      - home
+      - reference
+      - articles
+  components:
+    articles:
+      text: Vignettes
+      href: articles/index.html
+
+reference:
+  - title: Main Functions
+    desc: Core methods for network-based transcriptomic analysis
+    contents:
+      - run_tkoi
+      - run_gene_enrichment
+      - get_neighboring_nodes
+      - make_gene_exploration_plot
+      - export_gene_exploration_data
+      - export_network_summary_statistics
+      - visualize_topn
+      - plot_network
+      - compute_network_enrichment
+
+  - title: Data and Annotations
+    desc: Annotation datasets used for node interpretation
+    contents:
+      - tkoi_net
+      - anatomy_annotation
+      - celltype_annotation
+      - clinicallab_annotation
+      - complex_annotation
+      - compound_annotation
+      - disease_annotation
+      - ec_annotation
+      - go_annotation
+      - mirna_annotation
+      - pathway_annotation
+      - protein_annotation
+      - proteindomain_annotation
+      - proteinfamily_annotation
+      - pwgroup_annotation
+      - reaction_annotation
+      - genes
+      - human_metabolites
+
+articles:
+  - title: Getting Started
+    contents:
+      - getting-started-with-tkoi
+
+news:
+  one_page: true
