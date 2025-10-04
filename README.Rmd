@@ -22,6 +22,12 @@ The `tkoi` package provides an integrative framework that combines transcriptomi
 ## Web Application
 For non-power users, please use the web application of **[tKOI](https://comphealth.ucsf.edu/app/tkoi)** at `tkoi.org`. 
 
+## Contextualization Agent
+For subsequent analysis upon getting network enrichment statistics, please use **[tKOIAgent](https://github.com/BaranziniLab/tKOIAgent)** for contextualization and network treversal.
+
+## Documentations
+Please refer to **[Documentation](https://broccolito.github.io/software/tkoi/index.html)** for detailed documentation of this R package.
+
 ## Installation
 
 To install the development version from GitHub:
