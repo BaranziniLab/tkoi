@@ -43,14 +43,14 @@
 #' @examples
 #' \dontrun{
 #' # Example gene expression data
-#' expression_data <- data.frame(
+#' expression_data = data.frame(
 #'   gene_name = c("gene1", "gene2", "gene3"),
 #'   logfc = c(1.5, -0.8, 2.3),
 #'   pvalue = c(0.01, 0.05, 0.02)
 #' )
 #'
 #' # Run tKOI analysis
-#' result <- run_tkoi(
+#' result = run_tkoi(
 #'   expression_data = expression_data,
 #'   subnetwork = tkoi::tkoi_net,
 #'   pvalue_threshold = 0.05,

@@ -41,26 +41,26 @@
 #' @examples
 #' \dontrun{
 #' # Create a dummy tKOIList object
-#' tkoi_list <- new("tKOIList",
-#'                  expression_data = data.frame(
-#'                    gene_name = c("gene1", "gene2", "gene3"),
-#'                    logfc = c(1.2, -0.8, 0.5),
-#'                    pvalue = c(0.01, 0.03, 0.2)
-#'                  ),
-#'                  network_summary_statistics = list(
-#'                    Gene = data.frame(
-#'                      id = c(1, 2, 3),
-#'                      pagerank = c(0.05, 0.03, 0.02),
-#'                      beta = c(2.1, -1.5, 0.9),
-#'                      p_value = c(0.01, 0.02, 0.05),
-#'                      fdr = c(0.02, 0.03, 0.1)
-#'                    )
-#'                  ),
-#'                  pvalue_threshold = 0.05,
-#'                  logfc_threshold = 0.5)
+#' tkoi_list = new("tKOIList",
+#'                 expression_data = data.frame(
+#'                   gene_name = c("gene1", "gene2", "gene3"),
+#'                   logfc = c(1.2, -0.8, 0.5),
+#'                   pvalue = c(0.01, 0.03, 0.2)
+#'                 ),
+#'                 network_summary_statistics = list(
+#'                   Gene = data.frame(
+#'                     id = c(1, 2, 3),
+#'                     pagerank = c(0.05, 0.03, 0.02),
+#'                     beta = c(2.1, -1.5, 0.9),
+#'                     p_value = c(0.01, 0.02, 0.05),
+#'                     fdr = c(0.02, 0.03, 0.1)
+#'                   )
+#'                 ),
+#'                 pvalue_threshold = 0.05,
+#'                 logfc_threshold = 0.5)
 #'
 #' # Export the gene exploration data
-#' gene_data <- export_gene_exploration_data(tkoi_list)
+#' gene_data = export_gene_exploration_data(tkoi_list)
 #' print(gene_data)
 #' }
 #'
