@@ -301,8 +301,13 @@ run_tkoi = function(
   )
 
   end_time = Sys.time()
-  time_diff = end_time - start_time
-  message(glue::glue("Analysis finished and took {round(time_diff, 2)} minutes.\n"))
+  time_diff = as.numeric(difftime(end_time, start_time, units = "secs"))
+  if(time_diff < 60){
+    time_label = glue::glue("{round(time_diff, 2)} seconds")
+  } else {
+    time_label = glue::glue("{round(time_diff / 60, 2)} minutes")
+  }
+  message(glue::glue("Analysis finished and took {time_label}.\n"))
 
   return(result)
 }
