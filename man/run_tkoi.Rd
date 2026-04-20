@@ -13,88 +13,102 @@ run_tkoi(
   topology_similarity = 0.9,
   n_permutation = 100,
   damping_factor = 0.85,
-  maximum_iteration = 500
+  maximum_iteration = 500,
+  n_cores = 1
 )
 }
 \arguments{
-\item{expression_data}{A data frame containing the gene expression data with columns for gene identifiers, log fold changes, and p-values.}
+\item{expression_data}{A data frame with columns \code{gene_name} (Ensembl IDs),
+\code{logfc}, and \code{pvalue}.}
 
-\item{subnetwork}{An igraph object representing the subnetwork to be analyzed. Default is \code{tkoi::tkoi_net}.}
+\item{subnetwork}{An igraph object representing the biological knowledge graph.
+Default is \code{tkoi::tkoi_net}.}
 
-\item{pvalue_threshold}{A numeric value specifying the threshold for filtering genes based on p-values. Default is 0.05.}
+\item{pvalue_threshold}{Numeric threshold for filtering genes by p-value. Default \code{0.05}.}
 
-\item{logfc_threshold}{A numeric value specifying the threshold for filtering genes based on log fold changes. Default is 0.25.}
+\item{logfc_threshold}{Numeric threshold for filtering genes by absolute log fold change.
+Default \code{0.25}.}
 
-\item{indirect_link_threshold}{A numeric value specifying the threshold for the least amount of genes to be 2-hop-connected to the propagated node. Default is 3.}
+\item{indirect_link_threshold}{Minimum number of seed genes that must be 2-hop-connected
+to a node for it to be prioritized. Default \code{3}.}
 
-\item{topology_similarity}{A numeric value (between 0 and 1) defining the degree of similarity in topology for selecting substitute genes during permutation. Default is 0.9.}
+\item{topology_similarity}{Numeric in (0, 1) controlling how similar in degree a
+substitute gene must be to the original during permutation sampling. Default \code{0.9}.}
 
-\item{n_permutation}{An integer specifying the number of permutations for the network enrichment test. Default is 100.}
+\item{n_permutation}{Integer number of permutations for the null distribution. Default \code{100}.}
 
-\item{damping_factor}{A numeric value for the damping factor used in the personalized PageRank calculation. Default is 0.85.}
+\item{damping_factor}{Damping factor for personalized PageRank. Default \code{0.85}.}
 
-\item{maximum_iteration}{An integer specifying the maximum number of iterations for the PageRank algorithm. Default is 500.}
+\item{maximum_iteration}{Maximum iterations for PageRank convergence. Default \code{500}.}
+
+\item{n_cores}{Number of cores for parallel permutation computation. Default \code{1}
+(sequential). Values \code{> 1} use \code{parallel::mclapply} and require macOS or Linux;
+note that parallel mode produces statistically equivalent but numerically different results
+due to independent per-worker RNG streams.}
 }
 \value{
-An S4 object of class \code{tKOIList}, containing the following slots:
-\itemize{
-\item \code{expression_data}: The input gene expression data.
-\item \code{pagerank_data}: A data frame of personalized PageRank scores for nodes in the subnetwork.
-\item \code{network_summary_statistics}: A list of data frames, one for each node type, containing network enrichment statistics and functional annotations.
+An S4 object of class \code{tKOIList} with slots:
+\describe{
+\item{\code{expression_data}}{The input gene expression data frame.}
+\item{\code{pagerank_data}}{A data frame of observed and permutation PageRank scores
+for every node in the subnetwork.}
+\item{\code{network_summary_statistics}}{A named list of data frames, one per node type,
+containing beta, p_value, fdr, and biological annotations.}
 }
 }
 \description{
-This function performs a tKOI (Transcriptomic Knowledge-graph-driven Omics Integration) analysis on a gene expression dataset.
-The analysis integrates transcriptomic measurements with a biological knowledge graph to identify and interpret biologically enriched subnetworks.
-The pipeline includes the following steps:
+Performs tKOI (Transcriptomic Knowledge-graph-driven Omics Integration) analysis
+on a gene expression dataset. The analysis integrates transcriptomic measurements
+with a biological knowledge graph to identify and interpret biologically enriched
+subnetworks. The pipeline includes the following steps:
 }
 \details{
 \enumerate{
-\item \strong{Gene filtering:} Significant genes are selected based on user-defined thresholds for p-value and log fold change.
-\item \strong{Network mapping:} These genes are mapped onto a predefined biological subnetwork using unique gene identifiers.
-\item \strong{Personalized PageRank:} A PageRank-based propagation is performed using log fold change-weighted probabilities, quantifying the influence of each node in the network.
-\item \strong{Permutation testing:} To assess statistical significance, the same propagation is repeated multiple times using randomly substituted genes with similar topological properties.
-\item \strong{Network enrichment scoring:} Each node's empirical enrichment score (beta) and p-value are computed by comparing observed PageRank to the permutation null distribution.
-\item \strong{Node annotation:} Nodes are annotated with domain-specific metadata (e.g., GO terms, diseases, cell types, compounds), drawn from curated knowledge resources linked to the graph.
-\item \strong{Prioritization:} Annotated results are organized by node type, with adjusted FDR values and connectivity statistics (e.g., direct/indirect neighbors) used to prioritize biologically relevant findings.
+\item \strong{Gene filtering:} Significant genes are selected based on user-defined
+thresholds for p-value and log fold change.
+\item \strong{Network mapping:} Filtered genes are mapped onto the biological
+subnetwork using Ensembl gene identifiers.
+\item \strong{Personalized PageRank:} A PageRank propagation is performed using
+log fold change-weighted probabilities, quantifying each node's influence.
+\item \strong{Permutation testing:} The propagation is repeated \code{n_permutation}
+times using substitute genes with similar topological properties to build a
+null distribution.
+\item \strong{Network enrichment scoring:} Each node's z-score (beta) and p-value
+are computed by comparing observed PageRank to the permutation null.
+\item \strong{Node annotation:} Nodes are annotated with domain-specific metadata
+(GO terms, diseases, cell types, compounds) from curated knowledge resources.
+\item \strong{Prioritization:} Results are organized by node type with FDR adjustment
+and connectivity statistics for biological prioritization.
 }
 
-The result is a comprehensive, annotated list of network nodes enriched in the context of the transcriptomic changes observed in the input dataset.
-
-The function takes gene expression data and integrates it with a predefined knowledge graph subnetwork. Genes are filtered based on their p-values, and personalized PageRank scores are computed to measure their importance within the network.
-To assess statistical significance, a permutation test is performed where the genes are replaced by substitutes with similar network topology. The results are annotated with network node information and functional descriptions.
-
-The output includes:
-\itemize{
-\item \strong{Personalized PageRank scores} for genes.
-\item \strong{Permutation-based network enrichment statistics}.
-\item \strong{Annotated summary statistics} for network nodes.
-}
+Probability vectors and metapath filters are built with vectorized operations
+(\code{match()}, batch \code{igraph::ego()}) rather than per-gene dplyr operations.
+Candidate gene pools for permutation sampling are pre-computed once before the loop.
+Enrichment z-scores are computed with \code{rowMeans}/\code{sweep}/\code{rowSums}
+across the full permutation matrix rather than row-by-row.
 }
 \examples{
 \dontrun{
-# Example gene expression data
-expression_data <- data.frame(
-  gene_name = c("gene1", "gene2", "gene3"),
-  logfc = c(1.5, -0.8, 2.3),
-  pvalue = c(0.01, 0.05, 0.02)
+expression_data = data.frame(
+  gene_name = c("ENSG00000000003", "ENSG00000000005"),
+  logfc = c(1.5, -0.8),
+  pvalue = c(0.01, 0.02)
 )
 
-# Run tKOI analysis
-result <- run_tkoi(
+result = run_tkoi(
   expression_data = expression_data,
   subnetwork = tkoi::tkoi_net,
   pvalue_threshold = 0.05,
-  logfc_threshold = 0.5,
+  logfc_threshold = 0.25,
   n_permutation = 100
 )
 
-# Access the results
 result@pagerank_data
 result@network_summary_statistics
 }
 
 }
 \seealso{
-\code{\link[igraph]{page_rank}}, \code{\link[dplyr]{dplyr}}, \code{\link[tkoi]{compute_stat}}
+\code{\link[igraph]{page_rank}}, \code{\link{compute_network_enrichment}},
+\code{\link{run_gene_enrichment}}
 }

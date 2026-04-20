@@ -52,26 +52,26 @@ library(ggplot2)
 library(dplyr)
 
 # Create a dummy tKOIList object
-tkoi_list <- new("tKOIList",
-                 expression_data = data.frame(
-                   gene_name = c("gene1", "gene2", "gene3"),
-                   pvalue = c(0.01, 0.02, 0.2)
-                 ),
-                 network_summary_statistics = list(
-                   BiologicalProcess = data.frame(
-                     identifier = c("GO:0008150", "GO:0009987"),
-                     node_id = c(1, 2),
-                     pagerank = c(0.2, 0.3),
-                     beta = c(0.5, 0.4),
-                     p_value = c(0.01, 0.02),
-                     fdr = c(0.05, 0.1),
-                     definition = c("process1", "process2")
-                   ),
-                   CellularComponent = data.frame(),
-                   MolecularFunction = data.frame()
-                 ))
+tkoi_list = new("tKOIList",
+                expression_data = data.frame(
+                  gene_name = c("gene1", "gene2", "gene3"),
+                  pvalue = c(0.01, 0.02, 0.2)
+                ),
+                network_summary_statistics = list(
+                  BiologicalProcess = data.frame(
+                    identifier = c("GO:0008150", "GO:0009987"),
+                    node_id = c(1, 2),
+                    pagerank = c(0.2, 0.3),
+                    beta = c(0.5, 0.4),
+                    p_value = c(0.01, 0.02),
+                    fdr = c(0.05, 0.1),
+                    definition = c("process1", "process2")
+                  ),
+                  CellularComponent = data.frame(),
+                  MolecularFunction = data.frame()
+                ))
 
 # Run the enrichment function
-result <- run_gene_enrichment(tkoi_list)
+result = run_gene_enrichment(tkoi_list)
 }
 }

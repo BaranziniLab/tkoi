@@ -92,19 +92,19 @@ is used as the identifier.
 \examples{
 \dontrun{
 # Visualize the top 10 Biological Processes with default transformations and colors
-plt <- visualize_topn(tkoi_list, category = "BiologicalProcess", top_n = 10)
+plt = visualize_topn(tkoi_list, category = "BiologicalProcess", top_n = 10)
 print(plt)
 
 # Visualize the top 20 Genes with custom color gradient
-plt <- visualize_topn(tkoi_list, category = "Gene", top_n = 20, high_color = "#E74C3C", low_color = "#3498DB")
+plt = visualize_topn(tkoi_list, category = "Gene", top_n = 20, high_color = "#E74C3C", low_color = "#3498DB")
 print(plt)
 
 # Visualize the top 15 Pathways without rank-based normalization or log transformation
-plt <- visualize_topn(tkoi_list, category = "Pathway", top_n = 15, ranknorm = FALSE, lognorm = FALSE)
+plt = visualize_topn(tkoi_list, category = "Pathway", top_n = 15, ranknorm = FALSE, lognorm = FALSE)
 print(plt)
 
 # Visualize the top 5 Diseases with rank-based normalization enabled
-plt <- visualize_topn(tkoi_list, category = "Disease", top_n = 5, ranknorm = TRUE, lognorm = FALSE)
+plt = visualize_topn(tkoi_list, category = "Disease", top_n = 5, ranknorm = TRUE, lognorm = FALSE)
 print(plt)
 }
 

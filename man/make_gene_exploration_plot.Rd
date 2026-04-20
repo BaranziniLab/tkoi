@@ -52,23 +52,23 @@ The plot includes vertical and horizontal dashed lines to indicate the threshold
 \examples{
 \dontrun{
 # Create a dummy tKOIList object
-tkoi_list <- new("tKOIList",
-                 expression_data = data.frame(
-                   gene_name = c("gene1", "gene2", "gene3"),
-                   logfc = c(1.2, -0.8, 0.5),
-                   pvalue = c(0.01, 0.03, 0.2)
-                 ),
-                 network_summary_statistics = list(
-                   Gene = data.frame(
-                     node_id = c(1, 2, 3),
-                     fdr = c(0.02, 0.05, 0.1)
-                   )
-                 ),
-                 pvalue_threshold = 0.05,
-                 logfc_threshold = 0.5)
+tkoi_list = new("tKOIList",
+                expression_data = data.frame(
+                  gene_name = c("gene1", "gene2", "gene3"),
+                  logfc = c(1.2, -0.8, 0.5),
+                  pvalue = c(0.01, 0.03, 0.2)
+                ),
+                network_summary_statistics = list(
+                  Gene = data.frame(
+                    node_id = c(1, 2, 3),
+                    fdr = c(0.02, 0.05, 0.1)
+                  )
+                ),
+                pvalue_threshold = 0.05,
+                logfc_threshold = 0.5)
 
 # Generate the plot
-plt <- make_gene_exploration_plot(tkoi_list)
+plt = make_gene_exploration_plot(tkoi_list)
 print(plt)
 }
 }
