@@ -22,7 +22,8 @@ tkoi_result = run_tkoi(
   topology_similarity = 0.9,
   n_permutation = 100,
   damping_factor = 0.85,
-  maximum_iteration = 500
+  maximum_iteration = 500,
+  n_cores = 10
 )
 
 # Perform Gene Ontology enrichment analysis and integrate results with tKOI data
