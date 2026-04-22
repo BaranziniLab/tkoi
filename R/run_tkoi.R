@@ -168,6 +168,7 @@ run_tkoi = function(
     substitute_genes = character(n_genes)
     for(i in seq_len(n_genes)){
       pool = setdiff(candidate_pools[[i]], substitute_genes)
+      if(length(pool) == 0L) pool = candidate_pools[[i]]  # fallback: allow reuse when pool exhausted by large seed sets
       substitute_genes[i] = sample(pool, 1)
     }
 
