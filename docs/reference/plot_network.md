@@ -1,12 +1,10 @@
 # Plot a Local Network Around a Target Node from tKOI Results
 
-This function visualizes a subnetwork of biologically relevant nodes
-around a specified target node from a tKOI result. It includes all
-significant genes (based on p-value and logFC thresholds) within a
-user-defined network neighborhood, as well as all connecting paths
-between the target and these genes. The resulting network is colored by
-log fold change (logFC), sized by beta value, and plotted with an igraph
-layout.
+Draws the part of the knowledge graph that links a target node (for
+example an enriched GO term) to the significant genes near it. Genes are
+colored by log fold change (blue down, white zero, red up), the target
+is orange, other nodes are gray, and node size follows the tKOI effect
+size (`beta`).
 
 ## Usage
 
@@ -15,7 +13,8 @@ plot_network(
   tkoi_result,
   target_node_id,
   degree_expansion = 2,
-  network_layout_type = "kk"
+  network_layout_type = c("kk", "fr", "gem", "graphopt", "lgl", "mds"),
+  subnetwork = tkoi::tkoi_net
 )
 ```
 
@@ -23,51 +22,45 @@ plot_network(
 
 - tkoi_result:
 
-  An object of class `tkoi_result` containing differential expression
-  results, thresholds, and network information from a tKOI analysis.
+  A `tKOIList` returned by [`run_tkoi`](run_tkoi.md).
 
 - target_node_id:
 
-  A character string specifying the node ID (e.g., GO term) to center
-  the network around.
+  Node ID (vertex name) of the node to center on.
 
 - degree_expansion:
 
-  Integer specifying the maximum graph distance from the target node to
-  explore. Defaults to 2.
+  Maximum number of hops between the target and a gene. Default `2`.
 
 - network_layout_type:
 
-  A character string indicating the layout algorithm to use for
-  plotting. Options include: `"kk"` (Kamada-Kawai), `"fr"`
-  (Fruchterman-Reingold), `"gem"` (Graph Embedding), `"graphopt"` (Graph
-  Optimization), `"lgl"` (Large Graph Layout), and `"mds"`
-  (Multidimensional Scaling).
+  Layout algorithm: `"kk"` (Kamada-Kawai, the default), `"fr"`
+  (Fruchterman-Reingold), `"gem"`, `"graphopt"`, `"lgl"`, or `"mds"`.
+
+- subnetwork:
+
+  The igraph network used for the analysis. Default
+  [`tkoi::tkoi_net`](tkoi_net.md).
 
 ## Value
 
-A network plot is rendered directly using `plot.igraph()`.
+The plotted igraph subgraph, invisibly.
 
 ## Details
 
-The function first identifies differentially expressed genes that meet
-user-defined thresholds and are within the specified graph neighborhood
-of the target node. It then computes all simple paths between the target
-node and each significant gene, compiles a list of nodes involved, and
-builds a subgraph.
-
-Each node is colored by logFC (gradient), or gray if not a gene. The
-target node is highlighted in orange. Node sizes are scaled to beta
-values. The layout algorithm used can be selected with
-`network_layout_type`.
+Significant genes pass the p-value and log fold change thresholds stored
+in `tkoi_result`. The plot shows every node on a simple path of at most
+`degree_expansion` edges between the target and one of these genes. For
+`degree_expansion <= 2` these nodes are found directly from neighbor
+sets; longer paths use
+[`igraph::all_simple_paths()`](https://r.igraph.org/reference/all_simple_paths.html),
+which can be slow around highly connected nodes.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-plot_network(tkoi_result = my_tkoi_result,
-             target_node_id = "4:c77f6410-bc08-43ba-a172-0503ab1c93db:1234567",
-             degree_expansion = 2,
-             network_layout_type = "kk")
+top_term = tkoi_result@network_summary_statistics$BiologicalProcess$node_id[1]
+plot_network(tkoi_result, target_node_id = top_term, degree_expansion = 2)
 } # }
 ```

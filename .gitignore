@@ -7,3 +7,8 @@ inst/doc
 **/.DS_Store
 .codegraph
 .biorouter
+src/*.o
+src/*.so
+src/*.dll
+Rplots.pdf
+README.html

@@ -9,8 +9,10 @@ A data frame with 47,921 rows and 4 columns:
 \describe{
 \item{identifier}{A character string representing the GO identifier (e.g., "GO:0000001").}
 \item{name}{The name of the GO term (e.g., "mitochondrion inheritance").}
-\item{namespace}{The ontology category to which the term belongs, one of \code{"biological_process"}, \code{"molecular_function"}, or \code{"cellular_component"}.}
-\item{definition}{A textual definition of the GO term, often including references and source attributions.}
+\item{namespace}{The ontology category to which the term belongs, one of
+\code{"biological_process"}, \code{"molecular_function"}, or \code{"cellular_component"}.}
+\item{definition}{A textual definition of the GO term, often including references and
+source attributions.}
 }
 }
 \source{
@@ -20,13 +22,18 @@ Gene Ontology Consortium \url{http://geneontology.org/}
 go_annotation
 }
 \description{
-A comprehensive annotation table of Gene Ontology (GO) terms, including biological process, molecular function, and cellular component namespaces.
-This dataset supports the interpretation and functional enrichment of graph nodes labeled with GO identifiers within the tKOI framework.
+A comprehensive annotation table of Gene Ontology (GO) terms, including biological process,
+molecular function, and cellular component namespaces.
+This dataset supports the interpretation and functional enrichment of graph nodes labeled
+with GO identifiers within the tKOI framework.
 }
 \details{
-The dataset enables mapping of functional annotations to nodes in a biological knowledge graph and is particularly useful
-for characterizing enriched terms from network-based analyses such as those performed with \code{\link[tkoi]{run_tkoi}}.
-GO terms marked as "obsolete" are included for completeness but may require special handling during analysis.
+The dataset enables mapping of functional annotations to nodes in a biological knowledge
+graph and is particularly useful
+for characterizing enriched terms from network-based analyses such as those performed with
+\code{\link[tkoi]{run_tkoi}}.
+GO terms marked as "obsolete" are included for completeness but may require special handling
+during analysis.
 }
 \examples{
 data(go_annotation)
@@ -35,7 +42,8 @@ head(go_annotation[go_annotation$namespace == "molecular_function", ])
 
 }
 \seealso{
-\code{\link[tkoi]{anatomy_annotation}}, \code{\link[tkoi]{celltype_annotation}}, \code{\link[tkoi]{run_tkoi}}
+\code{\link[tkoi]{anatomy_annotation}}, \code{\link[tkoi]{celltype_annotation}},
+\code{\link[tkoi]{run_tkoi}}
 }
 \keyword{GO}
 \keyword{dataset}

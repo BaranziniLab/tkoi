@@ -1,18 +1,23 @@
 #' Gene Metadata
 #'
-#' A dataset containing information about genes, including identifiers, names, and degree in the network.
+#' The genes of \code{\link{tkoi_net}} that can seed an analysis, with their
+#' Ensembl IDs and network degree. \code{\link{run_tkoi}} maps
+#' \code{gene_name} to \code{ensembl}, and draws degree-matched replacement
+#' genes for the permutation null from this table.
 #'
-#' @format A data frame with the following columns:
+#' @format A data frame (data.table) with 17,569 rows and 5 columns:
 #' \describe{
-#'   \item{id}{Character. Unique identifier for the gene in the network.}
-#'   \item{identifier}{Integer. Internal identifier for the gene.}
-#'   \item{ensembl}{Character. Ensembl gene identifier.}
-#'   \item{name}{Character. Gene symbol or common name.}
-#'   \item{degree}{Integer. Degree of the gene node in the network, representing the number of connections.}
+#'   \item{id}{Character. Node ID of the gene in \code{tkoi_net}.}
+#'   \item{identifier}{Integer. NCBI Entrez Gene ID.}
+#'   \item{ensembl}{Character. Ensembl gene ID. A few genes have no Ensembl
+#'     ID (empty string), and a few Ensembl IDs map to two genes.}
+#'   \item{name}{Character. Gene symbol.}
+#'   \item{degree}{Integer. Degree of the gene node in \code{tkoi_net}.}
 #' }
 #'
 #' @details
-#' This dataset is essential for integrating gene-level information with biological networks and functional studies.
+#' This dataset is essential for integrating gene-level information with biological networks and
+#' functional studies.
 #'
 #' @examples
 #' data(genes)

@@ -7,81 +7,64 @@
 export_gene_exploration_data(tkoi_list)
 }
 \arguments{
-\item{tkoi_list}{An object of class \code{tKOIList}. This object must contain the following slots:
+\item{tkoi_list}{A \code{tKOIList} object returned by \code{\link[=run_tkoi]{run_tkoi()}}. Two slots
+are used:
 \itemize{
-\item \code{expression_data}: A \code{data.frame} containing experimental data with columns \code{gene_name}, \code{logfc}, and \code{pvalue}.
-\item \code{network_summary_statistics}: A list with a \code{data.frame} for gene-level network statistics, including \code{id}, \code{pagerank}, \code{beta}, \code{p_value}, and \code{fdr}.
-\item \code{pvalue_threshold}: A numeric value specifying the p-value threshold.
-\item \code{logfc_threshold}: A numeric value specifying the log fold change threshold.
+\item \code{expression_data}: the input table, with columns \code{gene_name} (Ensembl
+gene IDs), \code{logfc}, and \code{pvalue}.
+\item \code{network_summary_statistics}: its \code{Gene} table, with columns
+\code{node_id}, \code{identifier}, \code{name}, \code{pagerank}, \code{beta}, \code{p_value}, and
+\code{fdr}.
 }}
 }
 \value{
-A \code{data.frame} with the following columns:
+A data frame with one row per row of the \code{Gene} table and columns:
 \itemize{
-\item \code{gene_name}: Gene names from the experimental dataset.
-\item \code{gene_symbol}: Gene symbols or common names from the metadata.
-\item \code{id}: Unique node identifiers in the network.
-\item \code{identifier}: External identifiers for the genes (e.g., Ensembl IDs).
-\item \code{experimental_logfc}: Log fold change values from the experimental data.
-\item \code{experimental_pvalue}: P-values from the experimental data.
-\item \code{pagerank}: Personalized PageRank scores from the tKOI network analysis.
-\item \code{tkoi_beta}: tKOI z-scores for network enrichment.
-\item \code{tkoi_pvalue}: Unadjusted p-values from the tKOI network analysis.
-\item \code{tkoi_fdr}: False discovery rates (FDR) from the tKOI network analysis.
+\item \code{gene_name}: Ensembl gene ID from \code{expression_data}.
+\item \code{gene_symbol}: Gene symbol.
+\item \code{id}: Node ID of the gene in the network (\code{node_id} in the \code{Gene}
+table).
+\item \code{identifier}: NCBI Entrez Gene ID, as a character string.
+\item \code{experimental_logfc}: \code{logfc} from \code{expression_data}.
+\item \code{experimental_pvalue}: \code{pvalue} from \code{expression_data}.
+\item \code{pagerank}: Observed personalized PageRank.
+\item \code{tkoi_beta}: tKOI network enrichment z-score (\code{beta}).
+\item \code{tkoi_pvalue}: Unadjusted one-sided tKOI p-value.
+\item \code{tkoi_fdr}: tKOI false discovery rate (Benjamini-Hochberg, among gene
+nodes).
 }
 }
 \description{
-This function extracts and exports a combined dataset of experimental gene expression data
-and tKOI network statistics, including key metrics such as log fold changes, p-values,
-PageRank scores, and adjusted false discovery rates (FDR).
+Combines the differential expression table of a \code{\link[=run_tkoi]{run_tkoi()}} result with
+the tKOI network statistics of every gene node, so that experimental and
+network evidence can be compared gene by gene.
 }
 \details{
-The function performs the following steps:
-\enumerate{
-\item Merges the \code{expression_data} from the \code{tKOIList} object with gene metadata using \code{inner_join}.
-\item Merges the result with gene-level network data using \code{right_join}.
-\item Selects key columns from the merged dataset, including:
-\itemize{
-\item \code{gene_name}: Gene names from the experimental data.
-\item \code{name}: Gene symbols or common names.
-\item \code{id} and \code{identifier}: Unique identifiers for genes in the network.
-\item \code{logfc}: Experimental log fold change values.
-\item \code{pvalue}: Experimental p-values.
-\item \code{pagerank}: tKOI PageRank scores.
-\item \code{beta}: tKOI z-scores for network enrichment.
-\item \code{p_value}: tKOI unadjusted p-values.
-\item \code{fdr}: tKOI false discovery rates (FDR).
-}
-\item Renames columns for clarity and standardization.
-}
+\code{expression_data} is cleaned the same way as in \code{\link[=run_tkoi]{run_tkoi()}}: rows with a
+missing or blank \code{gene_name} are dropped, and only the first row of each
+gene is used. Genes are matched to network nodes through their Ensembl IDs
+(see \link{genes}). Every row of the \code{Gene} table is kept, so network genes
+that are not in \code{expression_data} have \code{NA} in \code{gene_name},
+\code{experimental_logfc}, and \code{experimental_pvalue}.
 }
 \examples{
 \dontrun{
-# Create a dummy tKOIList object
-tkoi_list = new("tKOIList",
-                expression_data = data.frame(
-                  gene_name = c("gene1", "gene2", "gene3"),
-                  logfc = c(1.2, -0.8, 0.5),
-                  pvalue = c(0.01, 0.03, 0.2)
-                ),
-                network_summary_statistics = list(
-                  Gene = data.frame(
-                    id = c(1, 2, 3),
-                    pagerank = c(0.05, 0.03, 0.02),
-                    beta = c(2.1, -1.5, 0.9),
-                    p_value = c(0.01, 0.02, 0.05),
-                    fdr = c(0.02, 0.03, 0.1)
-                  )
-                ),
-                pvalue_threshold = 0.05,
-                logfc_threshold = 0.5)
+expression_data = data.table::fread(
+  system.file("extdata", "example_data.csv", package = "tkoi")
+)
 
-# Export the gene exploration data
-gene_data = export_gene_exploration_data(tkoi_list)
-print(gene_data)
+set.seed(1)
+tkoi_result = run_tkoi(expression_data = expression_data)
+
+gene_data = export_gene_exploration_data(tkoi_result)
+head(gene_data)
+
+# Genes supported by both the experiment and the network
+subset(gene_data, experimental_pvalue <= 0.05 & tkoi_fdr <= 0.05)
 }
 
 }
 \seealso{
-\code{\link[dplyr]{dplyr}}, \code{\link[tkoi]{make_gene_exploration_plot}}
+\code{\link[=make_gene_exploration_plot]{make_gene_exploration_plot()}} to plot the same data,
+\code{\link[=export_network_summary_statistics]{export_network_summary_statistics()}} to export every node type.
 }

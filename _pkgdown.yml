@@ -10,7 +10,7 @@ home:
   tagline: "Transcriptomic Knowledge-Graph Omics Integration"
   links:
     - text: GitHub
-      href: https://github.com/Broccolito/tkoi
+      href: https://github.com/BaranziniLab/tkoi
 
 navbar:
   structure:

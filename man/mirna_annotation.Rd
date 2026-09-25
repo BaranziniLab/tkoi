@@ -7,8 +7,10 @@
 \format{
 A data frame with two columns and multiple rows (1 per miRNA):
 \describe{
-\item{identifier}{Character string representing the mature miRNA ID, including the species prefix (e.g., \code{"hsa-miR-6129"}).}
-\item{accession}{miRBase accession number for the precursor miRNA hairpin (e.g., \code{"MI0021274"}).}
+\item{identifier}{Character string representing the mature miRNA ID, including the species
+prefix (e.g., \code{"hsa-miR-6129"}).}
+\item{accession}{miRBase accession number for the precursor miRNA hairpin (e.g.,
+\code{"MI0021274"}).}
 }
 }
 \source{
@@ -18,13 +20,17 @@ Extracted from a parsed version of miRBase release data.
 mirna_annotation
 }
 \description{
-A curated dataset mapping human mature miRNA identifiers to their corresponding miRBase precursor accessions.
+A curated dataset mapping human mature miRNA identifiers to their corresponding miRBase
+precursor accessions.
 }
 \details{
-This dataset enables annotation and cross-referencing of mature miRNA names with miRBase precursor IDs.
-It is useful for linking results from miRNA expression studies with external reference databases such as miRBase.
+This dataset enables annotation and cross-referencing of mature miRNA names with miRBase
+precursor IDs.
+It is useful for linking results from miRNA expression studies with external reference
+databases such as miRBase.
 
-The \code{identifier} field typically corresponds to results from expression matrices, differential analysis tools, or network analysis pipelines.
+The \code{identifier} field typically corresponds to results from expression matrices,
+differential analysis tools, or network analysis pipelines.
 }
 \examples{
 data(mirna_annotation)

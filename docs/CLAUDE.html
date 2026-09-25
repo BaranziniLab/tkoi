@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">tkoi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,7 @@
 <li class="nav-item"><a class="nav-link" href="articles/index.html">Vignettes</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/BaranziniLab/tkoi/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -27,7 +28,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="logo.png" class="logo" alt=""><h1>CLAUDE.md</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/BaranziniLab/tkoi/blob/HEAD/CLAUDE.md" class="external-link"><code>CLAUDE.md</code></a></small>
     </div>
 
 <div id="claudemd" class="section level1">
@@ -37,6 +38,11 @@
 <h2 id="project-overview">Project Overview<a class="anchor" aria-label="anchor" href="#project-overview"></a></h2>
 <p><strong>tKOI</strong> (Transcriptomic Knowledge-Graph Omics Integration) is an R package for network-aware gene enrichment analysis. It propagates transcriptomic signals through a human biological knowledge graph via personalized PageRank, then uses permutation testing to identify statistically enriched biological concepts (GO terms, diseases, cell types, pathways).</p>
 </div>
+<div class="section level2">
+<h2 id="code-style">Code Style<a class="anchor" aria-label="anchor" href="#code-style"></a></h2>
+<ul><li>Assignment with <code>=</code> (never <code>&lt;-</code>), native pipe <code>|&gt;</code> (never <code>%&gt;%</code>), tidyverse layout otherwise.</li>
+<li>Keep <code><a href="https://lintr.r-lib.org/reference/lint.html" class="external-link">lintr::lint_package()</a></code> clean.</li>
+</ul></div>
 <div class="section level2">
 <h2 id="common-commands">Common Commands<a class="anchor" aria-label="anchor" href="#common-commands"></a></h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -54,6 +60,12 @@
 <span></span>
 <span><span class="co"># Run a single test file</span></span>
 <span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_file.html" class="external-link">test_file</a></span><span class="op">(</span><span class="st">"tests/testthat/test-&lt;name&gt;.R"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Include the slow tests (full network, GO enrichment)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>TKOI_EXTENDED_TESTS <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span>; <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">test</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Lint (config in .lintr: `=` assignment, `|&gt;` pipe)</span></span>
+<span><span class="fu">lintr</span><span class="fu">::</span><span class="fu"><a href="https://lintr.r-lib.org/reference/lint.html" class="external-link">lint_package</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Build package</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/build.html" class="external-link">build</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -77,7 +89,11 @@
 <div class="section level3">
 <h3 id="main-pipeline-run_tkoi">Main Pipeline: <code>run_tkoi()</code>
 <a class="anchor" aria-label="anchor" href="#main-pipeline-run_tkoi"></a></h3>
-<p><a href="R/run_tkoi.R">R/run_tkoi.R</a> is the primary entry point. Execution order: 1. Filter genes by <code>pvalue_threshold</code> and <code>logfc_threshold</code> 2. Map filtered genes to the knowledge graph via Ensembl IDs 3. Run personalized PageRank weighted by log fold change 4. Permutation test: swap each gene with topologically similar substitutes, recompute PageRank <code>n_permutation</code> times 5. Compute Z-scores and FDR per node 6. Annotate nodes with biological labels from pre-loaded <code>.rda</code> datasets</p>
+<p><a href="R/run_tkoi.R">R/run_tkoi.R</a> is the primary entry point. Execution order: 1. Filter genes by <code>pvalue_threshold</code> and <code>logfc_threshold</code> 2. Map filtered genes to the knowledge graph via Ensembl IDs 3. Draw <code>n_permutation</code> degree-matched null seed sets (C++, R’s RNG, so <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> applies) 4. Run personalized PageRank for the observed seeds and every null set in one batched, multithreaded C++ solve 5. Compute Z-scores, p-values, and per-node-type FDR 6. Count seeds within 1 and 2 hops (C++ bitsets), order tables, and annotate nodes from the <code>.rda</code> datasets</p>
+</div>
+<div class="section level3">
+<h3 id="native-engine">Native Engine<a class="anchor" aria-label="anchor" href="#native-engine"></a></h3>
+<p><a href="src/tkoi_engine.cpp">src/tkoi_engine.cpp</a> (Rcpp) holds the performance-critical code; <a href="R/engine.R">R/engine.R</a> prepares its inputs. - <code>.tkoi_build_csr()</code> builds the symmetric normalized matrix; <code>.tkoi_prepare_network()</code> caches it per <code><a href="https://r.igraph.org/reference/graph_id.html" class="external-link">igraph::graph_id()</a></code>. - <code>.tkoi_ppr_null()</code> solves personalized PageRank with block conjugate gradient, 16 vectors per pass, on <code>n_cores</code> threads. It matches <code>igraph::page_rank(algo = "prpack", directed = FALSE)</code> conventions (self-loops count twice, <code>weight</code> edge attribute used). - Results are bit-identical for any thread count (fixed chunking and reduction order). - <code>.tkoi_sample_null()</code> reproduces the legacy <code><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff()</a></code> + <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample()</a></code> loop draw for draw. - After editing C++ or <code>// [[Rcpp::export]]</code> tags, run <code><a href="https://rdrr.io/pkg/Rcpp/man/compileAttributes.html" class="external-link">Rcpp::compileAttributes()</a></code> then <code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code>. - <code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code> compiles with <code>-O0</code>; benchmark only an installed build (<code>R CMD INSTALL</code>).</p>
 </div>
 <div class="section level3">
 <h3 id="pre-loaded-annotation-data">Pre-loaded Annotation Data<a class="anchor" aria-label="anchor" href="#pre-loaded-annotation-data"></a></h3>
@@ -85,7 +101,7 @@
 </div>
 <div class="section level3">
 <h3 id="knowledge-graph">Knowledge Graph<a class="anchor" aria-label="anchor" href="#knowledge-graph"></a></h3>
-<p>The biological network is encrypted (via <code>sodium</code>) and bundled inside the package. It is decrypted at runtime in <code><a href="reference/run_tkoi.html">run_tkoi()</a></code>. The graph is an <code>igraph</code> object representing human gene–concept relationships.</p>
+<p><code>data/tkoi_net.rda</code> is the plain <code>igraph</code> network (939,059 nodes, 10,622,200 undirected edges, xz-compressed, ~55 MB). It lazy-loads as <code><a href="reference/tkoi_net.html">tkoi::tkoi_net</a></code>. There is no encryption.</p>
 </div>
 <div class="section level3">
 <h3 id="visualization--export">Visualization &amp; Export<a class="anchor" aria-label="anchor" href="#visualization--export"></a></h3>

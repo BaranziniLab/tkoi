@@ -47,55 +47,28 @@ populated. This slot is a `list` containing:
 
 The function performs the following steps:
 
-1.  Extracts genes with p-values below the threshold specified in the
-    `tkoi_list`.
+1.  Extracts genes with p-values at or below the threshold stored in
+    `tkoi_list` (the log fold change threshold is not applied here).
 
 2.  Conducts Gene Ontology (GO) enrichment analysis for Biological
     Process (BP), Cellular Component (CC), and Molecular Function (MF)
     using
     [`clusterProfiler::enrichGO`](https://rdrr.io/pkg/clusterProfiler/man/enrichGO.html).
 
-3.  Computes pairwise term similarities using
-    [`enrichplot::pairwise_termsim`](https://rdrr.io/pkg/enrichplot/man/pairwise_termsim.html).
-
-4.  Merges the enrichment results with TKOI network statistics to create
+3.  Merges the enrichment results with TKOI network statistics to create
     a unified dataset.
 
-5.  Generates scatter plots to visualize the relationship between TKOI
+4.  Generates scatter plots to visualize the relationship between TKOI
     network enrichment effect size and gene enrichment q-values.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# Example usage of the function
-library(clusterProfiler)
-library(enrichplot)
-library(org.Hs.eg.db)
-library(ggplot2)
-library(dplyr)
+tkoi_result = run_tkoi(expression_data)
+tkoi_result = run_gene_enrichment(tkoi_result)
 
-# Create a dummy tKOIList object
-tkoi_list = new("tKOIList",
-                expression_data = data.frame(
-                  gene_name = c("gene1", "gene2", "gene3"),
-                  pvalue = c(0.01, 0.02, 0.2)
-                ),
-                network_summary_statistics = list(
-                  BiologicalProcess = data.frame(
-                    identifier = c("GO:0008150", "GO:0009987"),
-                    node_id = c(1, 2),
-                    pagerank = c(0.2, 0.3),
-                    beta = c(0.5, 0.4),
-                    p_value = c(0.01, 0.02),
-                    fdr = c(0.05, 0.1),
-                    definition = c("process1", "process2")
-                  ),
-                  CellularComponent = data.frame(),
-                  MolecularFunction = data.frame()
-                ))
-
-# Run the enrichment function
-result = run_gene_enrichment(tkoi_list)
+tkoi_result@gene_enrichment_comparison$enrichment_result
+tkoi_result@gene_enrichment_comparison$comparison_scatter1
 } # }
 ```

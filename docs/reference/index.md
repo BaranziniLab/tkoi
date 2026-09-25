@@ -14,7 +14,7 @@ Core methods for network-based transcriptomic analysis
 - [`export_gene_exploration_data()`](export_gene_exploration_data.md) :
   Export Gene Exploration Data
 - [`export_network_summary_statistics()`](export_network_summary_statistics.md)
-  : Export Network Summary Statistics from tKOI Result
+  : Export Network Summary Statistics to Excel
 - [`visualize_topn()`](visualize_topn.md) : Visualize Top Network
   Enrichment Statistics
 - [`plot_network()`](plot_network.md) : Plot a Local Network Around a

@@ -13,7 +13,7 @@ or entities in the network."><meta property="og:image" content="/logo.png"></hea
 
     <a class="navbar-brand me-2" href="../index.html">tkoi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,7 @@ or entities in the network."><meta property="og:image" content="/logo.png"></hea
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/BaranziniLab/tkoi/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -33,7 +34,7 @@ or entities in the network."><meta property="og:image" content="/logo.png"></hea
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Visualize Top Network Enrichment Statistics</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/BaranziniLab/tkoi/blob/HEAD/R/visualize_topn.R" class="external-link"><code>R/visualize_topn.R</code></a></small>
       <div class="d-none name"><code>visualize_topn.Rd</code></div>
     </div>
 
@@ -99,7 +100,8 @@ to the <code>beta</code> values. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-lognorm">lognorm<a class="anchor" aria-label="anchor" href="#arg-lognorm"></a></dt>
-<dd><p>A logical value indicating whether to apply log base-2 transformation to the <code>beta</code>
+<dd><p>A logical value indicating whether to apply log base-2 transformation to the
+<code>beta</code>
 values. Default is <code>TRUE</code>.</p></dd>
 
 
@@ -119,21 +121,25 @@ representing <code>-log10(FDR)</code>. Default is <code>"#154360"</code>.</p></d
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The function performs the following steps:</p><ol><li><p>Extracts the top <code>n</code> entries from the specified category within the
-<code>network_summary_statistics</code> slot of the <code>tKOIList</code> object.</p></li>
-<li><p>Filters out entries with missing <code>beta</code> values.</p></li>
+    <p>The function performs the following steps:</p><ol><li><p>Takes the table for <code>category</code> from the <code>network_summary_statistics</code>
+slot of the <code>tKOIList</code> object and drops rows with a missing <code>beta</code>.</p></li>
+<li><p>Keeps the first <code>top_n</code> remaining rows (the tables are already ranked).</p></li>
 <li><p>Optionally applies transformations to the <code>beta</code> values:</p><ul><li><p>If <code>ranknorm</code> is set to <code>TRUE</code>, applies inverse rank-based normalization.</p></li>
 <li><p>If <code>lognorm</code> is set to <code>TRUE</code>, applies log base-2 transformation.</p></li>
 <li><p>If both transformations are enabled, <code>ranknorm</code> is overridden and set to <code>FALSE</code>.</p></li>
 </ul></li>
-<li><p>Adjusts very small <code>fdr</code> values to avoid extreme values in plotting.</p></li>
-<li><p>If the category is <code>"Gene"</code>, the function joins additional metadata from the
-<code><a href="genes.html">tkoi::genes</a></code> table to obtain gene names. For other categories, the <code>name</code> column
-is used as the identifier.</p></li>
-<li><p>Filters out entries with missing identifiers and ensures consistent ordering of identifiers for plotting.</p></li>
+<li><p>Raises <code>fdr</code> and <code>p_value</code> values below the smallest positive FDR of the
+category to that value, so zero FDRs can be plotted on a log scale.</p></li>
+<li><p>Labels bars with the <code>name</code> column for <code>"BiologicalProcess"</code>,
+<code>"CellularComponent"</code>, <code>"MolecularFunction"</code>, <code>"Disease"</code>, and <code>"Gene"</code>
+(gene symbols), falling back to <code>identifier</code> for nodes without a name;
+other categories are labelled with <code>identifier</code>.</p></li>
+<li><p>Filters out entries with missing identifiers, keeps the first row per
+identifier (annotation joins can repeat a node), and fixes the plotting order.</p></li>
 <li><p>Creates a horizontal bar plot where:</p><ul><li><p>The x-axis represents the (possibly transformed) effect size (<code>beta</code>).</p></li>
 <li><p>The y-axis represents the identifiers (e.g., terms or entities).</p></li>
-<li><p>The color gradient of the bars represents <code>-log10(FDR)</code>, with customizable low and high colors.</p></li>
+<li><p>The color gradient of the bars represents <code>-log10(FDR)</code>, with customizable low and high
+colors.</p></li>
 </ul></li>
 </ol></div>
     <div class="section level2">
@@ -149,15 +155,18 @@ is used as the identifier.</p></li>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Visualize the top 20 Genes with custom color gradient</span></span></span>
-<span class="r-in"><span><span class="va">plt</span> <span class="op">=</span> <span class="fu">visualize_topn</span><span class="op">(</span><span class="va">tkoi_list</span>, category <span class="op">=</span> <span class="st">"Gene"</span>, top_n <span class="op">=</span> <span class="fl">20</span>, high_color <span class="op">=</span> <span class="st">"#E74C3C"</span>, low_color <span class="op">=</span> <span class="st">"#3498DB"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">plt</span> <span class="op">=</span> <span class="fu">visualize_topn</span><span class="op">(</span><span class="va">tkoi_list</span>, category <span class="op">=</span> <span class="st">"Gene"</span>, top_n <span class="op">=</span> <span class="fl">20</span>, high_color <span class="op">=</span> <span class="st">"#E74C3C"</span>,</span></span>
+<span class="r-in"><span>low_color <span class="op">=</span> <span class="st">"#3498DB"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Visualize the top 15 Pathways without rank-based normalization or log transformation</span></span></span>
-<span class="r-in"><span><span class="va">plt</span> <span class="op">=</span> <span class="fu">visualize_topn</span><span class="op">(</span><span class="va">tkoi_list</span>, category <span class="op">=</span> <span class="st">"Pathway"</span>, top_n <span class="op">=</span> <span class="fl">15</span>, ranknorm <span class="op">=</span> <span class="cn">FALSE</span>, lognorm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">plt</span> <span class="op">=</span> <span class="fu">visualize_topn</span><span class="op">(</span><span class="va">tkoi_list</span>, category <span class="op">=</span> <span class="st">"Pathway"</span>, top_n <span class="op">=</span> <span class="fl">15</span>, ranknorm <span class="op">=</span> <span class="cn">FALSE</span>, lognorm <span class="op">=</span></span></span>
+<span class="r-in"><span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Visualize the top 5 Diseases with rank-based normalization enabled</span></span></span>
-<span class="r-in"><span><span class="va">plt</span> <span class="op">=</span> <span class="fu">visualize_topn</span><span class="op">(</span><span class="va">tkoi_list</span>, category <span class="op">=</span> <span class="st">"Disease"</span>, top_n <span class="op">=</span> <span class="fl">5</span>, ranknorm <span class="op">=</span> <span class="cn">TRUE</span>, lognorm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">plt</span> <span class="op">=</span> <span class="fu">visualize_topn</span><span class="op">(</span><span class="va">tkoi_list</span>, category <span class="op">=</span> <span class="st">"Disease"</span>, top_n <span class="op">=</span> <span class="fl">5</span>, ranknorm <span class="op">=</span> <span class="cn">TRUE</span>, lognorm <span class="op">=</span></span></span>
+<span class="r-in"><span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>

@@ -5,38 +5,29 @@
 \alias{human_metabolites}
 \title{human_metabolites: Parsed Human Metabolite Metadata from HMDB}
 \format{
-A data frame with  rows and 4 columns:
-\describe{
-\item{name}{Metabolite name (character)}
-\item{inchikey}{Standard InChIKey identifier (character)}
-\item{chebi_id}{ChEBI ID with "CHEBI:" prefix, or NA (character)}
-\item{chembl_id}{ChEMBL compound ID, or NA (character)}
-}
+A character vector of 231,466 unique identifiers (217,895
+InChIKeys, 13,562 ChEBI IDs, and 9 ChEMBL IDs).
 }
 \usage{
 human_metabolites
 }
 \description{
-A data frame containing key chemical identifiers for metabolites curated
-from the Human Metabolome Database (HMDB). This dataset was constructed
-by parsing the official HMDB XML export and selecting metabolite-level
-identifiers relevant for downstream bioinformatics and network biology analyses.
+A character vector of compound identifiers for metabolites curated from
+the Human Metabolome Database (HMDB), written like the \code{identifier}
+of Compound nodes in \code{\link{tkoi_net}}: InChIKeys (for example
+\code{"inchikey:BRMWTNUJHUMWMS-LURJTMIESA-N"}), ChEBI IDs (for example
+\code{"CHEBI:50599"}), and ChEMBL IDs (for example
+\code{"chembl.compound:CHEMBL4159192"}). \code{\link{run_tkoi}} reports
+only Compound nodes whose \code{identifier} is in this vector, and these
+nodes form the multiple-testing family of the Compound table.
 }
 \details{
-\subsection{Description}{
-
-Each row corresponds to a unique metabolite entry from HMDB. The following
-columns are included:
-\itemize{
-\item \code{name}: The primary name of the metabolite as recorded in HMDB
-\item \code{inchikey}: The standard InChIKey chemical structure identifier
-\item \code{chebi_id}: The corresponding ChEBI identifier (when available), prefixed with \code{"CHEBI:"}
-\item \code{chembl_id}: The corresponding ChEMBL compound ID (when available)
-}
-
-All values are character strings. Missing values are represented as \code{NA}.
-}
-
+In tkoi 1.1.0 the identifiers were repaired: ChEBI IDs had a doubled
+prefix (\code{"CHEBI:CHEBI:50599"}), ChEMBL IDs lacked the \code{"CHEMBL"}
+prefix, placeholder entries (\code{"CHEBI:NA"}, a bare \code{"inchikey:"})
+were removed, and duplicates were dropped. As a result, 45 Compound nodes
+identified by ChEBI ID are now reported in addition to the 24,099
+InChIKey-identified compounds.
 \subsection{Use Cases}{
 
 This table is useful for:
@@ -51,8 +42,7 @@ This table is useful for:
 
 This object was created by parsing \code{hmdb_metabolites.xml} using the \code{xml2} package.
 Chemical identifiers were extracted using XPath queries for \verb{<inchikey>}, \verb{<chebi_id>},
-and \verb{<chembl_id>}. ChEBI identifiers were post-processed to include the standard
-\code{"CHEBI:"} prefix when present.
+and \verb{<chembl_id>}, and prefixed with their namespace.
 }
 }
 \examples{

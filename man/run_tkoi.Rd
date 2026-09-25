@@ -14,101 +14,174 @@ run_tkoi(
   n_permutation = 100,
   damping_factor = 0.85,
   maximum_iteration = 500,
-  n_cores = 1
+  n_cores = NULL,
+  keep_permutations = TRUE,
+  tolerance = 1e-14,
+  verbose = TRUE
 )
 }
 \arguments{
-\item{expression_data}{A data frame with columns \code{gene_name} (Ensembl IDs),
-\code{logfc}, and \code{pvalue}.}
+\item{expression_data}{A data frame with columns \code{gene_name} (Ensembl
+gene IDs), \code{logfc}, and \code{pvalue}. Rows with a missing or blank
+\code{gene_name} are ignored, and only the first row of each gene is used.}
 
-\item{subnetwork}{An igraph object representing the biological knowledge graph.
-Default is \code{tkoi::tkoi_net}.}
+\item{subnetwork}{An igraph knowledge graph. Default \code{tkoi::tkoi_net}.}
 
-\item{pvalue_threshold}{Numeric threshold for filtering genes by p-value. Default \code{0.05}.}
+\item{pvalue_threshold}{Keep genes with \code{pvalue} at or below this
+value. Default \code{0.05}.}
 
-\item{logfc_threshold}{Numeric threshold for filtering genes by absolute log fold change.
-Default \code{0.25}.}
+\item{logfc_threshold}{Keep genes with \code{abs(logfc)} at or above this
+value. Default \code{0.25}.}
 
-\item{indirect_link_threshold}{Minimum number of seed genes that must be 2-hop-connected
-to a node for it to be prioritized. Default \code{3}.}
+\item{indirect_link_threshold}{Nodes within two hops of at least this many
+seed genes are ranked first in each result table. This only orders the
+tables; no node is excluded. Default \code{3}.}
 
-\item{topology_similarity}{Numeric in (0, 1) controlling how similar in degree a
-substitute gene must be to the original during permutation sampling. Default \code{0.9}.}
+\item{topology_similarity}{Number in \code{[0, 1]}. A replacement gene's
+degree must lie within \code{[topology_similarity * d, (2 -
+  topology_similarity) * d]}, where \code{d} is the seed gene's degree in
+\code{tkoi::genes} (its degree in \code{tkoi_net}, also for custom
+networks).
+Default \code{0.9}.}
 
-\item{n_permutation}{Integer number of permutations for the null distribution. Default \code{100}.}
+\item{n_permutation}{Number of permutations in the null (at least 2).
+Default \code{100}.}
 
-\item{damping_factor}{Damping factor for personalized PageRank. Default \code{0.85}.}
+\item{damping_factor}{PageRank damping factor in \code{(0, 1)}. Default
+\code{0.85}.}
 
-\item{maximum_iteration}{Maximum iterations for PageRank convergence. Default \code{500}.}
+\item{maximum_iteration}{Maximum solver iterations per PageRank vector.
+The solver needs about 55 iterations on \code{tkoi_net} at the default
+\code{tolerance}. Default \code{500}.}
 
-\item{n_cores}{Number of cores for parallel permutation computation. Default \code{1}
-(sequential). Values \code{> 1} use \code{parallel::mclapply} and require macOS or Linux;
-note that parallel mode produces statistically equivalent but numerically different results
-due to independent per-worker RNG streams.}
+\item{n_cores}{Number of CPU threads. \code{NULL} (the default) uses every
+available core, or \code{getOption("tkoi.n_cores")} when that is set.
+Requests above the number of available cores (which respects Slurm and
+Linux cgroup CPU limits) are capped. Results do not depend on this value.}
+
+\item{keep_permutations}{If \code{TRUE} (the default), \code{pagerank_data}
+holds every permutation's PageRank vector (\code{perm.1}, \code{perm.2},
+...). If \code{FALSE}, it holds only the null mean and standard deviation
+(\code{null_mean}, \code{null_sd}), which saves memory for large
+\code{n_permutation}.}
+
+\item{tolerance}{Relative residual at which the PageRank solver stops. A
+vector is accepted when its residual is below \code{tolerance} both in
+the symmetric system the solver works on and, in 1-norm, in the original
+PageRank system, which bounds the 1-norm error of the PageRank vector by
+about \code{2 * tolerance}. The default \code{1e-14} is at least as
+accurate as \code{igraph::page_rank()} on \code{tkoi_net}, per node as
+well as overall.}
+
+\item{verbose}{If \code{TRUE} (the default), print progress messages.}
 }
 \value{
 An S4 object of class \code{tKOIList} with slots:
 \describe{
-\item{\code{expression_data}}{The input gene expression data frame.}
-\item{\code{pagerank_data}}{A data frame of observed and permutation PageRank scores
-for every node in the subnetwork.}
-\item{\code{network_summary_statistics}}{A named list of data frames, one per node type,
-containing beta, p_value, fdr, and biological annotations.}
+\item{\code{expression_data}}{The input data frame.}
+\item{\code{pagerank_data}}{A data frame with \code{node_id},
+observed \code{pagerank}, and either every permutation
+(\code{perm.1}, ...) or \code{null_mean} and \code{null_sd}.}
+\item{\code{network_summary_statistics}}{A named list of tibbles, one per
+node type, with \code{node_id}, \code{node_type}, \code{identifier},
+\code{pagerank}, \code{beta}, \code{p_value}, \code{fdr},
+\code{direct_links}, \code{indirect_links}, \code{valency}, and
+annotation columns (missing for nodes without a curated annotation).
+Every node of the network is listed once, except Compound nodes that
+are not human metabolites.}
 }
 }
 \description{
-Performs tKOI (Transcriptomic Knowledge-graph-driven Omics Integration) analysis
-on a gene expression dataset. The analysis integrates transcriptomic measurements
-with a biological knowledge graph to identify and interpret biologically enriched
-subnetworks. The pipeline includes the following steps:
+Performs tKOI (Transcriptomic Knowledge-graph-driven Omics Integration)
+analysis on a differential expression table. Transcriptomic signals are
+propagated through a biological knowledge graph with personalized PageRank,
+and a degree-matched permutation null identifies enriched concepts. The
+pipeline has these steps:
 }
 \details{
 \enumerate{
-\item \strong{Gene filtering:} Significant genes are selected based on user-defined
-thresholds for p-value and log fold change.
-\item \strong{Network mapping:} Filtered genes are mapped onto the biological
-subnetwork using Ensembl gene identifiers.
-\item \strong{Personalized PageRank:} A PageRank propagation is performed using
-log fold change-weighted probabilities, quantifying each node's influence.
-\item \strong{Permutation testing:} The propagation is repeated \code{n_permutation}
-times using substitute genes with similar topological properties to build a
-null distribution.
-\item \strong{Network enrichment scoring:} Each node's z-score (beta) and p-value
-are computed by comparing observed PageRank to the permutation null.
-\item \strong{Node annotation:} Nodes are annotated with domain-specific metadata
-(GO terms, diseases, cell types, compounds) from curated knowledge resources.
-\item \strong{Prioritization:} Results are organized by node type with FDR adjustment
-and connectivity statistics for biological prioritization.
+\item \strong{Gene filtering:} genes are kept when \code{pvalue <=
+        pvalue_threshold} and \code{abs(logfc) >= logfc_threshold}.
+\item \strong{Network mapping:} kept genes are mapped onto the network
+through their Ensembl IDs (see \code{\link{genes}}).
+\item \strong{Personalized PageRank:} PageRank is propagated from the
+seed genes, each weighted by \code{abs(logfc)}.
+\item \strong{Permutation null:} every seed gene is replaced by a random
+gene of similar degree, \code{n_permutation} times, and PageRank is
+recomputed for each replacement set.
+\item \strong{Network enrichment scoring:} each node's z-score
+(\code{beta}) and one-sided p-value compare its observed PageRank
+with the null.
+\item \strong{Node annotation:} nodes are annotated with curated
+metadata (GO terms, diseases, cell types, compounds, and more).
+Every node is reported; nodes without a curated annotation have
+missing annotation columns. Among compounds, only human
+metabolites (\code{\link{human_metabolites}}) are reported.
+\item \strong{Prioritization:} results are split by node type, adjusted
+for multiple testing (Benjamini-Hochberg FDR over the reported
+nodes of each type), and ranked.
 }
 
-Probability vectors and metapath filters are built with vectorized operations
-(\code{match()}, batch \code{igraph::ego()}) rather than per-gene dplyr operations.
-Candidate gene pools for permutation sampling are pre-computed once before the loop.
-Enrichment z-scores are computed with \code{rowMeans}/\code{sweep}/\code{rowSums}
-across the full permutation matrix rather than row-by-row.
+\strong{Speed.} The PageRank solver is written in C++. It solves the
+symmetric form of the personalized PageRank system with conjugate
+gradient, up to 16 PageRank vectors per pass over the network, on
+\code{n_cores} threads. Two-hop neighborhood counts use bitsets, and the
+permutation null is drawn in C++.
+
+\strong{Reproducibility.} The null seed sets are drawn in one sequence from
+R's random number generator, so \code{set.seed()} fixes the result, and
+the same seed gives bit-identical statistics for any \code{n_cores}. On
+\code{tkoi_net}, the same seed also draws the same null seed sets as tkoi
+1.0.0 run with \code{n_cores = 1}, and PageRank values, \code{beta}, and
+\code{p_value} agree with 1.0.0 to numerical precision. Result tables
+differ from 1.0.0 by design: unannotated nodes are kept, the Compound FDR
+family is the reported human metabolites, and nodes with a constant null
+are untestable (see below).
+
+\strong{Custom networks.} Seed genes that are not vertices of
+\code{subnetwork} are dropped before the null is drawn, so the observed run
+and every null run use the same seeds with the same weights. Replacement
+genes are drawn only from \code{\link{genes}} that are vertices of
+\code{subnetwork}. Nodes with a missing type are grouped as
+\code{"Unknown"}, and nodes of types without a curated annotation are
+reported without annotation columns.
+
+\strong{Memory.} Beyond \code{tkoi_net} itself (about 0.5 GB), the network
+matrix takes about 0.3 GB and the solver about 0.6 GB. Keeping all
+permutations takes \code{8 * vcount(subnetwork) * (n_permutation + 1)}
+bytes (about 0.75 GB for 100 permutations on \code{tkoi_net}). Before any
+PageRank is computed, the run checks this against the available memory
+(physical memory, or a Linux container limit) and stops with advice if it
+would not fit.
+
+\strong{Untestable nodes.} When a node's null PageRank is the same in every
+permutation (standard deviation 0), its z-score is undefined, so its
+\code{beta}, \code{p_value}, and \code{fdr} are \code{NaN}; such nodes
+are left out of the FDR adjustment and listed last. This covers nodes
+that no seed gene or replacement gene reaches, and seed genes in small
+disconnected components that no replacement gene reaches (which would
+otherwise get an infinite \code{beta}). \code{direct_links} and
+\code{indirect_links} are \code{NA} for nodes that have no seed gene within
+one or two hops. A gene whose first row in \code{expression_data} has a
+missing \code{pvalue} or \code{logfc} is not used as a seed.
 }
 \examples{
 \dontrun{
-expression_data = data.frame(
-  gene_name = c("ENSG00000000003", "ENSG00000000005"),
-  logfc = c(1.5, -0.8),
-  pvalue = c(0.01, 0.02)
+expression_data = data.table::fread(
+  system.file("extdata", "example_data.csv", package = "tkoi")
 )
 
+set.seed(1)
 result = run_tkoi(
   expression_data = expression_data,
-  subnetwork = tkoi::tkoi_net,
-  pvalue_threshold = 0.05,
-  logfc_threshold = 0.25,
   n_permutation = 100
 )
 
-result@pagerank_data
-result@network_summary_statistics
+result@network_summary_statistics$BiologicalProcess
 }
 
 }
 \seealso{
-\code{\link[igraph]{page_rank}}, \code{\link{compute_network_enrichment}},
+\code{\link{visualize_topn}}, \code{\link{export_gene_exploration_data}},
 \code{\link{run_gene_enrichment}}
 }

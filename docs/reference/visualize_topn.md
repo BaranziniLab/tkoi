@@ -101,10 +101,11 @@ statistics.
 
 The function performs the following steps:
 
-1.  Extracts the top `n` entries from the specified category within the
-    `network_summary_statistics` slot of the `tKOIList` object.
+1.  Takes the table for `category` from the `network_summary_statistics`
+    slot of the `tKOIList` object and drops rows with a missing `beta`.
 
-2.  Filters out entries with missing `beta` values.
+2.  Keeps the first `top_n` remaining rows (the tables are already
+    ranked).
 
 3.  Optionally applies transformations to the `beta` values:
 
@@ -116,14 +117,18 @@ The function performs the following steps:
     - If both transformations are enabled, `ranknorm` is overridden and
       set to `FALSE`.
 
-4.  Adjusts very small `fdr` values to avoid extreme values in plotting.
+4.  Raises `fdr` and `p_value` values below the smallest positive FDR of
+    the category to that value, so zero FDRs can be plotted on a log
+    scale.
 
-5.  If the category is `"Gene"`, the function joins additional metadata
-    from the [`tkoi::genes`](genes.md) table to obtain gene names. For
-    other categories, the `name` column is used as the identifier.
+5.  Labels bars with the `name` column for `"BiologicalProcess"`,
+    `"CellularComponent"`, `"MolecularFunction"`, `"Disease"`, and
+    `"Gene"` (gene symbols), falling back to `identifier` for nodes
+    without a name; other categories are labelled with `identifier`.
 
-6.  Filters out entries with missing identifiers and ensures consistent
-    ordering of identifiers for plotting.
+6.  Filters out entries with missing identifiers, keeps the first row
+    per identifier (annotation joins can repeat a node), and fixes the
+    plotting order.
 
 7.  Creates a horizontal bar plot where:
 
@@ -150,15 +155,18 @@ plt = visualize_topn(tkoi_list, category = "BiologicalProcess", top_n = 10)
 print(plt)
 
 # Visualize the top 20 Genes with custom color gradient
-plt = visualize_topn(tkoi_list, category = "Gene", top_n = 20, high_color = "#E74C3C", low_color = "#3498DB")
+plt = visualize_topn(tkoi_list, category = "Gene", top_n = 20, high_color = "#E74C3C",
+low_color = "#3498DB")
 print(plt)
 
 # Visualize the top 15 Pathways without rank-based normalization or log transformation
-plt = visualize_topn(tkoi_list, category = "Pathway", top_n = 15, ranknorm = FALSE, lognorm = FALSE)
+plt = visualize_topn(tkoi_list, category = "Pathway", top_n = 15, ranknorm = FALSE, lognorm =
+FALSE)
 print(plt)
 
 # Visualize the top 5 Diseases with rank-based normalization enabled
-plt = visualize_topn(tkoi_list, category = "Disease", top_n = 5, ranknorm = TRUE, lognorm = FALSE)
+plt = visualize_topn(tkoi_list, category = "Disease", top_n = 5, ranknorm = TRUE, lognorm =
+FALSE)
 print(plt)
 } # }
 ```

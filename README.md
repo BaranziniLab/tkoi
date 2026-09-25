@@ -21,13 +21,16 @@ For non-power users, please use the web application of
 
 For subsequent analysis upon getting network enrichment statistics,
 please use **[tKOIAgent](https://github.com/BaranziniLab/tKOIAgent)**
-for contextualization and network treversal.
+for contextualization and network traversal.
 
 ## Documentations
 
 Please refer to
-**[Documentation](https://broccolito.github.io/software/tkoi/index.html)**
-for detailed documentation of this R package.
+**[Documentation](https://baranzinilab.github.io/tkoi/)** for detailed
+documentation of this R package. The source code is on
+**[GitHub](https://github.com/BaranziniLab/tkoi)**, and changes between
+versions are listed in
+[NEWS.md](https://github.com/BaranziniLab/tkoi/blob/main/NEWS.md).
 
 ## Installation
 
@@ -38,19 +41,88 @@ To install the development version from GitHub:
 install.packages("devtools")
 
 # Install tkoi
-devtools::install_github("Broccolito/tkoi")
+devtools::install_github("BaranziniLab/tkoi")
+```
+
+The former address `Broccolito/tkoi` redirects to `BaranziniLab/tkoi`.
+`tkoi` requires R 4.1 or later.
+
+Since version 1.1.0, `tkoi` compiles C++ code during installation, so a
+compiler toolchain is required:
+
+- **macOS**: Xcode Command Line Tools (run `xcode-select --install` in a
+  terminal)
+- **Windows**: [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
+  matching your R version
+- **Linux**: a C++ compiler, e.g. `build-essential` on Debian/Ubuntu
+
+The Bioconductor dependencies (`clusterProfiler`, `org.Hs.eg.db`) are
+installed automatically. If that step fails, install them first with
+`BiocManager` and then install `tkoi` again:
+
+``` r
+install.packages("BiocManager")
+BiocManager::install(c("clusterProfiler", "org.Hs.eg.db"))
 ```
 
 ## Core Features
 
 - Personalized PageRank propagation using transcriptomic weights
 - Permutation-based enrichment scoring for network nodes
+- Fast, multithreaded C++ engine that solves PageRank for the observed
+  data and all permutations in batches
+- Reproducible results: `set.seed()` fixes the permutation null, and
+  results are identical for any number of cores
 - Functional annotation using Gene Ontology, Disease Ontology, Cell
   Ontology, Reactome, and more
 - Modular and extensible S4 object design (`tKOIList`)
 - Export and visualization tools for enriched subnetworks
-- Seamless compatibility with `clusterProfiler`, `enrichplot`, and
-  `ggplot2` \## Getting Started
+- Side-by-side comparison with Gene Ontology enrichment from
+  `clusterProfiler`, and plots built with `ggplot2`
+
+## Performance
+
+The core of `run_tkoi()` is written in C++ (via `Rcpp`). Personalized
+PageRank for the observed data and every permutation is solved in
+batches of up to 16 vectors per pass over the network, using conjugate
+gradient on multiple threads. Two-hop neighbourhood counts use bitsets,
+and the degree-matched null gene sets are sampled in C++.
+
+Measured on an Apple M2 (8 cores) with a 21,414-gene differential
+expression dataset (1,201 seed genes) on the full `tkoi_net`:
+
+- 10 permutations: 48.5 s with `tkoi` 1.0.0 vs 5.3 s with `tkoi` 1.1.0
+  (8.8 s for the first run in a session, which also builds the network
+  matrix)
+- 100 permutations: 244.3 s with `tkoi` 1.0.0 vs 25.5 to 38.1 s with
+  `tkoi` 1.1.0 (the range is run-to-run variation from thermal
+  throttling)
+
+That is about 6 to 10 times faster. A single core is still faster than
+`tkoi` 1.0.0: 10.9 s for 10 permutations with `n_cores = 1`.
+
+With the same `set.seed()`, the permutation null gene sets on `tkoi_net`
+are identical to those of a sequential `tkoi` 1.0.0 run, and the
+statistics match `tkoi` 1.0.0: `beta` agrees to within 1e-8 and PageRank
+vectors to within 6e-15. The result tables are more complete than in
+1.0.0: every node is reported (unannotated nodes were dropped before),
+the Compound FDR is adjusted over the reported human metabolites only,
+nodes with a constant null are reported as untestable (`NaN`) instead of
+infinitely significant, and the list of human metabolites was repaired
+(see `NEWS.md`). Rows can otherwise be ordered differently only where
+FDR and `beta` agree to 10 significant digits, because `tkoi` 1.1.0
+orders such ties deterministically. At the default `tolerance = 1e-14`,
+the PageRank vectors are at least as accurate as those of
+`igraph::page_rank()` on `tkoi_net`, both per node and overall.
+
+Loading `tkoi::tkoi_net` takes a few seconds and about 0.5 GB of memory
+the first time it is used in a session. Keeping every permutation
+(`keep_permutations = TRUE`) adds about 0.75 GB for 100 permutations.
+Before any PageRank is computed, `run_tkoi()` checks the memory the run
+needs against the memory available (physical memory, or a Linux
+container limit) and stops with advice if the run would not fit.
+
+## Getting Started
 
 ### Example Workflow
 
@@ -82,6 +154,9 @@ The file includes columns:
 - `logfc`: log2 fold-change values
 - `pvalue`: associated p-values for differential expression
 
+Rows with a missing or blank `gene_name` are ignored, and only the first
+row of a duplicated gene is used.
+
 ### Step 2: Run tKOI Network Enrichment Analysis
 
 `tKOI` integrates transcriptomic changes with a biological knowledge
@@ -89,21 +164,43 @@ graph using a personalized PageRank algorithm. It also performs
 permutations to assess statistical enrichment.
 
 ``` r
+set.seed(1)                       # Makes the permutation null reproducible
+
 tkoi_result = run_tkoi(
   expression_data = expression_data,
   subnetwork = tkoi::tkoi_net,    # Predefined igraph network included with the package
   pvalue_threshold = 0.05,        # p-value filter for differential expression
   logfc_threshold = 0.25,         # Minimum log fold change
-  indirect_link_threshold = 3,    # Required indirect connectivity for downstream inclusion
+  indirect_link_threshold = 3,    # Rank first the nodes within two hops of at least 3 seed genes
   topology_similarity = 0.9,      # Similarity for selecting matched genes in permutations
   n_permutation = 100,            # Number of random permutations
   damping_factor = 0.85,          # PageRank damping factor
-  maximum_iteration = 500         # Max iterations for convergence
+  maximum_iteration = 500,        # Max solver iterations per PageRank vector
+  n_cores = NULL,                 # CPU threads; NULL uses all available cores
+  keep_permutations = TRUE        # FALSE keeps only the null mean and SD to save memory
 )
 ```
 
 The result is an S4 object (`tKOIList`) that stores PageRank scores,
 permutation statistics, and network annotations.
+
+A few notes on the run settings:
+
+- `indirect_link_threshold` only orders the result tables: nodes within
+  two hops of at least that many seed genes are listed first. No node is
+  excluded.
+- `n_cores` only changes the speed: results are identical for any number
+  of cores. Requests above the number of available cores (including
+  Slurm and Linux container CPU limits) are capped, and
+  `options(tkoi.n_cores = 4)` sets a default for the session.
+- `keep_permutations = FALSE` stores only the null mean and standard
+  deviation instead of every permutation, which saves memory for large
+  `n_permutation`.
+- The PageRank solver stops when its relative residual is at most
+  `tolerance` (default `1e-14`, about 55 iterations per vector on
+  `tkoi_net`). A warning is raised if a PageRank vector does not
+  converge within `maximum_iteration` iterations.
+- Set `verbose = FALSE` to silence the progress messages.
 
 ### Step 3: Perform Gene Ontology (GO) Enrichment
 
@@ -179,12 +276,43 @@ plt2 = visualize_topn(
 plt2
 ```
 
-### Step 8: (Optional) Save the Analysis Result
+### Step 8: (Optional) Plot the Network Around an Enriched Node
+
+Use `plot_network()` to draw the part of the knowledge graph that links
+an enriched node (for example the top biological process) to the
+significant genes near it. Genes are colored by log fold change, the
+target node is orange, and node size follows the tKOI effect size
+(`beta`).
+
+``` r
+top_term = tkoi_result@network_summary_statistics$BiologicalProcess$node_id[1]
+
+plot_network(
+  tkoi_result = tkoi_result,
+  target_node_id = top_term,
+  degree_expansion = 2,          # Maximum number of hops between the target and a gene
+  network_layout_type = "kk",    # Also "fr", "gem", "graphopt", "lgl", or "mds"
+  subnetwork = tkoi::tkoi_net    # Use the same network as in run_tkoi()
+)
+```
+
+`plot_network()` returns the plotted `igraph` subgraph invisibly. To
+list the nodes around any node, use
+`get_neighboring_nodes(top_term, degree_expansion = 1)`.
+
+### Step 9: (Optional) Save the Analysis Result
 
 Save your full analysis object for future use:
 
 ``` r
 save(tkoi_result, file = "tkoi_result.rda")
+```
+
+The node-level enrichment tables can also be written to an Excel
+workbook, one sheet per node type:
+
+``` r
+export_network_summary_statistics(tkoi_result, filename = "tkoi_network_statistics.xlsx")
 ```
 
 ## S4 Object Structure
@@ -193,9 +321,24 @@ save(tkoi_result, file = "tkoi_result.rda")
 slots:
 
 - `expression_data`: Input transcriptomic measurements
-- `pagerank_data`: Personalized PageRank vectors
-- `network_summary_statistics`: Node-level enrichment results
-- `gene_enrichment_comparison`: GO enrichment overlay and plots
+- `pagerank_data`: A data frame with one row per network node (row names
+  are node IDs): `node_id`, the observed `pagerank`, and either every
+  permutation’s PageRank (`perm.1`, `perm.2`, …) or, with
+  `keep_permutations = FALSE`, only the null mean and standard deviation
+  (`null_mean`, `null_sd`)
+- `network_summary_statistics`: Node-level enrichment results, a named
+  list with one table per node type (`node_id`, `node_type`,
+  `identifier`, `pagerank`, `beta`, `p_value`, `fdr`, `direct_links`,
+  `indirect_links`, `valency`, and annotation columns). Every node is
+  listed once, with missing annotation columns when no curated
+  annotation exists; among compounds, only human metabolites are listed.
+  FDR is adjusted within each table, and nodes whose null has no
+  variation are untestable (`NaN`) and listed last
+- `gene_enrichment_comparison`: GO enrichment overlay and plots, added
+  by `run_gene_enrichment()`
+- `pvalue_threshold`, `logfc_threshold`, `topology_similarity`,
+  `n_permutation`, `damping_factor`, `maximum_iteration`: The settings
+  used for the run
 
 ## Annotation Resources
 

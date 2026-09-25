@@ -1,16 +1,33 @@
 #' Human-Specific Heterogeneous Network
 #'
-#' An igraph object representing a human-specific heterogeneous biological network.
+#' The tKOI knowledge graph: an undirected igraph object with 939,059 nodes
+#' and 10,622,200 edges linking human genes to the concepts they relate to.
+#' It is shipped as a plain igraph object and loads lazily the first time
+#' \code{tkoi::tkoi_net} is used (this takes a few seconds and about 0.5 GB
+#' of memory).
 #'
-#' @format An igraph object where nodes and edges represent biological entities and their interactions. The node types included are:
+#' @format An igraph object. Vertex attributes:
+#' \describe{
+#'   \item{name}{Unique node ID, e.g. \code{"4:c77f6410-...:16050"}.}
+#'   \item{identifier}{Source identifier (Entrez ID, GO ID, UBERON ID, ...).}
+#'   \item{source}{Source database.}
+#'   \item{labels}{Node type in Neo4j label form, e.g. \code{"['Gene']"}.}
+#'   \item{degree}{Node degree in the full network.}
+#' }
+#' The edge attribute \code{edge_type} names the relationship (e.g.
+#' \code{"PARTICIPATES_GpBP"}). The node types included are:
 #' \describe{
 #'   \item{Anatomy}{Nodes representing anatomical structures and systems.}
-#'   \item{BiologicalProcess}{Nodes for functional biological processes, such as signaling pathways.}
+#'   \item{BiologicalProcess}{Nodes for functional biological processes, such as signaling
+#'     pathways.}
 #'   \item{CellType}{Nodes describing different cell types.}
-#'   \item{CellularComponent}{Nodes for subcellular structures, organelles, and macromolecular complexes.}
+#'   \item{CellularComponent}{Nodes for subcellular structures, organelles, and macromolecular
+#'     complexes.}
 #'   \item{ClinicalLab}{Nodes representing clinical measurements and diagnostic data.}
 #'   \item{Complex}{Nodes for molecular and protein complexes.}
-#'   \item{Compound}{Nodes for endogenous metabolites in human.}
+#'   \item{Compound}{Nodes for chemical compounds, identified by InChIKey, ChEBI ID, or ChEMBL ID
+#'     (see \code{\link{compound_annotation}}). \code{\link{run_tkoi}} reports only those in
+#'     \code{\link{human_metabolites}}.}
 #'   \item{Disease}{Nodes for diseases and pathological conditions.}
 #'   \item{EC}{Nodes categorized by Enzyme Commission numbers.}
 #'   \item{Gene}{Nodes for genetic elements, such as genes and genetic markers.}
@@ -25,11 +42,14 @@
 #' }
 #'
 #' @details
-#' This heterogeneous network integrates multiple biological datasets to represent complex relationships within the human system. It serves as the foundation for network-based analyses in the `tkoi` package, such as personalized PageRank calculations and enrichment analyses.
+#' This heterogeneous network integrates multiple biological datasets to represent complex
+#' relationships within the human system. It serves as the foundation for network-based analyses
+#' in the `tkoi` package, such as personalized PageRank calculations and enrichment analyses.
 #'
 #' @examples
-#' data(tkoi_net)
-#' igraph::summary(tkoi_net)
-#' igraph::V(tkoi_net)$name[1:10]
-#' igraph::E(tkoi_net)[1:10]
+#' \donttest{
+#' igraph::vcount(tkoi::tkoi_net)
+#' table(igraph::V(tkoi::tkoi_net)$labels)
+#' head(igraph::V(tkoi::tkoi_net)$identifier)
+#' }
 "tkoi_net"

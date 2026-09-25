@@ -1,4 +1,4 @@
 # License
 
-    YEAR: 2025
-    COPYRIGHT HOLDER: Wanjun Gu
+YEAR: 2025\
+COPYRIGHT HOLDER: Wanjun Gu\

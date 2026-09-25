@@ -23,7 +23,7 @@ tkoi_result = run_tkoi(
   n_permutation = 100,
   damping_factor = 0.85,
   maximum_iteration = 500,
-  n_cores = 10
+  n_cores = NULL # use every available core
 )
 
 # Perform Gene Ontology enrichment analysis and integrate results with tKOI data

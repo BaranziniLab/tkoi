@@ -27,9 +27,9 @@ A data frame with 194076 rows and 3 columns:
 
 - description:
 
-  A textual description of the protein’s function or classification,
-  including enzyme commission (EC) numbers, if available (e.g., "ATP
-  synthase subunit a").
+  A textual description of the protein\<U+2019\>s function or
+  classification, including enzyme commission (EC) numbers, if available
+  (e.g., "ATP synthase subunit a").
 
 ## Source
 

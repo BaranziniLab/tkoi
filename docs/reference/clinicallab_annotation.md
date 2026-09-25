@@ -28,7 +28,7 @@ A data frame with multiple rows and 2 columns:
 
 ## Source
 
-LOINC — Logical Observation Identifiers Names and Codes
+LOINC \<U+2014\> Logical Observation Identifiers Names and Codes
 <https://loinc.org/>
 
 ## Details

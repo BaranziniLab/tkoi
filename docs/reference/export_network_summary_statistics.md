@@ -1,7 +1,8 @@
-# Export Network Summary Statistics from tKOI Result
+# Export Network Summary Statistics to Excel
 
-This function exports the `network_summary_statistics` slot from a
-`tkoi_result` object to an Excel file.
+Writes the `network_summary_statistics` slot of a
+[`run_tkoi()`](run_tkoi.md) result to an Excel workbook, with one sheet
+per node type (for example `Gene`, `BiologicalProcess`, `Disease`).
 
 ## Usage
 
@@ -13,25 +14,39 @@ export_network_summary_statistics(tkoi_result, filename = "tkoi_result.xlsx")
 
 - tkoi_result:
 
-  An object of class `tkoi_result`, typically returned by a tKOI
-  analysis pipeline. This object must include a slot named
-  `@network_summary_statistics`, which contains a data frame of
-  network-level metrics.
+  A `tKOIList` object returned by [`run_tkoi()`](run_tkoi.md).
 
 - filename:
 
-  A character string specifying the name of the output Excel file.
-  Defaults to `"tkoi_result.xlsx"`.
+  Path of the Excel file to write. An existing file is overwritten.
+  Default `"tkoi_result.xlsx"`.
 
 ## Value
 
-No return value. This function is called for its side effect of writing
-a file to disk.
+The path of the written file, invisibly, as returned by
+[`writexl::write_xlsx()`](https://docs.ropensci.org/writexl//reference/write_xlsx.html).
+The function is called for its side effect of writing the workbook.
+
+## See also
+
+[`export_gene_exploration_data()`](export_gene_exploration_data.md) for
+a gene-level table.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-export_network_summary_statistics(tkoi_result, filename = "my_output.xlsx")
+expression_data = data.table::fread(
+  system.file("extdata", "example_data.csv", package = "tkoi")
+)
+
+set.seed(1)
+tkoi_result = run_tkoi(expression_data = expression_data)
+
+path = export_network_summary_statistics(
+  tkoi_result,
+  filename = file.path(tempdir(), "tkoi_network_statistics.xlsx")
+)
+path
 } # }
 ```

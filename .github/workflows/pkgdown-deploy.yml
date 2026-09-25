@@ -22,7 +22,7 @@ jobs:
         uses: r-lib/actions/setup-pandoc@v2
 
       - name: Install system dependencies
-        run: sudo apt-get install -y libsodium-dev libcurl4-openssl-dev libssl-dev libxml2-dev
+        run: sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
 
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2

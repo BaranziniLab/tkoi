@@ -46,7 +46,8 @@ Accepted values include:
 \item{ranknorm}{A logical value indicating whether to apply inverse rank-based normalization
 to the \code{beta} values. Default is \code{FALSE}.}
 
-\item{lognorm}{A logical value indicating whether to apply log base-2 transformation to the \code{beta}
+\item{lognorm}{A logical value indicating whether to apply log base-2 transformation to the
+\code{beta}
 values. Default is \code{TRUE}.}
 
 \item{high_color}{A character string specifying the high value color for the gradient scale
@@ -67,25 +68,29 @@ or entities in the network.
 \details{
 The function performs the following steps:
 \enumerate{
-\item Extracts the top \code{n} entries from the specified category within the
-\code{network_summary_statistics} slot of the \code{tKOIList} object.
-\item Filters out entries with missing \code{beta} values.
+\item Takes the table for \code{category} from the \code{network_summary_statistics}
+slot of the \code{tKOIList} object and drops rows with a missing \code{beta}.
+\item Keeps the first \code{top_n} remaining rows (the tables are already ranked).
 \item Optionally applies transformations to the \code{beta} values:
 \itemize{
 \item If \code{ranknorm} is set to \code{TRUE}, applies inverse rank-based normalization.
 \item If \code{lognorm} is set to \code{TRUE}, applies log base-2 transformation.
 \item If both transformations are enabled, \code{ranknorm} is overridden and set to \code{FALSE}.
 }
-\item Adjusts very small \code{fdr} values to avoid extreme values in plotting.
-\item If the category is \code{"Gene"}, the function joins additional metadata from the
-\code{tkoi::genes} table to obtain gene names. For other categories, the \code{name} column
-is used as the identifier.
-\item Filters out entries with missing identifiers and ensures consistent ordering of identifiers for plotting.
+\item Raises \code{fdr} and \code{p_value} values below the smallest positive FDR of the
+category to that value, so zero FDRs can be plotted on a log scale.
+\item Labels bars with the \code{name} column for \code{"BiologicalProcess"},
+\code{"CellularComponent"}, \code{"MolecularFunction"}, \code{"Disease"}, and \code{"Gene"}
+(gene symbols), falling back to \code{identifier} for nodes without a name;
+other categories are labelled with \code{identifier}.
+\item Filters out entries with missing identifiers, keeps the first row per
+identifier (annotation joins can repeat a node), and fixes the plotting order.
 \item Creates a horizontal bar plot where:
 \itemize{
 \item The x-axis represents the (possibly transformed) effect size (\code{beta}).
 \item The y-axis represents the identifiers (e.g., terms or entities).
-\item The color gradient of the bars represents \code{-log10(FDR)}, with customizable low and high colors.
+\item The color gradient of the bars represents \code{-log10(FDR)}, with customizable low and high
+colors.
 }
 }
 }
@@ -96,15 +101,18 @@ plt = visualize_topn(tkoi_list, category = "BiologicalProcess", top_n = 10)
 print(plt)
 
 # Visualize the top 20 Genes with custom color gradient
-plt = visualize_topn(tkoi_list, category = "Gene", top_n = 20, high_color = "#E74C3C", low_color = "#3498DB")
+plt = visualize_topn(tkoi_list, category = "Gene", top_n = 20, high_color = "#E74C3C",
+low_color = "#3498DB")
 print(plt)
 
 # Visualize the top 15 Pathways without rank-based normalization or log transformation
-plt = visualize_topn(tkoi_list, category = "Pathway", top_n = 15, ranknorm = FALSE, lognorm = FALSE)
+plt = visualize_topn(tkoi_list, category = "Pathway", top_n = 15, ranknorm = FALSE, lognorm =
+FALSE)
 print(plt)
 
 # Visualize the top 5 Diseases with rank-based normalization enabled
-plt = visualize_topn(tkoi_list, category = "Disease", top_n = 5, ranknorm = TRUE, lognorm = FALSE)
+plt = visualize_topn(tkoi_list, category = "Disease", top_n = 5, ranknorm = TRUE, lognorm =
+FALSE)
 print(plt)
 }
 

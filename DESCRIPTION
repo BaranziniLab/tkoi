@@ -1,6 +1,6 @@
 Package: tkoi
 Title: Transcriptomic Knowledge-Graph Omics Integration for Human Pathway Analysis
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: 
     person("Wanjun", "Gu", ,email = "wanjun.gu@ucsf.edu", role = c("aut", "cre"), 
            comment = c(ORCID = "0000-0002-7342-7000"))
@@ -8,33 +8,39 @@ Description: A system for enriching biological concepts and integrating transcri
     human-specific heterogeneous biological knowledge graph from transcriptomics data. It enables advanced analyses, including pathway enrichment, network-based gene ranking, and functional annotation. Key features include personalized PageRank computation, visualization of network enrichment, and seamless integration with biological ontologies. The package is designed for users in 
     genomics and computational biology to gain insights from large-scale transcriptomic data.
 License: MIT + file LICENSE
+URL: https://github.com/BaranziniLab/tkoi
+BugReports: https://github.com/BaranziniLab/tkoi/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Imports: 
     clusterProfiler,
-    data.table,
-    dplyr,
-    enrichplot,
+    dplyr (>= 1.1.0),
     ggplot2,
     glue,
     grDevices,
-    igraph,
+    igraph (>= 2.0.0),
     knitr,
+    methods,
     org.Hs.eg.db,
-    purrr,
-    readxl,
+    parallel,
+    Rcpp,
     RNOmni,
     scales,
-    sodium,
     stats,
     utils,
     writexl
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1.0)
+LinkingTo: 
+    Rcpp
 LazyData: true
+LazyDataCompression: gzip
 Suggests: 
+    data.table,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    withr
 Config/testthat/edition: 3
+biocViews:
 VignetteBuilder: knitr

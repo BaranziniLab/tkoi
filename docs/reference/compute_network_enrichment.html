@@ -11,7 +11,7 @@ containing the z-score (beta) and p-value (p_value)."><meta property="og:image" 
 
     <a class="navbar-brand me-2" href="../index.html">tkoi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@ containing the z-score (beta) and p-value (p_value)."><meta property="og:image" 
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/BaranziniLab/tkoi/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -31,7 +32,7 @@ containing the z-score (beta) and p-value (p_value)."><meta property="og:image" 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Compute Z-Score and P-Value for Node Pagerank</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/BaranziniLab/tkoi/blob/HEAD/R/compute_network_enrichment.R" class="external-link"><code>R/compute_network_enrichment.R</code></a></small>
       <div class="d-none name"><code>compute_network_enrichment.Rd</code></div>
     </div>
 
@@ -51,26 +52,46 @@ containing the z-score (<code>beta</code>) and p-value (<code>p_value</code>).</
 
 
 <dl><dt id="arg-node">node<a class="anchor" aria-label="anchor" href="#arg-node"></a></dt>
-<dd><p>A named list or data structure containing:</p><ul><li><p><code>pagerank</code>: A numeric value representing the pagerank of the node.</p></li>
-<li><p>Permutation values: One or more numeric values with names matching the
-pattern <code>"^perm.*"</code> (e.g., <code>perm1</code>, <code>perm2</code>), used for calculating the z-score.</p></li>
-</ul></dd>
+<dd><p>Either a named list / one-row data frame with <code>pagerank</code> and
+permutation values whose names start with <code>"perm"</code> (e.g. <code>perm.1</code>,
+<code>perm.2</code>), or a data frame with one row per node in that layout, such as
+the <code>pagerank_data</code> slot of a <code><a href="run_tkoi.html">run_tkoi()</a></code> result with
+<code>keep_permutations = TRUE</code>. A list of equal-length vectors is treated as
+such a data frame. <code>node</code> needs a <code>pagerank</code> value and at least two
+<code>perm*</code> values, or an error is raised.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame with the following columns:</p><ul><li><p><code>beta</code>: The computed z-score.</p></li>
+    <p>A data frame with one row per node and columns:</p><ul><li><p><code>beta</code>: The computed z-score.</p></li>
 <li><p><code>p_value</code>: The one-tailed p-value derived from the z-score.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The function calculates the z-score as:
-$$z = \frac{\text{pagerank} - \text{mean}(\text{perm_values})}{\text{sd}(\text{perm_values})}$$
-and the p-value is calculated as the survival function of the z-score:
+$$z = \frac{\text{pagerank} -
+\text{mean}(\text{perm_values})}{\text{sd}(\text{perm_values})}$$
+(<code>NaN</code> when the permutation values have no spread, as in
+<code><a href="run_tkoi.html">run_tkoi</a></code>), and the p-value is calculated as the survival
+function of the z-score:
 $$p = 1 - \Phi(z)$$
 where \(\Phi\) is the cumulative distribution function of the standard normal distribution.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">compute_network_enrichment</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pagerank <span class="op">=</span> <span class="fl">0.3</span>, perm.1 <span class="op">=</span> <span class="fl">0.1</span>, perm.2 <span class="op">=</span> <span class="fl">0.2</span>, perm.3 <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   beta     p_value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    3 0.001349898</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">nodes</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>pagerank <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.1</span><span class="op">)</span>, perm.1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.1</span><span class="op">)</span>, perm.2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.12</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">compute_network_enrichment</span><span class="op">(</span><span class="va">nodes</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         beta    p_value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  2.1213203 0.01694743</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 -0.7071068 0.76024994</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

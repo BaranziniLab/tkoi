@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tkoi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/BaranziniLab/tkoi/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -56,9 +57,9 @@
       <img src="../logo.png" class="logo" alt=""><h1>Transcriptomic Knowledge Graph Integration with tKOI</h1>
                         <h4 data-toc-skip class="author">Wanjun Gu</h4>
             
-            <h4 data-toc-skip class="date">2026-04-20</h4>
+            <h4 data-toc-skip class="date">2026-09-24</h4>
       
-
+      <small class="dont-index">Source: <a href="https://github.com/BaranziniLab/tkoi/blob/HEAD/vignettes/getting-started-with-tkoi.Rmd" class="external-link"><code>vignettes/getting-started-with-tkoi.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started-with-tkoi.Rmd</code></div>
     </div>
 
@@ -73,6 +74,16 @@ knowledge graph to identify enriched biological concepts and pathways.
 It combines PageRank propagation with permutation testing and
 ontology-based annotations for high-resolution network
 interpretation.</p>
+<p>Since version 1.1.0, the core of <code><a href="../reference/run_tkoi.html">run_tkoi()</a></code> is written
+in C++ and runs on multiple threads. Personalized PageRank for the
+observed data and every permutation is solved in batches, so a full
+analysis with 100 permutations on the complete knowledge graph
+(<code>tkoi_net</code>) took 25.5 to 38.1 s on an 8-core Apple M2,
+compared with 244.3 s for <code>tkoi</code> 1.0.0. The package therefore
+needs a C++ compiler toolchain to install from source (Xcode Command
+Line Tools on macOS, Rtools on Windows):</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"BaranziniLab/tkoi"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="step-by-step-example">Step-by-Step Example<a class="anchor" aria-label="anchor" href="#step-by-step-example"></a>
@@ -82,16 +93,27 @@ interpretation.</p>
 <div class="section level3">
 <h3 id="load-example-expression-data">Load Example Expression Data<a class="anchor" aria-label="anchor" href="#load-example-expression-data"></a>
 </h3>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">file_path</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_data.csv"</span>, package <span class="op">=</span> <span class="st">"tkoi"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BaranziniLab/tkoi" class="external-link">tkoi</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">file_path</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_data.csv"</span>, package <span class="op">=</span> <span class="st">"tkoi"</span><span class="op">)</span></span>
 <span><span class="va">expression_data</span> <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="va">file_path</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">expression_data</span><span class="op">)</span></span></code></pre></div>
+<p>The table needs the columns <code>gene_name</code> (Ensembl gene
+IDs), <code>logfc</code>, and <code>pvalue</code>. Rows with a missing
+or blank <code>gene_name</code> are ignored, and only the first row of a
+duplicated gene is used. The downstream functions
+(<code><a href="../reference/export_gene_exploration_data.html">export_gene_exploration_data()</a></code>,
+<code><a href="../reference/make_gene_exploration_plot.html">make_gene_exploration_plot()</a></code>, and
+<code><a href="../reference/plot_network.html">plot_network()</a></code>) read the table the same way.</p>
 </div>
 <div class="section level3">
 <h3 id="run-tkoi-analysis">Run tKOI Analysis<a class="anchor" aria-label="anchor" href="#run-tkoi-analysis"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tkoi_result</span> <span class="op">=</span> <span class="fu"><a href="../reference/run_tkoi.html">run_tkoi</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tkoi_result</span> <span class="op">=</span> <span class="fu"><a href="../reference/run_tkoi.html">run_tkoi</a></span><span class="op">(</span></span>
 <span>  expression_data <span class="op">=</span> <span class="va">expression_data</span>,</span>
 <span>  subnetwork <span class="op">=</span> <span class="fu">tkoi</span><span class="fu">::</span><span class="va"><a href="../reference/tkoi_net.html">tkoi_net</a></span>,</span>
 <span>  pvalue_threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
@@ -100,27 +122,107 @@ interpretation.</p>
 <span>  topology_similarity <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  n_permutation <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  damping_factor <span class="op">=</span> <span class="fl">0.85</span>,</span>
-<span>  maximum_iteration <span class="op">=</span> <span class="fl">500</span></span>
+<span>  maximum_iteration <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  n_cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  keep_permutations <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p>Genes are kept as seeds when
+<code>pvalue &lt;= pvalue_threshold</code> and
+<code>abs(logfc) &gt;= logfc_threshold</code>, and each seed is weighted
+by <code>abs(logfc)</code>. <code>indirect_link_threshold</code> does
+not filter anything: it only orders each result table, listing first the
+nodes within two hops of at least that many seed genes. No node is
+excluded.</p>
+<p>The arguments added in version 1.1.0 control how the analysis runs
+and what it stores; the statistics themselves do not depend on them
+beyond numerical precision:</p>
+<ul>
+<li>
+<code>n_cores</code>: number of CPU threads. <code>NULL</code> (the
+default) uses every available core, or
+<code>getOption("tkoi.n_cores")</code> when that option is set. Requests
+above the number of available cores (including Slurm and Linux container
+CPU limits) are capped.</li>
+<li>
+<code>keep_permutations</code>: if <code>TRUE</code> (the default),
+the <code>pagerank_data</code> slot holds every permutation’s PageRank
+vector (<code>perm.1</code>, <code>perm.2</code>, …). If
+<code>FALSE</code>, it holds only the null mean and standard deviation
+(<code>null_mean</code>, <code>null_sd</code>), which saves memory for
+large <code>n_permutation</code>.</li>
+<li>
+<code>tolerance</code>: relative residual at which the PageRank
+solver stops (default <code>1e-14</code>). The solver needs about 55
+iterations per PageRank vector on <code>tkoi_net</code>;
+<code>maximum_iteration</code> caps the number of iterations, and a
+warning is raised if a PageRank vector has not converged by then.</li>
+<li>
+<code>verbose</code>: set to <code>FALSE</code> to silence the
+progress messages.</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="performance-and-reproducibility">Performance and Reproducibility<a class="anchor" aria-label="anchor" href="#performance-and-reproducibility"></a>
+</h3>
+<p>The permutation null is drawn from R’s random number generator, so
+<code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> fixes the result, and the same seed gives
+bit-identical statistics for any <code>n_cores</code>. On
+<code>tkoi_net</code>, the same seed draws the same null gene sets as a
+sequential <code>tkoi</code> 1.0.0 run, and the statistics agree with
+<code>tkoi</code> 1.0.0: <code>beta</code> to within 1e-8 and PageRank
+vectors to within 6e-15. The result tables are more complete than in
+1.0.0: every node is reported (unannotated nodes appear with missing
+annotation columns), the Compound FDR is adjusted over the reported
+human metabolites only, nodes whose null has no variation are untestable
+(<code>NaN</code>, listed last) instead of infinitely significant, and
+the <code>human_metabolites</code> list was repaired. Rows can otherwise
+be ordered differently only where FDR and <code>beta</code> agree to 10
+significant digits, because version 1.1.0 orders such ties
+deterministically.</p>
+<p>The PageRank solver stops when both the residual of the symmetric
+system it solves and the 1-norm residual of the original PageRank system
+are at most <code>tolerance</code>. At the default
+<code>tolerance = 1e-14</code>, compared with a reference solution
+computed at <code>1e-16</code> on <code>tkoi_net</code>, the 1-norm
+error of a PageRank vector was 2.3e-15, and the 99th and 99.9th
+percentiles of the per-node relative error were 1.5e-11 and 1.5e-10
+(largest 7.5e-8). <code><a href="https://r.igraph.org/reference/page_rank.html" class="external-link">igraph::page_rank()</a></code> gave 4.1e-12, 1.2e-9,
+4.4e-9, and 2.7e-7 on the same measures, so the default is at least as
+accurate both per node and overall.</p>
+<p>On an Apple M2 (8 cores), a 21,414-gene dataset with 1,201 seed genes
+on the full <code>tkoi_net</code> took 5.3 s with 10 permutations (48.5
+s with <code>tkoi</code> 1.0.0) and 25.5 to 38.1 s with 100 permutations
+(244.3 s with <code>tkoi</code> 1.0.0), about 6 to 10 times faster; the
+range reflects run-to-run variation from thermal throttling. The first
+run in a session also builds the network matrix (8.8 s for 10
+permutations). With <code>n_cores = 1</code>, 10 permutations took 10.9
+s, still faster than <code>tkoi</code> 1.0.0.</p>
+<p>Loading <code><a href="../reference/tkoi_net.html">tkoi::tkoi_net</a></code> takes a few seconds and about 0.5
+GB of memory the first time it is used in a session. Keeping all 100
+permutations adds about 0.75 GB. Before any PageRank is computed,
+<code><a href="../reference/run_tkoi.html">run_tkoi()</a></code> checks the memory the run needs against the
+memory available (physical memory, or a Linux container limit) and stops
+with advice, such as <code>keep_permutations = FALSE</code>, if the run
+would not fit.</p>
 </div>
 <div class="section level3">
 <h3 id="perform-gene-ontology-enrichment">Perform Gene Ontology Enrichment<a class="anchor" aria-label="anchor" href="#perform-gene-ontology-enrichment"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tkoi_result</span> <span class="op">=</span> <span class="fu"><a href="../reference/run_gene_enrichment.html">run_gene_enrichment</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualize-go-vs-graph-enrichment">Visualize GO vs Graph Enrichment<a class="anchor" aria-label="anchor" href="#visualize-go-vs-graph-enrichment"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tkoi_result</span><span class="op">@</span><span class="va">gene_enrichment_comparison</span><span class="op">$</span><span class="va">comparison_scatter1</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tkoi_result</span><span class="op">@</span><span class="va">gene_enrichment_comparison</span><span class="op">$</span><span class="va">comparison_scatter1</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tkoi_result</span><span class="op">@</span><span class="va">gene_enrichment_comparison</span><span class="op">$</span><span class="va">comparison_scatter2</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="gene-level-network-visualization">Gene-Level Network Visualization<a class="anchor" aria-label="anchor" href="#gene-level-network-visualization"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt1</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_gene_exploration_plot.html">make_gene_exploration_plot</a></span><span class="op">(</span></span>
 <span>  tkoi_list <span class="op">=</span> <span class="va">tkoi_result</span>,</span>
 <span>  sig_color <span class="op">=</span> <span class="st">"#F39B7FB2"</span>,</span>
@@ -131,14 +233,18 @@ interpretation.</p>
 <div class="section level3">
 <h3 id="export-enrichment-summary-table">Export Enrichment Summary Table<a class="anchor" aria-label="anchor" href="#export-enrichment-summary-table"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gene_data</span> <span class="op">=</span> <span class="fu"><a href="../reference/export_gene_exploration_data.html">export_gene_exploration_data</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene_data</span><span class="op">)</span></span></code></pre></div>
+<p>The node-level tables for every node type can be written to an Excel
+workbook, one sheet per node type:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/export_network_summary_statistics.html">export_network_summary_statistics</a></span><span class="op">(</span><span class="va">tkoi_result</span>, filename <span class="op">=</span> <span class="st">"tkoi_network_statistics.xlsx"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualize-top-enriched-genes">Visualize Top Enriched Genes<a class="anchor" aria-label="anchor" href="#visualize-top-enriched-genes"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt2</span> <span class="op">=</span> <span class="fu"><a href="../reference/visualize_topn.html">visualize_topn</a></span><span class="op">(</span></span>
 <span>  tkoi_list <span class="op">=</span> <span class="va">tkoi_result</span>,</span>
 <span>  category <span class="op">=</span> <span class="st">"Gene"</span>,</span>
@@ -149,24 +255,47 @@ interpretation.</p>
 <span><span class="va">plt2</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="plot-the-network-around-an-enriched-node">Plot the Network Around an Enriched Node<a class="anchor" aria-label="anchor" href="#plot-the-network-around-an-enriched-node"></a>
+</h3>
+<p><code><a href="../reference/plot_network.html">plot_network()</a></code> draws the part of the knowledge graph
+that links a target node to the significant genes within
+<code>degree_expansion</code> hops. Genes are colored by log fold change
+(blue down, red up), the target is orange, and node size follows
+<code>beta</code>. Pass the same <code>subnetwork</code> that was used
+in <code><a href="../reference/run_tkoi.html">run_tkoi()</a></code>.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">top_term</span> <span class="op">=</span> <span class="va">tkoi_result</span><span class="op">@</span><span class="va">network_summary_statistics</span><span class="op">$</span><span class="va">BiologicalProcess</span><span class="op">$</span><span class="va">node_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span></span>
+<span>  tkoi_result <span class="op">=</span> <span class="va">tkoi_result</span>,</span>
+<span>  target_node_id <span class="op">=</span> <span class="va">top_term</span>,</span>
+<span>  degree_expansion <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  network_layout_type <span class="op">=</span> <span class="st">"kk"</span>,</span>
+<span>  subnetwork <span class="op">=</span> <span class="fu">tkoi</span><span class="fu">::</span><span class="va"><a href="../reference/tkoi_net.html">tkoi_net</a></span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Every node within one hop of the term, including the term itself</span></span>
+<span><span class="va">neighbors</span> <span class="op">=</span> <span class="fu"><a href="../reference/get_neighboring_nodes.html">get_neighboring_nodes</a></span><span class="op">(</span><span class="va">top_term</span>, degree_expansion <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="save-analysis-result-optional">Save Analysis Result (Optional)<a class="anchor" aria-label="anchor" href="#save-analysis-result-optional"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">tkoi_result</span>, file <span class="op">=</span> <span class="st">"tkoi_result.rda"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.5.0 (2025-04-11)</span></span>
+<span><span class="co">#&gt; R version 4.4.3 (2025-02-28)</span></span>
 <span><span class="co">#&gt; Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">#&gt; Running under: macOS 26.4.1</span></span>
+<span><span class="co">#&gt; Running under: macOS 26.6.2</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
-<span><span class="co">#&gt; BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib </span></span>
-<span><span class="co">#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1</span></span>
+<span><span class="co">#&gt; BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>
+<span><span class="co">#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; locale:</span></span>
 <span><span class="co">#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
@@ -180,11 +309,11 @@ interpretation.</p>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] digest_0.6.39     desc_1.4.3        R6_2.6.1          fastmap_1.2.0    </span></span>
 <span><span class="co">#&gt;  [5] xfun_0.57         cachem_1.1.0      knitr_1.51        htmltools_0.5.9  </span></span>
-<span><span class="co">#&gt;  [9] rmarkdown_2.30    lifecycle_1.0.5   cli_3.6.5         sass_0.4.10      </span></span>
+<span><span class="co">#&gt;  [9] rmarkdown_2.31    lifecycle_1.0.5   cli_3.6.6         sass_0.4.10      </span></span>
 <span><span class="co">#&gt; [13] pkgdown_2.2.0     textshaping_1.0.5 jquerylib_0.1.4   systemfonts_1.3.2</span></span>
-<span><span class="co">#&gt; [17] compiler_4.5.0    tools_4.5.0       ragg_1.5.2        bslib_0.10.0     </span></span>
+<span><span class="co">#&gt; [17] compiler_4.4.3    tools_4.4.3       ragg_1.5.2        bslib_0.10.0     </span></span>
 <span><span class="co">#&gt; [21] evaluate_1.0.5    yaml_2.3.12       otel_0.2.0        jsonlite_2.0.0   </span></span>
-<span><span class="co">#&gt; [25] rlang_1.1.7       fs_2.0.1          htmlwidgets_1.6.4</span></span></code></pre></div>
+<span><span class="co">#&gt; [25] rlang_1.1.7       fs_2.1.0          htmlwidgets_1.6.4</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

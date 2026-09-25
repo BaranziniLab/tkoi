@@ -11,64 +11,55 @@ make_gene_exploration_plot(
 )
 }
 \arguments{
-\item{tkoi_list}{An object of class \code{tKOIList}. This object must contain the following slots:
-\itemize{
-\item \code{expression_data}: A \code{data.frame} containing experimental data with columns \code{gene_name}, \code{logfc}, and \code{pvalue}.
-\item \code{network_summary_statistics}: A list with a \code{data.frame} for gene-level statistics, including \code{node_id} and \code{fdr}.
-\item \code{pvalue_threshold}: A numeric value specifying the p-value threshold.
-\item \code{logfc_threshold}: A numeric value specifying the log fold change threshold.
-}}
+\item{tkoi_list}{A \code{tKOIList} object returned by \code{\link[=run_tkoi]{run_tkoi()}}. It uses the
+\code{expression_data} slot (columns \code{gene_name}, \code{logfc}, and \code{pvalue}), the
+\code{Gene} table of \code{network_summary_statistics} (columns \code{node_id}, \code{name},
+and \code{fdr}), and the \code{pvalue_threshold} and \code{logfc_threshold} of the run.}
 
-\item{sig_color}{A character string specifying the color for significant genes in the plot. Default is \code{"#F39B7FB2"}.}
+\item{sig_color}{Fill color of genes whose \code{abs(logfc)} is at least the
+run's \code{logfc_threshold}. Default \code{"#F39B7FB2"}.}
 
-\item{non_sig_color}{A character string specifying the color for non-significant genes in the plot. Default is \code{"gray"}.}
+\item{non_sig_color}{Fill color of the other genes. Default \code{"gray"}.}
 }
 \value{
-A \code{ggplot} object representing the scatter plot.
+A \code{ggplot} object.
 }
 \description{
-This function generates a scatter plot that visualizes the relationship between experimental p-values
-and tKOI-adjusted false discovery rates (FDR) for genes in the network. The plot highlights
-significantly upregulated and downregulated genes based on user-defined thresholds for log fold change
-and p-values.
+Plots, for every gene of the experiment that is a gene node of the network,
+the experimental p-value against the tKOI false discovery rate (FDR), with
+up- and down-regulated genes in separate panels. Genes supported by both
+the experiment and the network appear in the top right of each panel.
 }
 \details{
-The function performs the following steps:
-\enumerate{
-\item Merges the \code{expression_data} from the \code{tKOIList} object with gene metadata using \code{inner_join}.
-\item Merges the result with gene-level network data using \code{right_join}.
-\item Filters and annotates the data to classify genes as upregulated or downregulated based on the sign of \code{logfc}.
-\item Colors genes based on their significance determined by \code{logfc_threshold}.
-\item Generates a scatter plot with ggplot2, where:
-\itemize{
-\item The x-axis represents \code{-log10(pvalue)} (experimental p-value).
-\item The y-axis represents \code{-log10(fdr)} (tKOI-adjusted FDR).
-\item Points are colored and categorized into upregulated and downregulated facets.
-}
-}
+\code{expression_data} is cleaned the same way as in \code{\link[=run_tkoi]{run_tkoi()}}: rows with a
+missing or blank \code{gene_name} are dropped, and only the first row of each
+gene is used. Genes are matched to network nodes through their Ensembl IDs
+(see \link{genes}); network genes without expression data are not plotted.
 
-The plot includes vertical and horizontal dashed lines to indicate the thresholds for p-value and FDR.
+In the plot:
+\itemize{
+\item The x-axis is \code{-log10(pvalue)} (experimental p-value).
+\item The y-axis is \code{-log10(fdr)} (tKOI FDR).
+\item Genes with \code{logfc >= 0} are in the \code{Up-regulated} panel, the others in
+the \code{Down-regulated} panel.
+\item The dashed vertical line marks the run's \code{pvalue_threshold} and the
+dashed horizontal line an FDR of 0.05.
+}
 }
 \examples{
 \dontrun{
-# Create a dummy tKOIList object
-tkoi_list = new("tKOIList",
-                expression_data = data.frame(
-                  gene_name = c("gene1", "gene2", "gene3"),
-                  logfc = c(1.2, -0.8, 0.5),
-                  pvalue = c(0.01, 0.03, 0.2)
-                ),
-                network_summary_statistics = list(
-                  Gene = data.frame(
-                    node_id = c(1, 2, 3),
-                    fdr = c(0.02, 0.05, 0.1)
-                  )
-                ),
-                pvalue_threshold = 0.05,
-                logfc_threshold = 0.5)
+expression_data = data.table::fread(
+  system.file("extdata", "example_data.csv", package = "tkoi")
+)
 
-# Generate the plot
-plt = make_gene_exploration_plot(tkoi_list)
-print(plt)
+set.seed(1)
+tkoi_result = run_tkoi(expression_data = expression_data)
+
+plt = make_gene_exploration_plot(tkoi_result, sig_color = "#F39B7FB2", non_sig_color = "gray")
+plt
 }
+
+}
+\seealso{
+\code{\link[=export_gene_exploration_data]{export_gene_exploration_data()}} for the underlying table.
 }

@@ -2,26 +2,43 @@
 % Please edit documentation in R/export_network_summary_statistics.R
 \name{export_network_summary_statistics}
 \alias{export_network_summary_statistics}
-\title{Export Network Summary Statistics from tKOI Result}
+\title{Export Network Summary Statistics to Excel}
 \usage{
 export_network_summary_statistics(tkoi_result, filename = "tkoi_result.xlsx")
 }
 \arguments{
-\item{tkoi_result}{An object of class \code{tkoi_result}, typically returned by a tKOI analysis pipeline.
-This object must include a slot named \verb{@network_summary_statistics}, which contains a data frame of network-level metrics.}
+\item{tkoi_result}{A \code{tKOIList} object returned by \code{\link[=run_tkoi]{run_tkoi()}}.}
 
-\item{filename}{A character string specifying the name of the output Excel file.
-Defaults to \code{"tkoi_result.xlsx"}.}
+\item{filename}{Path of the Excel file to write. An existing file is
+overwritten. Default \code{"tkoi_result.xlsx"}.}
 }
 \value{
-No return value. This function is called for its side effect of writing a file to disk.
+The path of the written file, invisibly, as returned by
+\code{\link[writexl:write_xlsx]{writexl::write_xlsx()}}. The function is called for its side effect of
+writing the workbook.
 }
 \description{
-This function exports the \code{network_summary_statistics} slot from a \code{tkoi_result} object to an Excel file.
+Writes the \code{network_summary_statistics} slot of a \code{\link[=run_tkoi]{run_tkoi()}} result to an
+Excel workbook, with one sheet per node type (for example \code{Gene},
+\code{BiologicalProcess}, \code{Disease}).
 }
 \examples{
 \dontrun{
-export_network_summary_statistics(tkoi_result, filename = "my_output.xlsx")
+expression_data = data.table::fread(
+  system.file("extdata", "example_data.csv", package = "tkoi")
+)
+
+set.seed(1)
+tkoi_result = run_tkoi(expression_data = expression_data)
+
+path = export_network_summary_statistics(
+  tkoi_result,
+  filename = file.path(tempdir(), "tkoi_network_statistics.xlsx")
+)
+path
 }
 
+}
+\seealso{
+\code{\link[=export_gene_exploration_data]{export_gene_exploration_data()}} for a gene-level table.
 }

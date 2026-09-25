@@ -7,6 +7,7 @@
 <url><loc>/articles/index.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
 <url><loc>/reference/anatomy_annotation.html</loc></url>
 <url><loc>/reference/celltype_annotation.html</loc></url>
 <url><loc>/reference/clinicallab_annotation.html</loc></url>
@@ -33,6 +34,7 @@
 <url><loc>/reference/reaction_annotation.html</loc></url>
 <url><loc>/reference/run_gene_enrichment.html</loc></url>
 <url><loc>/reference/run_tkoi.html</loc></url>
+<url><loc>/reference/tkoi-package.html</loc></url>
 <url><loc>/reference/tkoi_net.html</loc></url>
 <url><loc>/reference/visualize_topn.html</loc></url>
 </urlset>

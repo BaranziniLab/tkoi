@@ -28,19 +28,23 @@ setClass(
 setMethod(
   f = "show",
   signature = "tKOIList",
-  definition = function(object){
-    parameter_set = data.frame(parameter = c(object@pvalue_threshold,
-                                             object@logfc_threshold,
-                                             object@topology_similarity,
-                                             object@n_permutation,
-                                             object@damping_factor,
-                                             object@maximum_iteration))
-    rownames(parameter_set) = c("P.Value Threshold",
-                                "Log Fold Change Threshold",
-                                "Topology Similarity",
-                                "N Permutation",
-                                "Damping Factor",
-                                "Maximum Iteration")
+  definition = function(object) {
+    parameter_set = data.frame(parameter = c(
+      object@pvalue_threshold,
+      object@logfc_threshold,
+      object@topology_similarity,
+      object@n_permutation,
+      object@damping_factor,
+      object@maximum_iteration
+    ))
+    rownames(parameter_set) = c(
+      "P.Value Threshold",
+      "Log Fold Change Threshold",
+      "Topology Similarity",
+      "N Permutation",
+      "Damping Factor",
+      "Maximum Iteration"
+    )
 
     cat("[tKOIList object]\n")
     cat(glue::glue("{dim(object@expression_data)[1]} genes included in the experiment."))

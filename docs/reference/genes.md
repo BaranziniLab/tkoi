@@ -1,7 +1,9 @@
 # Gene Metadata
 
-A dataset containing information about genes, including identifiers,
-names, and degree in the network.
+The genes of [`tkoi_net`](tkoi_net.md) that can seed an analysis, with
+their Ensembl IDs and network degree. [`run_tkoi`](run_tkoi.md) maps
+`gene_name` to `ensembl`, and draws degree-matched replacement genes for
+the permutation null from this table.
 
 ## Usage
 
@@ -11,28 +13,28 @@ genes
 
 ## Format
 
-A data frame with the following columns:
+A data frame (data.table) with 17,569 rows and 5 columns:
 
 - id:
 
-  Character. Unique identifier for the gene in the network.
+  Character. Node ID of the gene in `tkoi_net`.
 
 - identifier:
 
-  Integer. Internal identifier for the gene.
+  Integer. NCBI Entrez Gene ID.
 
 - ensembl:
 
-  Character. Ensembl gene identifier.
+  Character. Ensembl gene ID. A few genes have no Ensembl ID (empty
+  string), and a few Ensembl IDs map to two genes.
 
 - name:
 
-  Character. Gene symbol or common name.
+  Character. Gene symbol.
 
 - degree:
 
-  Integer. Degree of the gene node in the network, representing the
-  number of connections.
+  Integer. Degree of the gene node in `tkoi_net`.
 
 ## Details
 
