@@ -1,9 +1,11 @@
 # Gene Metadata
 
-The genes of [`tkoi_net`](tkoi_net.md) that can seed an analysis, with
-their Ensembl IDs and network degree. [`run_tkoi`](run_tkoi.md) maps
-`gene_name` to `ensembl`, and draws degree-matched replacement genes for
-the permutation null from this table.
+The genes of
+[`tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)
+that can seed an analysis, with their Ensembl IDs and network degree.
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+maps `gene_name` to `ensembl`, and draws degree-matched replacement
+genes for the permutation null from this table.
 
 ## Usage
 

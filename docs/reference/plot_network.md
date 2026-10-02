@@ -22,7 +22,8 @@ plot_network(
 
 - tkoi_result:
 
-  A `tKOIList` returned by [`run_tkoi`](run_tkoi.md).
+  A `tKOIList` returned by
+  [`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md).
 
 - target_node_id:
 
@@ -40,7 +41,7 @@ plot_network(
 - subnetwork:
 
   The igraph network used for the analysis. Default
-  [`tkoi::tkoi_net`](tkoi_net.md).
+  [`tkoi::tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md).
 
 ## Value
 

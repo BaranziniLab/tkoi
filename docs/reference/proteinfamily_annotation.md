@@ -43,8 +43,9 @@ The `identifier` field serves as a join key for nodes of type
 
 ## See also
 
-[`proteindomain_annotation`](proteindomain_annotation.md),
-[`protein_annotation`](protein_annotation.md), [`run_tkoi`](run_tkoi.md)
+[`proteindomain_annotation`](https://baranzinilab.github.io/tkoi/reference/proteindomain_annotation.md),
+[`protein_annotation`](https://baranzinilab.github.io/tkoi/reference/protein_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
 
 ## Examples
 

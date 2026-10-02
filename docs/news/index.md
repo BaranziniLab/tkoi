@@ -1,14 +1,28 @@
 # Changelog
 
+## tkoi 1.2.0
+
+- The Shiny interface is now developed and distributed in this
+  repository. Launch the installed app with
+  [`tkoi::run_tkoi_app()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi_app.md).
+  It uses the package’s analysis engine, graph, annotations and network
+  plotting.
+- GitHub releases include standalone Shiny ZIP and tar archives, with a
+  pinned tkoi source package and dependency installer for deployment on
+  another server.
+- The Shiny packages are optional dependencies. Existing command-line
+  analysis workflows and the statistical method are unchanged.
+
 ## tkoi 1.1.0
 
 ### Performance
 
-- The core of [`run_tkoi()`](../reference/run_tkoi.md) has been
-  rewritten in C++ (via Rcpp). Personalized PageRank for the observed
-  data and for every permutation is solved in batches of up to 16
-  vectors per pass over the network, with conjugate gradient on multiple
-  threads. Two-hop neighbourhood counts use bitsets, and the
+- The core of
+  [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+  has been rewritten in C++ (via Rcpp). Personalized PageRank for the
+  observed data and for every permutation is solved in batches of up to
+  16 vectors per pass over the network, with conjugate gradient on
+  multiple threads. Two-hop neighbourhood counts use bitsets, and the
   degree-matched null gene sets are sampled in C++.
 - On an Apple M2 (8 cores), with a 21,414-gene differential expression
   dataset (1,201 seed genes) on the full `tkoi_net`:
@@ -58,7 +72,7 @@ accurate, and change `network_summary_statistics` compared with tkoi
   1.0.0 a seed gene in a small disconnected component that no
   replacement gene reaches got `beta = Inf`, `p_value = 0`, and ranked
   first.
-  [`compute_network_enrichment()`](../reference/compute_network_enrichment.md)
+  [`compute_network_enrichment()`](https://baranzinilab.github.io/tkoi/reference/compute_network_enrichment.md)
   follows the same rule.
 - `human_metabolites` was repaired. Its ChEBI entries had a doubled
   prefix (`"CHEBI:CHEBI:50599"`), its ChEMBL entries lacked the `CHEMBL`
@@ -68,12 +82,13 @@ accurate, and change `network_summary_statistics` compared with tkoi
   unique identifiers in the form of Compound node identifiers, and 45
   ChEBI-identified compounds are reported in addition to the 24,099
   InChIKey-identified ones.
-- [`visualize_topn()`](../reference/visualize_topn.md) labels nodes
-  without a name by their identifier.
+- [`visualize_topn()`](https://baranzinilab.github.io/tkoi/reference/visualize_topn.md)
+  labels nodes without a name by their identifier.
 
 ### New arguments
 
-- [`run_tkoi()`](../reference/run_tkoi.md) gains:
+- [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+  gains:
   - `n_cores = NULL`: number of threads. `NULL` uses every available
     core, or `getOption("tkoi.n_cores")` when that option is set.
     Requests above the number of available cores are capped; the count
@@ -101,10 +116,11 @@ accurate, and change `network_summary_statistics` compared with tkoi
     per node as well as overall (1-norm error 2.3e-15 versus 4.1e-12,
     and largest per-node relative error 7.5e-8 versus 2.7e-7).
   - `verbose = TRUE`: set to `FALSE` to silence progress messages.
-- [`plot_network()`](../reference/plot_network.md) gains a `subnetwork`
-  argument (default [`tkoi::tkoi_net`](../reference/tkoi_net.md)), so it
-  can be used with the network that was passed to
-  [`run_tkoi()`](../reference/run_tkoi.md).
+- [`plot_network()`](https://baranzinilab.github.io/tkoi/reference/plot_network.md)
+  gains a `subnetwork` argument (default
+  [`tkoi::tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)),
+  so it can be used with the network that was passed to
+  [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md).
 
 ### Breaking and behaviour changes
 
@@ -113,9 +129,9 @@ accurate, and change `network_summary_statistics` compared with tkoi
   `network_attributes` dataset have been removed, and passing a raw
   (encrypted) vector as `subnetwork` is an error. Loading `tkoi_net`
   takes a few seconds and about 0.5 GB of memory.
-- [`run_tkoi()`](../reference/run_tkoi.md) now uses every available core
-  by default. Set `n_cores = 1` or `options(tkoi.n_cores = 1)` to use a
-  single thread.
+- [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+  now uses every available core by default. Set `n_cores = 1` or
+  `options(tkoi.n_cores = 1)` to use a single thread.
 - Reproducibility: [`set.seed()`](https://rdrr.io/r/base/Random.html)
   fully determines the result. Results are bit-identical for any
   `n_cores`, and do not depend on how many PageRank vectors are solved
@@ -130,11 +146,11 @@ accurate, and change `network_summary_statistics` compared with tkoi
   not reach `tolerance` within `maximum_iteration` iterations.
 - `maximum_iteration` and `n_permutation` must not exceed
   `.Machine$integer.max`.
-- [`run_tkoi()`](../reference/run_tkoi.md) checks the memory a run needs
-  before the null seed sets are drawn and before any PageRank is
-  computed. The check uses physical memory, or a Linux cgroup memory
-  limit when that is lower, and stops with advice (for example
-  `keep_permutations = FALSE`) if the run would not fit.
+- [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+  checks the memory a run needs before the null seed sets are drawn and
+  before any PageRank is computed. The check uses physical memory, or a
+  Linux cgroup memory limit when that is lower, and stops with advice
+  (for example `keep_permutations = FALSE`) if the run would not fit.
 - `pagerank_data` now has node IDs as row names.
 - For a custom `subnetwork`, replacement genes in the permutation null
   are drawn only from genes that are vertices of that network. For
@@ -154,55 +170,56 @@ accurate, and change `network_summary_statistics` compared with tkoi
   biased.
 - Rows with a missing or blank `gene_name`, and repeated rows for the
   same gene, are now handled the same way by
-  [`run_tkoi()`](../reference/run_tkoi.md),
-  [`export_gene_exploration_data()`](../reference/export_gene_exploration_data.md),
-  [`make_gene_exploration_plot()`](../reference/make_gene_exploration_plot.md),
-  and [`plot_network()`](../reference/plot_network.md): blank rows are
-  ignored (they previously matched every gene without an Ensembl ID) and
-  only the first row of each gene is used.
-- [`plot_network()`](../reference/plot_network.md) works again. It
-  previously failed because it called
-  [`get_neighboring_nodes()`](../reference/get_neighboring_nodes.md)
+  [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md),
+  [`export_gene_exploration_data()`](https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.md),
+  [`make_gene_exploration_plot()`](https://baranzinilab.github.io/tkoi/reference/make_gene_exploration_plot.md),
+  and
+  [`plot_network()`](https://baranzinilab.github.io/tkoi/reference/plot_network.md):
+  blank rows are ignored (they previously matched every gene without an
+  Ensembl ID) and only the first row of each gene is used.
+- [`plot_network()`](https://baranzinilab.github.io/tkoi/reference/plot_network.md)
+  works again. It previously failed because it called
+  [`get_neighboring_nodes()`](https://baranzinilab.github.io/tkoi/reference/get_neighboring_nodes.md)
   without a network and read the encrypted `tkoi_net` directly. Paths of
   up to two hops are now found from neighbour sets, the log fold change
   color scale is centred on zero, and a clear error is given when no
   significant gene is within reach of the target. On custom networks it
   uses vertex names when there is no `identifier` attribute and reads
   node types from `labels` or `label`.
-- [`get_neighboring_nodes()`](../reference/get_neighboring_nodes.md) now
-  defaults to `subnetwork = tkoi::tkoi_net` (which works now that the
-  network is not encrypted) and validates its inputs.
-- [`run_gene_enrichment()`](../reference/run_gene_enrichment.md) no
-  longer runs the unused
+- [`get_neighboring_nodes()`](https://baranzinilab.github.io/tkoi/reference/get_neighboring_nodes.md)
+  now defaults to `subnetwork = tkoi::tkoi_net` (which works now that
+  the network is not encrypted) and validates its inputs.
+- [`run_gene_enrichment()`](https://baranzinilab.github.io/tkoi/reference/run_gene_enrichment.md)
+  no longer runs the unused
   [`enrichplot::pairwise_termsim()`](https://rdrr.io/pkg/enrichplot/man/pairwise_termsim.html)
   step and handles GO ontologies that return no enrichment results.
-- [`make_gene_exploration_plot()`](../reference/make_gene_exploration_plot.md)
+- [`make_gene_exploration_plot()`](https://baranzinilab.github.io/tkoi/reference/make_gene_exploration_plot.md)
   no longer prints a ggplot2 message about an unknown label.
-- [`visualize_topn()`](../reference/visualize_topn.md) validates
-  `category` and `top_n` and tolerates duplicated labels.
-- [`compute_network_enrichment()`](../reference/compute_network_enrichment.md)
+- [`visualize_topn()`](https://baranzinilab.github.io/tkoi/reference/visualize_topn.md)
+  validates `category` and `top_n` and tolerates duplicated labels.
+- [`compute_network_enrichment()`](https://baranzinilab.github.io/tkoi/reference/compute_network_enrichment.md)
   also accepts a data frame with one row per node, such as the
   `pagerank_data` slot of a run with `keep_permutations = TRUE`, or a
   list of equal-length vectors, which is treated the same way. It gives
   a clear error when `node` has no `pagerank` value or fewer than two
   `perm*` values.
-- [`run_tkoi()`](../reference/run_tkoi.md) gives clear errors for
-  invalid inputs, such as missing or non-numeric columns, out-of-range
-  thresholds, no genes passing the filters, or infinite `logfc` values
-  among the selected genes.
+- [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+  gives clear errors for invalid inputs, such as missing or non-numeric
+  columns, out-of-range thresholds, no genes passing the filters, or
+  infinite `logfc` values among the selected genes.
 
 ### Documentation
 
 - The `genes`, `human_metabolites`, `compound_annotation`, and
   `tkoi_net` help pages describe the identifiers the datasets actually
   contain, and the
-  [`export_gene_exploration_data()`](../reference/export_gene_exploration_data.md),
-  [`make_gene_exploration_plot()`](../reference/make_gene_exploration_plot.md),
+  [`export_gene_exploration_data()`](https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.md),
+  [`make_gene_exploration_plot()`](https://baranzinilab.github.io/tkoi/reference/make_gene_exploration_plot.md),
   and
-  [`export_network_summary_statistics()`](../reference/export_network_summary_statistics.md)
+  [`export_network_summary_statistics()`](https://baranzinilab.github.io/tkoi/reference/export_network_summary_statistics.md)
   help pages have examples based on a
-  [`run_tkoi()`](../reference/run_tkoi.md) result instead of hand-built
-  objects.
+  [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+  result instead of hand-built objects.
 
 ### Internal
 

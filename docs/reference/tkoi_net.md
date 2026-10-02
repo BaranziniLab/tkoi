@@ -67,9 +67,11 @@ The edge attribute `edge_type` names the relationship (e.g.
 - Compound:
 
   Nodes for chemical compounds, identified by InChIKey, ChEBI ID, or
-  ChEMBL ID (see [`compound_annotation`](compound_annotation.md)).
-  [`run_tkoi`](run_tkoi.md) reports only those in
-  [`human_metabolites`](human_metabolites.md).
+  ChEMBL ID (see
+  [`compound_annotation`](https://baranzinilab.github.io/tkoi/reference/compound_annotation.md)).
+  [`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+  reports only those in
+  [`human_metabolites`](https://baranzinilab.github.io/tkoi/reference/human_metabolites.md).
 
 - Disease:
 

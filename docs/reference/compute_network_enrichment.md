@@ -17,10 +17,11 @@ compute_network_enrichment(node)
   Either a named list / one-row data frame with `pagerank` and
   permutation values whose names start with `"perm"` (e.g. `perm.1`,
   `perm.2`), or a data frame with one row per node in that layout, such
-  as the `pagerank_data` slot of a [`run_tkoi()`](run_tkoi.md) result
-  with `keep_permutations = TRUE`. A list of equal-length vectors is
-  treated as such a data frame. `node` needs a `pagerank` value and at
-  least two `perm*` values, or an error is raised.
+  as the `pagerank_data` slot of a
+  [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+  result with `keep_permutations = TRUE`. A list of equal-length vectors
+  is treated as such a data frame. `node` needs a `pagerank` value and
+  at least two `perm*` values, or an error is raised.
 
 ## Value
 
@@ -35,10 +36,10 @@ A data frame with one row per node and columns:
 The function calculates the z-score as: \$\$z = \frac{\text{pagerank} -
 \text{mean}(\text{perm_values})}{\text{sd}(\text{perm_values})}\$\$
 (`NaN` when the permutation values have no spread, as in
-[`run_tkoi`](run_tkoi.md)), and the p-value is calculated as the
-survival function of the z-score: \$\$p = 1 - \Phi(z)\$\$ where \\\Phi\\
-is the cumulative distribution function of the standard normal
-distribution.
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)),
+and the p-value is calculated as the survival function of the z-score:
+\$\$p = 1 - \Phi(z)\$\$ where \\\Phi\\ is the cumulative distribution
+function of the standard normal distribution.
 
 ## Examples
 

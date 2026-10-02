@@ -21,6 +21,7 @@ argument of \code{\link[=run_tkoi]{run_tkoi()}} and the \code{tkoi.n_cores} opti
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://baranzinilab.github.io/tkoi/}
   \item \url{https://github.com/BaranziniLab/tkoi}
   \item Report bugs at \url{https://github.com/BaranziniLab/tkoi/issues}
 }
@@ -28,6 +29,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Wanjun Gu \email{wanjun.gu@ucsf.edu} (\href{https://orcid.org/0000-0002-7342-7000}{ORCID})
+
+Authors:
+\itemize{
+  \item Wanjun Gu \email{wanjun.gu@ucsf.edu} (\href{https://orcid.org/0000-0002-7342-7000}{ORCID})
+}
 
 }
 \keyword{internal}

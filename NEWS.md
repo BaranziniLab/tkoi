@@ -1,3 +1,13 @@
+# tkoi 1.2.0
+
+* The Shiny interface is now developed and distributed in this repository.
+  Launch the installed app with `tkoi::run_tkoi_app()`. It uses the package's
+  analysis engine, graph, annotations and network plotting.
+* GitHub releases include standalone Shiny ZIP and tar archives, with a pinned
+  tkoi source package and dependency installer for deployment on another server.
+* The Shiny packages are optional dependencies. Existing command-line analysis
+  workflows and the statistical method are unchanged.
+
 # tkoi 1.1.0
 
 ## Performance

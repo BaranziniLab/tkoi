@@ -18,7 +18,7 @@ get_neighboring_nodes(
 - gene_node_id:
 
   A node ID (a vertex name of `subnetwork`), for example a gene's `id`
-  in [`genes`](genes.md).
+  in [`genes`](https://baranzinilab.github.io/tkoi/reference/genes.md).
 
 - degree_expansion:
 
@@ -27,7 +27,8 @@ get_neighboring_nodes(
 
 - subnetwork:
 
-  An igraph object to search. Default [`tkoi::tkoi_net`](tkoi_net.md).
+  An igraph object to search. Default
+  [`tkoi::tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md).
 
 ## Value
 
@@ -42,7 +43,7 @@ edge direction.
 ## See also
 
 [`ego`](https://r.igraph.org/reference/ego.html),
-[`plot_network`](plot_network.md)
+[`plot_network`](https://baranzinilab.github.io/tkoi/reference/plot_network.md)
 
 ## Examples
 

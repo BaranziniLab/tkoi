@@ -36,7 +36,8 @@ run_tkoi(
 
 - subnetwork:
 
-  An igraph knowledge graph. Default [`tkoi::tkoi_net`](tkoi_net.md).
+  An igraph knowledge graph. Default
+  [`tkoi::tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md).
 
 - pvalue_threshold:
 
@@ -56,8 +57,9 @@ run_tkoi(
 
   Number in `[0, 1]`. A replacement gene's degree must lie within
   `[topology_similarity * d, (2 - topology_similarity) * d]`, where `d`
-  is the seed gene's degree in [`tkoi::genes`](genes.md) (its degree in
-  `tkoi_net`, also for custom networks). Default `0.9`.
+  is the seed gene's degree in
+  [`tkoi::genes`](https://baranzinilab.github.io/tkoi/reference/genes.md)
+  (its degree in `tkoi_net`, also for custom networks). Default `0.9`.
 
 - n_permutation:
 
@@ -128,7 +130,8 @@ An S4 object of class `tKOIList` with slots:
     and `abs(logfc) >= logfc_threshold`.
 
 2.  **Network mapping:** kept genes are mapped onto the network through
-    their Ensembl IDs (see [`genes`](genes.md)).
+    their Ensembl IDs (see
+    [`genes`](https://baranzinilab.github.io/tkoi/reference/genes.md)).
 
 3.  **Personalized PageRank:** PageRank is propagated from the seed
     genes, each weighted by `abs(logfc)`.
@@ -144,7 +147,8 @@ An S4 object of class `tKOIList` with slots:
     terms, diseases, cell types, compounds, and more). Every node is
     reported; nodes without a curated annotation have missing annotation
     columns. Among compounds, only human metabolites
-    ([`human_metabolites`](human_metabolites.md)) are reported.
+    ([`human_metabolites`](https://baranzinilab.github.io/tkoi/reference/human_metabolites.md))
+    are reported.
 
 7.  **Prioritization:** results are split by node type, adjusted for
     multiple testing (Benjamini-Hochberg FDR over the reported nodes of
@@ -170,9 +174,11 @@ untestable (see below).
 **Custom networks.** Seed genes that are not vertices of `subnetwork`
 are dropped before the null is drawn, so the observed run and every null
 run use the same seeds with the same weights. Replacement genes are
-drawn only from [`genes`](genes.md) that are vertices of `subnetwork`.
-Nodes with a missing type are grouped as `"Unknown"`, and nodes of types
-without a curated annotation are reported without annotation columns.
+drawn only from
+[`genes`](https://baranzinilab.github.io/tkoi/reference/genes.md) that
+are vertices of `subnetwork`. Nodes with a missing type are grouped as
+`"Unknown"`, and nodes of types without a curated annotation are
+reported without annotation columns.
 
 **Memory.** Beyond `tkoi_net` itself (about 0.5 GB), the network matrix
 takes about 0.3 GB and the solver about 0.6 GB. Keeping all permutations
@@ -194,9 +200,9 @@ as a seed.
 
 ## See also
 
-[`visualize_topn`](visualize_topn.md),
-[`export_gene_exploration_data`](export_gene_exploration_data.md),
-[`run_gene_enrichment`](run_gene_enrichment.md)
+[`visualize_topn`](https://baranzinilab.github.io/tkoi/reference/visualize_topn.md),
+[`export_gene_exploration_data`](https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.md),
+[`run_gene_enrichment`](https://baranzinilab.github.io/tkoi/reference/run_gene_enrichment.md)
 
 ## Examples
 

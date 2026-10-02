@@ -12,10 +12,61 @@ This enables network-aware enrichment, functional interpretation, and
 gene prioritization via personalized PageRank and ontology-aware
 annotation.
 
-## Web Application
+## Shiny App
 
-For non-power users, please use the web application of
-**[tKOI](https://comphealth.ucsf.edu/app/tkoi)** at `tkoi.org`.
+Launch the Shiny app from the installed R package:
+
+``` r
+tkoi::run_tkoi_app()
+```
+
+Install the optional app dependencies once if needed:
+
+``` r
+install.packages(c(
+  "shiny", "shinythemes", "data.table", "readxl", "openxlsx", "plotly", "DT"
+))
+```
+
+The app accepts CSV, TSV, or Excel files with `gene_name`, `logfc`, and
+`pvalue` columns. It runs the package’s analysis and lets you explore
+and export the results.
+
+To serve the installed app on a network interface:
+
+``` r
+tkoi::run_tkoi_app(host = "0.0.0.0", port = 3838, launch_browser = FALSE)
+```
+
+The [app
+source](https://github.com/BaranziniLab/tkoi/tree/main/inst/shiny/tkoi),
+tests, and deployment scripts are maintained in this repository. You can
+also use the [hosted app](https://comphealth.ucsf.edu/app/tkoi).
+
+### Standalone Server Deployment
+
+Download `tkoi-shiny-1.2.0.zip` or `tkoi-shiny-1.2.0.tar.gz` from the
+[GitHub releases](https://github.com/BaranziniLab/tkoi/releases),
+extract it, and run these commands from the extracted app directory:
+
+``` sh
+Rscript install.R
+Rscript run_app.R 3838 0.0.0.0
+```
+
+The bundle includes the complete app and the matching R package at
+`vendor/tkoi_1.2.0.tar.gz`. The installer uses that archive and
+downloads its other dependencies from CRAN and Bioconductor. Setup
+requires R 4.1 or later, a C++ compiler, and internet access for those
+dependencies.
+
+For Shiny Server, place the extracted directory in its configured app
+directory and install the dependencies for the account running the
+service. For Posit Connect, publish the extracted directory as a Shiny
+application. `app.R` is the entry point. The bundle’s README and the
+[getting started
+guide](https://baranzinilab.github.io/tkoi/articles/getting-started-with-tkoi.html)
+provide more detail.
 
 ## Contextualization Agent
 
@@ -23,7 +74,7 @@ For subsequent analysis upon getting network enrichment statistics,
 please use **[tKOIAgent](https://github.com/BaranziniLab/tKOIAgent)**
 for contextualization and network traversal.
 
-## Documentations
+## Documentation
 
 Please refer to
 **[Documentation](https://baranzinilab.github.io/tkoi/)** for detailed

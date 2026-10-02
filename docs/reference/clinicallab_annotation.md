@@ -44,9 +44,9 @@ values corresponding to LOINC codes.
 
 ## See also
 
-[`run_tkoi`](run_tkoi.md),
-[`disease_annotation`](disease_annotation.md),
-[`compound_annotation`](compound_annotation.md)
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md),
+[`disease_annotation`](https://baranzinilab.github.io/tkoi/reference/disease_annotation.md),
+[`compound_annotation`](https://baranzinilab.github.io/tkoi/reference/compound_annotation.md)
 
 ## Examples
 

@@ -12,3 +12,5 @@ src/*.so
 src/*.dll
 Rplots.pdf
 README.html
+release/
+.shiny-r-library/

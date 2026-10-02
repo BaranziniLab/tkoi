@@ -9,16 +9,83 @@ PageRank propagation with permutation testing and ontology-based
 annotations for high-resolution network interpretation.
 
 Since version 1.1.0, the core of
-[`run_tkoi()`](../reference/run_tkoi.md) is written in C++ and runs on
-multiple threads. Personalized PageRank for the observed data and every
-permutation is solved in batches, so a full analysis with 100
-permutations on the complete knowledge graph (`tkoi_net`) took 25.5 to
-38.1 s on an 8-core Apple M2, compared with 244.3 s for `tkoi` 1.0.0.
-The package therefore needs a C++ compiler toolchain to install from
-source (Xcode Command Line Tools on macOS, Rtools on Windows):
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+is written in C++ and runs on multiple threads. Personalized PageRank
+for the observed data and every permutation is solved in batches, so a
+full analysis with 100 permutations on the complete knowledge graph
+(`tkoi_net`) took 25.5 to 38.1 s on an 8-core Apple M2, compared with
+244.3 s for `tkoi` 1.0.0. The package therefore needs a C++ compiler
+toolchain to install from source (Xcode Command Line Tools on macOS,
+Rtools on Windows):
 
 \
 `devtools``::`[`install_github`](https://devtools.r-lib.org/reference/install-deprecated.html)`(``"BaranziniLab/tkoi"``)`
+
+## Use the Shiny App
+
+The package includes a Shiny interface for uploading expression data,
+running the analysis, exploring results, and exporting tables and plots.
+Install its optional dependencies once, then launch it from R:
+
+\
+[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(`\
+`  ``"shiny"``, ``"shinythemes"``, ``"data.table"``, ``"readxl"``, ``"openxlsx"``, ``"plotly"``, ``"DT"`\
+`)``)`\
+`tkoi``::`[`run_tkoi_app`](https://baranzinilab.github.io/tkoi/reference/run_tkoi_app.md)`(``)`
+
+Upload a CSV, TSV, or Excel file with `gene_name` (Ensembl gene ID),
+`logfc`, and `pvalue` columns, or use the app’s example input. The app
+uses the installed tkoi package and its bundled knowledge graph.
+
+For a server process, choose the interface and port and disable the
+browser:
+
+\
+`tkoi``::`[`run_tkoi_app`](https://baranzinilab.github.io/tkoi/reference/run_tkoi_app.md)`(``host ``=`` ``"0.0.0.0"``, port ``=`` ``3838``, launch_browser ``=`` ``FALSE``)`
+
+The default host is `127.0.0.1`; the default port is chosen by Shiny.
+The app runs until you interrupt R. Its source, assets, and example
+input are maintained under `inst/shiny/tkoi` in the [tkoi
+repository](https://github.com/BaranziniLab/tkoi).
+
+### Host a Standalone Release
+
+The same repository’s [GitHub
+releases](https://github.com/BaranziniLab/tkoi/releases) provide
+`tkoi-shiny-1.2.0.zip` and `tkoi-shiny-1.2.0.tar.gz`. Extract either
+archive, open a terminal in the extracted directory, and install the
+dependencies:
+
+``` sh
+Rscript install.R
+```
+
+The bundle includes `app.R`, the app sources and assets, and the
+matching tkoi source package at `vendor/tkoi_1.2.0.tar.gz`. The
+installer installs that package and downloads its other dependencies
+from CRAN and Bioconductor. It requires R 4.1 or later, a C++ compiler,
+and internet access during setup. On Linux, the R dependencies also
+require system development libraries such as curl, OpenSSL, and libxml2.
+Install the dependencies into an R library that the server account can
+read.
+
+Launch locally at `http://127.0.0.1:3838`:
+
+``` sh
+Rscript run_app.R
+```
+
+To serve on a network interface:
+
+``` sh
+Rscript run_app.R 3838 0.0.0.0
+```
+
+For Shiny Server, place the extracted app directory under its configured
+app root, for example `/srv/shiny-server/tkoi`. For Posit Connect,
+publish the extracted directory as a Shiny application. In both cases,
+`app.R` is the entry point; the bundle’s README contains the deployment
+instructions.
 
 ## Step-by-Step Example
 
@@ -27,7 +94,7 @@ This vignette demonstrates a complete workflow using the `tkoi` package.
 ### Load Example Expression Data
 
 \
-[`library`](https://rdrr.io/r/base/library.html)`(`[`tkoi`](https://github.com/BaranziniLab/tkoi)`)`\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`tkoi`](https://baranzinilab.github.io/tkoi/)`)`\
 \
 `file_path`` ``=`` `[`system.file`](https://rdrr.io/r/base/system.file.html)`(``"extdata"``, ``"example_data.csv"``, package ``=`` ``"tkoi"``)`\
 `expression_data`` ``=`` ``data.table``::`[`fread`](https://rdrr.io/pkg/data.table/man/fread.html)`(``file_path``)`\
@@ -36,19 +103,20 @@ This vignette demonstrates a complete workflow using the `tkoi` package.
 The table needs the columns `gene_name` (Ensembl gene IDs), `logfc`, and
 `pvalue`. Rows with a missing or blank `gene_name` are ignored, and only
 the first row of a duplicated gene is used. The downstream functions
-([`export_gene_exploration_data()`](../reference/export_gene_exploration_data.md),
-[`make_gene_exploration_plot()`](../reference/make_gene_exploration_plot.md),
-and [`plot_network()`](../reference/plot_network.md)) read the table the
-same way.
+([`export_gene_exploration_data()`](https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.md),
+[`make_gene_exploration_plot()`](https://baranzinilab.github.io/tkoi/reference/make_gene_exploration_plot.md),
+and
+[`plot_network()`](https://baranzinilab.github.io/tkoi/reference/plot_network.md))
+read the table the same way.
 
 ### Run tKOI Analysis
 
 \
 [`set.seed`](https://rdrr.io/r/base/Random.html)`(``1``)`\
 \
-`tkoi_result`` ``=`` `[`run_tkoi`](../reference/run_tkoi.md)`(`\
+`tkoi_result`` ``=`` `[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)`(`\
 `  expression_data ``=`` ``expression_data``,`\
-`  subnetwork ``=`` ``tkoi``::`[`tkoi_net`](../reference/tkoi_net.md)`,`\
+`  subnetwork ``=`` ``tkoi``::`[`tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)`,`\
 `  pvalue_threshold ``=`` ``0.05``,`\
 `  logfc_threshold ``=`` ``0.25``,`\
 `  indirect_link_threshold ``=`` ``3``,`\
@@ -122,18 +190,20 @@ builds the network matrix (8.8 s for 10 permutations). With
 `n_cores = 1`, 10 permutations took 10.9 s, still faster than `tkoi`
 1.0.0.
 
-Loading [`tkoi::tkoi_net`](../reference/tkoi_net.md) takes a few seconds
-and about 0.5 GB of memory the first time it is used in a session.
-Keeping all 100 permutations adds about 0.75 GB. Before any PageRank is
-computed, [`run_tkoi()`](../reference/run_tkoi.md) checks the memory the
-run needs against the memory available (physical memory, or a Linux
-container limit) and stops with advice, such as
+Loading
+[`tkoi::tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)
+takes a few seconds and about 0.5 GB of memory the first time it is used
+in a session. Keeping all 100 permutations adds about 0.75 GB. Before
+any PageRank is computed,
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+checks the memory the run needs against the memory available (physical
+memory, or a Linux container limit) and stops with advice, such as
 `keep_permutations = FALSE`, if the run would not fit.
 
 ### Perform Gene Ontology Enrichment
 
 \
-`tkoi_result`` ``=`` `[`run_gene_enrichment`](../reference/run_gene_enrichment.md)`(``tkoi_result``)`
+`tkoi_result`` ``=`` `[`run_gene_enrichment`](https://baranzinilab.github.io/tkoi/reference/run_gene_enrichment.md)`(``tkoi_result``)`
 
 ### Visualize GO vs Graph Enrichment
 
@@ -146,7 +216,7 @@ container limit) and stops with advice, such as
 ### Gene-Level Network Visualization
 
 \
-`plt1`` ``=`` `[`make_gene_exploration_plot`](../reference/make_gene_exploration_plot.md)`(`\
+`plt1`` ``=`` `[`make_gene_exploration_plot`](https://baranzinilab.github.io/tkoi/reference/make_gene_exploration_plot.md)`(`\
 `  tkoi_list ``=`` ``tkoi_result``,`\
 `  sig_color ``=`` ``"#F39B7FB2"``,`\
 `  non_sig_color ``=`` ``"gray"`\
@@ -156,19 +226,19 @@ container limit) and stops with advice, such as
 ### Export Enrichment Summary Table
 
 \
-`gene_data`` ``=`` `[`export_gene_exploration_data`](../reference/export_gene_exploration_data.md)`(``tkoi_result``)`\
+`gene_data`` ``=`` `[`export_gene_exploration_data`](https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.md)`(``tkoi_result``)`\
 [`head`](https://rdrr.io/r/utils/head.html)`(``gene_data``)`
 
 The node-level tables for every node type can be written to an Excel
 workbook, one sheet per node type:
 
 \
-[`export_network_summary_statistics`](../reference/export_network_summary_statistics.md)`(``tkoi_result``, filename ``=`` ``"tkoi_network_statistics.xlsx"``)`
+[`export_network_summary_statistics`](https://baranzinilab.github.io/tkoi/reference/export_network_summary_statistics.md)`(``tkoi_result``, filename ``=`` ``"tkoi_network_statistics.xlsx"``)`
 
 ### Visualize Top Enriched Genes
 
 \
-`plt2`` ``=`` `[`visualize_topn`](../reference/visualize_topn.md)`(`\
+`plt2`` ``=`` `[`visualize_topn`](https://baranzinilab.github.io/tkoi/reference/visualize_topn.md)`(`\
 `  tkoi_list ``=`` ``tkoi_result``,`\
 `  category ``=`` ``"Gene"``,`\
 `  top_n ``=`` ``25``,`\
@@ -179,26 +249,26 @@ workbook, one sheet per node type:
 
 ### Plot the Network Around an Enriched Node
 
-[`plot_network()`](../reference/plot_network.md) draws the part of the
-knowledge graph that links a target node to the significant genes within
-`degree_expansion` hops. Genes are colored by log fold change (blue
-down, red up), the target is orange, and node size follows `beta`. Pass
-the same `subnetwork` that was used in
-[`run_tkoi()`](../reference/run_tkoi.md).
+[`plot_network()`](https://baranzinilab.github.io/tkoi/reference/plot_network.md)
+draws the part of the knowledge graph that links a target node to the
+significant genes within `degree_expansion` hops. Genes are colored by
+log fold change (blue down, red up), the target is orange, and node size
+follows `beta`. Pass the same `subnetwork` that was used in
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md).
 
 \
 `top_term`` ``=`` ``tkoi_result``@``network_summary_statistics``$``BiologicalProcess``$``node_id``[``1``]`\
 \
-[`plot_network`](../reference/plot_network.md)`(`\
+[`plot_network`](https://baranzinilab.github.io/tkoi/reference/plot_network.md)`(`\
 `  tkoi_result ``=`` ``tkoi_result``,`\
 `  target_node_id ``=`` ``top_term``,`\
 `  degree_expansion ``=`` ``2``,`\
 `  network_layout_type ``=`` ``"kk"``,`\
-`  subnetwork ``=`` ``tkoi``::`[`tkoi_net`](../reference/tkoi_net.md)\
+`  subnetwork ``=`` ``tkoi``::`[`tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)\
 `)`\
 \
 `# Every node within one hop of the term, including the term itself`\
-`neighbors`` ``=`` `[`get_neighboring_nodes`](../reference/get_neighboring_nodes.md)`(``top_term``, degree_expansion ``=`` ``1``)`
+`neighbors`` ``=`` `[`get_neighboring_nodes`](https://baranzinilab.github.io/tkoi/reference/get_neighboring_nodes.md)`(``top_term``, degree_expansion ``=`` ``1``)`
 
 ### Save Analysis Result (Optional)
 
@@ -209,16 +279,16 @@ the same `subnetwork` that was used in
 
 \
 [`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`\
-`#> R version 4.4.3 (2025-02-28)`\
+`#> R version 4.5.0 (2025-04-11)`\
 `#> Platform: aarch64-apple-darwin20`\
-`#> Running under: macOS 26.6.2`\
+`#> Running under: macOS 26.7.1`\
 `#> `\
 `#> Matrix products: default`\
-`#> BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib `\
-`#> LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0`\
+`#> BLAS:   /opt/homebrew/Cellar/openblas/0.3.34/lib/libopenblasp-r0.3.34.dylib `\
+`#> LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1`\
 `#> `\
 `#> locale:`\
-`#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8`\
+`#> [1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8`\
 `#> `\
 `#> time zone: America/Los_Angeles`\
 `#> tzcode source: internal`\
@@ -228,9 +298,9 @@ the same `subnetwork` that was used in
 `#> `\
 `#> loaded via a namespace (and not attached):`\
 `#>  [1] digest_0.6.39     desc_1.4.3        R6_2.6.1          fastmap_1.2.0    `\
-`#>  [5] xfun_0.57         cachem_1.1.0      knitr_1.51        htmltools_0.5.9  `\
-`#>  [9] rmarkdown_2.31    lifecycle_1.0.5   cli_3.6.6         sass_0.4.10      `\
-`#> [13] pkgdown_2.2.0     textshaping_1.0.5 jquerylib_0.1.4   systemfonts_1.3.2`\
-`#> [17] compiler_4.4.3    tools_4.4.3       ragg_1.5.2        bslib_0.10.0     `\
+`#>  [5] xfun_0.61         cachem_1.1.0      knitr_1.52        htmltools_0.5.9  `\
+`#>  [9] rmarkdown_2.32    lifecycle_1.0.5   cli_3.6.6         sass_0.4.10      `\
+`#> [13] pkgdown_2.2.1     textshaping_1.0.5 jquerylib_0.1.4   systemfonts_1.3.2`\
+`#> [17] compiler_4.5.0    tools_4.5.0       ragg_1.5.2        bslib_0.12.0     `\
 `#> [21] evaluate_1.0.5    yaml_2.3.12       otel_0.2.0        jsonlite_2.0.0   `\
-`#> [25] rlang_1.1.7       fs_2.1.0          htmlwidgets_1.6.4`
+`#> [25] rlang_1.3.0       fs_2.1.0          htmlwidgets_1.6.4`

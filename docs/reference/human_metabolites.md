@@ -2,12 +2,14 @@
 
 A character vector of compound identifiers for metabolites curated from
 the Human Metabolome Database (HMDB), written like the `identifier` of
-Compound nodes in [`tkoi_net`](tkoi_net.md): InChIKeys (for example
-`"inchikey:BRMWTNUJHUMWMS-LURJTMIESA-N"`), ChEBI IDs (for example
-`"CHEBI:50599"`), and ChEMBL IDs (for example
-`"chembl.compound:CHEMBL4159192"`). [`run_tkoi`](run_tkoi.md) reports
-only Compound nodes whose `identifier` is in this vector, and these
-nodes form the multiple-testing family of the Compound table.
+Compound nodes in
+[`tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md):
+InChIKeys (for example `"inchikey:BRMWTNUJHUMWMS-LURJTMIESA-N"`), ChEBI
+IDs (for example `"CHEBI:50599"`), and ChEMBL IDs (for example
+`"chembl.compound:CHEMBL4159192"`).
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+reports only Compound nodes whose `identifier` is in this vector, and
+these nodes form the multiple-testing family of the Compound table.
 
 ## Usage
 

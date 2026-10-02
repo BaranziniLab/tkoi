@@ -39,7 +39,7 @@ tables; no node is excluded. Default \code{3}.}
 
 \item{topology_similarity}{Number in \code{[0, 1]}. A replacement gene's
 degree must lie within \code{[topology_similarity * d, (2 -
-  topology_similarity) * d]}, where \code{d} is the seed gene's degree in
+topology_similarity) * d]}, where \code{d} is the seed gene's degree in
 \code{tkoi::genes} (its degree in \code{tkoi_net}, also for custom
 networks).
 Default \code{0.9}.}

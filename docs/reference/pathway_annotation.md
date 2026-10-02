@@ -39,13 +39,15 @@ biological interpretation and functional enrichment of graph nodes
 associated with pathway membership or influence.
 
 The `identifier` column is used to map pathway node IDs from graph
-analyses (e.g., [`run_tkoi`](run_tkoi.md)), while the `name` column
-provides context for labeling and visualization.
+analyses (e.g.,
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)),
+while the `name` column provides context for labeling and visualization.
 
 ## See also
 
-[`reaction_annotation`](reaction_annotation.md),
-[`disease_annotation`](disease_annotation.md), [`run_tkoi`](run_tkoi.md)
+[`reaction_annotation`](https://baranzinilab.github.io/tkoi/reference/reaction_annotation.md),
+[`disease_annotation`](https://baranzinilab.github.io/tkoi/reference/disease_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
 
 ## Examples
 

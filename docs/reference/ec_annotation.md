@@ -39,8 +39,9 @@ descriptive labels for downstream analysis and visualization.
 
 ## See also
 
-[`complex_annotation`](complex_annotation.md),
-[`run_tkoi`](run_tkoi.md), [`protein_annotation`](protein_annotation.md)
+[`complex_annotation`](https://baranzinilab.github.io/tkoi/reference/complex_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md),
+[`protein_annotation`](https://baranzinilab.github.io/tkoi/reference/protein_annotation.md)
 
 ## Examples
 

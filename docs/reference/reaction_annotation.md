@@ -45,8 +45,9 @@ reporting or visualization.
 
 ## See also
 
-[`pwgroup_annotation`](pwgroup_annotation.md),
-[`pathway_annotation`](pathway_annotation.md), [`run_tkoi`](run_tkoi.md)
+[`pwgroup_annotation`](https://baranzinilab.github.io/tkoi/reference/pwgroup_annotation.md),
+[`pathway_annotation`](https://baranzinilab.github.io/tkoi/reference/pathway_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
 
 ## Examples
 

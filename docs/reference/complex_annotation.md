@@ -47,12 +47,14 @@ research and SMAD family transcriptional complexes involved in TGF-beta
 signaling.
 
 The annotations can be joined to analysis outputs from
-[`run_tkoi`](run_tkoi.md) using the `identifier` column.
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+using the `identifier` column.
 
 ## See also
 
-[`compound_annotation`](compound_annotation.md),
-[`disease_annotation`](disease_annotation.md), [`run_tkoi`](run_tkoi.md)
+[`compound_annotation`](https://baranzinilab.github.io/tkoi/reference/compound_annotation.md),
+[`disease_annotation`](https://baranzinilab.github.io/tkoi/reference/disease_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
 
 ## Examples
 

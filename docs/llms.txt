@@ -9,10 +9,58 @@ This enables network-aware enrichment, functional interpretation, and
 gene prioritization via personalized PageRank and ontology-aware
 annotation.
 
-## Web Application
+## Shiny App
 
-For non-power users, please use the web application of
-**[tKOI](https://comphealth.ucsf.edu/app/tkoi)** at `tkoi.org`.
+Launch the Shiny app from the installed R package:
+
+\
+`tkoi``::`[`run_tkoi_app`](https://baranzinilab.github.io/tkoi/reference/run_tkoi_app.md)`(``)`
+
+Install the optional app dependencies once if needed:
+
+\
+[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(`\
+`  ``"shiny"``, ``"shinythemes"``, ``"data.table"``, ``"readxl"``, ``"openxlsx"``, ``"plotly"``, ``"DT"`\
+`)``)`
+
+The app accepts CSV, TSV, or Excel files with `gene_name`, `logfc`, and
+`pvalue` columns. It runs the package’s analysis and lets you explore
+and export the results.
+
+To serve the installed app on a network interface:
+
+\
+`tkoi``::`[`run_tkoi_app`](https://baranzinilab.github.io/tkoi/reference/run_tkoi_app.md)`(``host ``=`` ``"0.0.0.0"``, port ``=`` ``3838``, launch_browser ``=`` ``FALSE``)`
+
+The [app
+source](https://github.com/BaranziniLab/tkoi/tree/main/inst/shiny/tkoi),
+tests, and deployment scripts are maintained in this repository. You can
+also use the [hosted app](https://comphealth.ucsf.edu/app/tkoi).
+
+### Standalone Server Deployment
+
+Download `tkoi-shiny-1.2.0.zip` or `tkoi-shiny-1.2.0.tar.gz` from the
+[GitHub releases](https://github.com/BaranziniLab/tkoi/releases),
+extract it, and run these commands from the extracted app directory:
+
+``` sh
+Rscript install.R
+Rscript run_app.R 3838 0.0.0.0
+```
+
+The bundle includes the complete app and the matching R package at
+`vendor/tkoi_1.2.0.tar.gz`. The installer uses that archive and
+downloads its other dependencies from CRAN and Bioconductor. Setup
+requires R 4.1 or later, a C++ compiler, and internet access for those
+dependencies.
+
+For Shiny Server, place the extracted directory in its configured app
+directory and install the dependencies for the account running the
+service. For Posit Connect, publish the extracted directory as a Shiny
+application. `app.R` is the entry point. The bundle’s README and the
+[getting started
+guide](https://baranzinilab.github.io/tkoi/articles/getting-started-with-tkoi.html)
+provide more detail.
 
 ## Contextualization Agent
 
@@ -20,7 +68,7 @@ For subsequent analysis upon getting network enrichment statistics,
 please use **[tKOIAgent](https://github.com/BaranziniLab/tKOIAgent)**
 for contextualization and network traversal.
 
-## Documentations
+## Documentation
 
 Please refer to
 **[Documentation](https://baranzinilab.github.io/tkoi/)** for detailed
@@ -78,12 +126,13 @@ installed automatically. If that step fails, install them first with
 
 ## Performance
 
-The core of [`run_tkoi()`](reference/run_tkoi.md) is written in C++ (via
-`Rcpp`). Personalized PageRank for the observed data and every
-permutation is solved in batches of up to 16 vectors per pass over the
-network, using conjugate gradient on multiple threads. Two-hop
-neighbourhood counts use bitsets, and the degree-matched null gene sets
-are sampled in C++.
+The core of
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+is written in C++ (via `Rcpp`). Personalized PageRank for the observed
+data and every permutation is solved in batches of up to 16 vectors per
+pass over the network, using conjugate gradient on multiple threads.
+Two-hop neighbourhood counts use bitsets, and the degree-matched null
+gene sets are sampled in C++.
 
 Measured on an Apple M2 (8 cores) with a 21,414-gene differential
 expression dataset (1,201 seed genes) on the full `tkoi_net`:
@@ -114,13 +163,16 @@ vectors are at least as accurate as those of
 [`igraph::page_rank()`](https://r.igraph.org/reference/page_rank.html)
 on `tkoi_net`, both per node and overall.
 
-Loading [`tkoi::tkoi_net`](reference/tkoi_net.md) takes a few seconds
-and about 0.5 GB of memory the first time it is used in a session.
-Keeping every permutation (`keep_permutations = TRUE`) adds about 0.75
-GB for 100 permutations. Before any PageRank is computed,
-[`run_tkoi()`](reference/run_tkoi.md) checks the memory the run needs
-against the memory available (physical memory, or a Linux container
-limit) and stops with advice if the run would not fit.
+Loading
+[`tkoi::tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)
+takes a few seconds and about 0.5 GB of memory the first time it is used
+in a session. Keeping every permutation (`keep_permutations = TRUE`)
+adds about 0.75 GB for 100 permutations. Before any PageRank is
+computed,
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+checks the memory the run needs against the memory available (physical
+memory, or a Linux container limit) and stops with advice if the run
+would not fit.
 
 ## Getting Started
 
@@ -137,7 +189,7 @@ simulated gene expression results. We’ll read it using `data.table` for
 performance.
 
 \
-[`library`](https://rdrr.io/r/base/library.html)`(`[`tkoi`](https://github.com/BaranziniLab/tkoi)`)`\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`tkoi`](https://baranzinilab.github.io/tkoi/)`)`\
 [`library`](https://rdrr.io/r/base/library.html)`(`[`data.table`](https://r-datatable.com)`)`\
 \
 `# Get the file path of the example expression data`\
@@ -165,9 +217,9 @@ permutations to assess statistical enrichment.
 \
 [`set.seed`](https://rdrr.io/r/base/Random.html)`(``1``)``                       ``# Makes the permutation null reproducible`\
 \
-`tkoi_result`` ``=`` `[`run_tkoi`](reference/run_tkoi.md)`(`\
+`tkoi_result`` ``=`` `[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)`(`\
 `  expression_data ``=`` ``expression_data``,`\
-`  subnetwork ``=`` ``tkoi``::`[`tkoi_net`](reference/tkoi_net.md)`,    ``# Predefined igraph network included with the package`\
+`  subnetwork ``=`` ``tkoi``::`[`tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)`,    ``# Predefined igraph network included with the package`\
 `  pvalue_threshold ``=`` ``0.05``,        ``# p-value filter for differential expression`\
 `  logfc_threshold ``=`` ``0.25``,         ``# Minimum log fold change`\
 `  indirect_link_threshold ``=`` ``3``,    ``# Rank first the nodes within two hops of at least 3 seed genes`\
@@ -207,7 +259,7 @@ You can extend the analysis by integrating GO term enrichment using
 ontology-based and graph-based enrichment.
 
 \
-`tkoi_result`` ``=`` `[`run_gene_enrichment`](reference/run_gene_enrichment.md)`(``tkoi_result``)`
+`tkoi_result`` ``=`` `[`run_gene_enrichment`](https://baranzinilab.github.io/tkoi/reference/run_gene_enrichment.md)`(``tkoi_result``)`
 
 This adds a `gene_enrichment_comparison` slot containing GO enrichment
 tables and visual summaries.
@@ -232,12 +284,12 @@ q-values.
 ### Step 5: Visualize Differential Genes in the Network
 
 The
-[`make_gene_exploration_plot()`](reference/make_gene_exploration_plot.md)
+[`make_gene_exploration_plot()`](https://baranzinilab.github.io/tkoi/reference/make_gene_exploration_plot.md)
 function highlights upregulated and downregulated genes in a scatter
 plot based on both experimental and network evidence.
 
 \
-`plt1`` ``=`` `[`make_gene_exploration_plot`](reference/make_gene_exploration_plot.md)`(`\
+`plt1`` ``=`` `[`make_gene_exploration_plot`](https://baranzinilab.github.io/tkoi/reference/make_gene_exploration_plot.md)`(`\
 `  tkoi_list ``=`` ``tkoi_result``,`\
 `  sig_color ``=`` ``"#F39B7FB2"``,`\
 `  non_sig_color ``=`` ``"gray"`\
@@ -250,17 +302,18 @@ This returns a data frame containing logFC, p-values, PageRank scores,
 and FDRs for each gene.
 
 \
-`gene_data`` ``=`` `[`export_gene_exploration_data`](reference/export_gene_exploration_data.md)`(``tkoi_result``)`\
+`gene_data`` ``=`` `[`export_gene_exploration_data`](https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.md)`(``tkoi_result``)`\
 [`head`](https://rdrr.io/r/utils/head.html)`(``gene_data``)`
 
 ### Step 7: Visualize Top N Enriched Nodes
 
-Use [`visualize_topn()`](reference/visualize_topn.md) to highlight the
-most significantly enriched genes, pathways, or biological concepts
-based on network-level statistics.
+Use
+[`visualize_topn()`](https://baranzinilab.github.io/tkoi/reference/visualize_topn.md)
+to highlight the most significantly enriched genes, pathways, or
+biological concepts based on network-level statistics.
 
 \
-`plt2`` ``=`` `[`visualize_topn`](reference/visualize_topn.md)`(`\
+`plt2`` ``=`` `[`visualize_topn`](https://baranzinilab.github.io/tkoi/reference/visualize_topn.md)`(`\
 `  tkoi_list ``=`` ``tkoi_result``,`\
 `  category ``=`` ``"Gene"``,       ``# Can also be "Pathway", "BiologicalProcess", etc.`\
 `  top_n ``=`` ``25``,`\
@@ -271,25 +324,27 @@ based on network-level statistics.
 
 ### Step 8: (Optional) Plot the Network Around an Enriched Node
 
-Use [`plot_network()`](reference/plot_network.md) to draw the part of
-the knowledge graph that links an enriched node (for example the top
-biological process) to the significant genes near it. Genes are colored
-by log fold change, the target node is orange, and node size follows the
-tKOI effect size (`beta`).
+Use
+[`plot_network()`](https://baranzinilab.github.io/tkoi/reference/plot_network.md)
+to draw the part of the knowledge graph that links an enriched node (for
+example the top biological process) to the significant genes near it.
+Genes are colored by log fold change, the target node is orange, and
+node size follows the tKOI effect size (`beta`).
 
 \
 `top_term`` ``=`` ``tkoi_result``@``network_summary_statistics``$``BiologicalProcess``$``node_id``[``1``]`\
 \
-[`plot_network`](reference/plot_network.md)`(`\
+[`plot_network`](https://baranzinilab.github.io/tkoi/reference/plot_network.md)`(`\
 `  tkoi_result ``=`` ``tkoi_result``,`\
 `  target_node_id ``=`` ``top_term``,`\
 `  degree_expansion ``=`` ``2``,          ``# Maximum number of hops between the target and a gene`\
 `  network_layout_type ``=`` ``"kk"``,    ``# Also "fr", "gem", "graphopt", "lgl", or "mds"`\
-`  subnetwork ``=`` ``tkoi``::`[`tkoi_net`](reference/tkoi_net.md)`    ``# Use the same network as in run_tkoi()`\
+`  subnetwork ``=`` ``tkoi``::`[`tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)`    ``# Use the same network as in run_tkoi()`\
 `)`
 
-[`plot_network()`](reference/plot_network.md) returns the plotted
-`igraph` subgraph invisibly. To list the nodes around any node, use
+[`plot_network()`](https://baranzinilab.github.io/tkoi/reference/plot_network.md)
+returns the plotted `igraph` subgraph invisibly. To list the nodes
+around any node, use
 `get_neighboring_nodes(top_term, degree_expansion = 1)`.
 
 ### Step 9: (Optional) Save the Analysis Result
@@ -303,12 +358,13 @@ The node-level enrichment tables can also be written to an Excel
 workbook, one sheet per node type:
 
 \
-[`export_network_summary_statistics`](reference/export_network_summary_statistics.md)`(``tkoi_result``, filename ``=`` ``"tkoi_network_statistics.xlsx"``)`
+[`export_network_summary_statistics`](https://baranzinilab.github.io/tkoi/reference/export_network_summary_statistics.md)`(``tkoi_result``, filename ``=`` ``"tkoi_network_statistics.xlsx"``)`
 
 ## S4 Object Structure
 
 `tKOIList` is an S4 object returned by
-[`run_tkoi()`](reference/run_tkoi.md) with the following slots:
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+with the following slots:
 
 - `expression_data`: Input transcriptomic measurements
 - `pagerank_data`: A data frame with one row per network node (row names
@@ -325,7 +381,8 @@ workbook, one sheet per node type:
   FDR is adjusted within each table, and nodes whose null has no
   variation are untestable (`NaN`) and listed last
 - `gene_enrichment_comparison`: GO enrichment overlay and plots, added
-  by [`run_gene_enrichment()`](reference/run_gene_enrichment.md)
+  by
+  [`run_gene_enrichment()`](https://baranzinilab.github.io/tkoi/reference/run_gene_enrichment.md)
 - `pvalue_threshold`, `logfc_threshold`, `topology_similarity`,
   `n_permutation`, `damping_factor`, `maximum_iteration`: The settings
   used for the run
@@ -368,66 +425,71 @@ Transcriptomics Analysis.
 
 Core methods for network-based transcriptomic analysis
 
-- [`run_tkoi()`](run_tkoi.md) : Run tKOI Analysis
-- [`run_gene_enrichment()`](run_gene_enrichment.md) : Run Gene
-  Enrichment and Compare with TKOI Data
-- [`get_neighboring_nodes()`](get_neighboring_nodes.md) : Retrieve
-  Neighboring Nodes in a Knowledge Graph
-- [`make_gene_exploration_plot()`](make_gene_exploration_plot.md) :
-  Create Gene Exploration Plot
-- [`export_gene_exploration_data()`](export_gene_exploration_data.md) :
-  Export Gene Exploration Data
-- [`export_network_summary_statistics()`](export_network_summary_statistics.md)
+- [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+  : Run tKOI Analysis
+- [`run_tkoi_app()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi_app.md)
+  : Launch the tKOI Shiny App
+- [`run_gene_enrichment()`](https://baranzinilab.github.io/tkoi/reference/run_gene_enrichment.md)
+  : Run Gene Enrichment and Compare with TKOI Data
+- [`get_neighboring_nodes()`](https://baranzinilab.github.io/tkoi/reference/get_neighboring_nodes.md)
+  : Retrieve Neighboring Nodes in a Knowledge Graph
+- [`make_gene_exploration_plot()`](https://baranzinilab.github.io/tkoi/reference/make_gene_exploration_plot.md)
+  : Create Gene Exploration Plot
+- [`export_gene_exploration_data()`](https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.md)
+  : Export Gene Exploration Data
+- [`export_network_summary_statistics()`](https://baranzinilab.github.io/tkoi/reference/export_network_summary_statistics.md)
   : Export Network Summary Statistics to Excel
-- [`visualize_topn()`](visualize_topn.md) : Visualize Top Network
-  Enrichment Statistics
-- [`plot_network()`](plot_network.md) : Plot a Local Network Around a
-  Target Node from tKOI Results
-- [`compute_network_enrichment()`](compute_network_enrichment.md) :
-  Compute Z-Score and P-Value for Node Pagerank
+- [`visualize_topn()`](https://baranzinilab.github.io/tkoi/reference/visualize_topn.md)
+  : Visualize Top Network Enrichment Statistics
+- [`plot_network()`](https://baranzinilab.github.io/tkoi/reference/plot_network.md)
+  : Plot a Local Network Around a Target Node from tKOI Results
+- [`compute_network_enrichment()`](https://baranzinilab.github.io/tkoi/reference/compute_network_enrichment.md)
+  : Compute Z-Score and P-Value for Node Pagerank
 
 ## Data and Annotations
 
 Annotation datasets used for node interpretation
 
-- [`tkoi_net`](tkoi_net.md) : Human-Specific Heterogeneous Network
-- [`anatomy_annotation`](anatomy_annotation.md) : Anatomical Entity
-  Annotations from UBERON
-- [`celltype_annotation`](celltype_annotation.md) : Cell Type Ontology
-  Annotations (CL)
-- [`clinicallab_annotation`](clinicallab_annotation.md) : Clinical
-  Laboratory Measurement Annotations (LOINC)
-- [`complex_annotation`](complex_annotation.md) : Protein and Molecular
-  Complex Annotations
-- [`compound_annotation`](compound_annotation.md) : Chemical Compound
-  Annotations
-- [`disease_annotation`](disease_annotation.md) : Disease Ontology (DO)
-  Annotations
-- [`ec_annotation`](ec_annotation.md) : Enzyme Commission (EC) Number
-  Annotations
-- [`go_annotation`](go_annotation.md) : Gene Ontology (GO) Term
-  Annotations
-- [`mirna_annotation`](mirna_annotation.md) : Human miRNA Annotations
-  (miRBase-style)
-- [`pathway_annotation`](pathway_annotation.md) : Pathway Annotations
-  (WikiPathways)
-- [`protein_annotation`](protein_annotation.md) : Protein Annotations
-  (UniProt-Based)
-- [`proteindomain_annotation`](proteindomain_annotation.md) : Protein
-  Domain Annotations (Pfam)
-- [`proteinfamily_annotation`](proteinfamily_annotation.md) : Protein
-  Family Annotations (Pfam Clans)
-- [`pwgroup_annotation`](pwgroup_annotation.md) : Pathway Group
-  Annotations (Reactome Interaction Sets)
-- [`reaction_annotation`](reaction_annotation.md) : Biochemical Reaction
-  Annotations (KEGG-Based)
-- [`genes`](genes.md) : Gene Metadata
-- [`human_metabolites`](human_metabolites.md) : human_metabolites:
-  Parsed Human Metabolite Metadata from HMDB
+- [`tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)
+  : Human-Specific Heterogeneous Network
+- [`anatomy_annotation`](https://baranzinilab.github.io/tkoi/reference/anatomy_annotation.md)
+  : Anatomical Entity Annotations from UBERON
+- [`celltype_annotation`](https://baranzinilab.github.io/tkoi/reference/celltype_annotation.md)
+  : Cell Type Ontology Annotations (CL)
+- [`clinicallab_annotation`](https://baranzinilab.github.io/tkoi/reference/clinicallab_annotation.md)
+  : Clinical Laboratory Measurement Annotations (LOINC)
+- [`complex_annotation`](https://baranzinilab.github.io/tkoi/reference/complex_annotation.md)
+  : Protein and Molecular Complex Annotations
+- [`compound_annotation`](https://baranzinilab.github.io/tkoi/reference/compound_annotation.md)
+  : Chemical Compound Annotations
+- [`disease_annotation`](https://baranzinilab.github.io/tkoi/reference/disease_annotation.md)
+  : Disease Ontology (DO) Annotations
+- [`ec_annotation`](https://baranzinilab.github.io/tkoi/reference/ec_annotation.md)
+  : Enzyme Commission (EC) Number Annotations
+- [`go_annotation`](https://baranzinilab.github.io/tkoi/reference/go_annotation.md)
+  : Gene Ontology (GO) Term Annotations
+- [`mirna_annotation`](https://baranzinilab.github.io/tkoi/reference/mirna_annotation.md)
+  : Human miRNA Annotations (miRBase-style)
+- [`pathway_annotation`](https://baranzinilab.github.io/tkoi/reference/pathway_annotation.md)
+  : Pathway Annotations (WikiPathways)
+- [`protein_annotation`](https://baranzinilab.github.io/tkoi/reference/protein_annotation.md)
+  : Protein Annotations (UniProt-Based)
+- [`proteindomain_annotation`](https://baranzinilab.github.io/tkoi/reference/proteindomain_annotation.md)
+  : Protein Domain Annotations (Pfam)
+- [`proteinfamily_annotation`](https://baranzinilab.github.io/tkoi/reference/proteinfamily_annotation.md)
+  : Protein Family Annotations (Pfam Clans)
+- [`pwgroup_annotation`](https://baranzinilab.github.io/tkoi/reference/pwgroup_annotation.md)
+  : Pathway Group Annotations (Reactome Interaction Sets)
+- [`reaction_annotation`](https://baranzinilab.github.io/tkoi/reference/reaction_annotation.md)
+  : Biochemical Reaction Annotations (KEGG-Based)
+- [`genes`](https://baranzinilab.github.io/tkoi/reference/genes.md) :
+  Gene Metadata
+- [`human_metabolites`](https://baranzinilab.github.io/tkoi/reference/human_metabolites.md)
+  : human_metabolites: Parsed Human Metabolite Metadata from HMDB
 
 # Articles
 
 ### Getting Started
 
 - [Transcriptomic Knowledge Graph Integration with
-  tKOI](getting-started-with-tkoi.md):
+  tKOI](https://baranzinilab.github.io/tkoi/articles/getting-started-with-tkoi.md):

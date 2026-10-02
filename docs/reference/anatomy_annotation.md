@@ -44,9 +44,9 @@ enriched or prioritized nodes.
 
 ## See also
 
-[`run_tkoi`](run_tkoi.md),
-[`celltype_annotation`](celltype_annotation.md),
-[`disease_annotation`](disease_annotation.md)
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md),
+[`celltype_annotation`](https://baranzinilab.github.io/tkoi/reference/celltype_annotation.md),
+[`disease_annotation`](https://baranzinilab.github.io/tkoi/reference/disease_annotation.md)
 
 ## Examples
 

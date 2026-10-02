@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Transcriptomic Knowledge Graph Integration with tKOI">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tkoi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/BaranziniLab/tkoi/releases">Releases</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/BaranziniLab/tkoi/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
@@ -57,7 +58,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Transcriptomic Knowledge Graph Integration with tKOI</h1>
                         <h4 data-toc-skip class="author">Wanjun Gu</h4>
             
-            <h4 data-toc-skip class="date">2026-09-24</h4>
+            <h4 data-toc-skip class="date">2026-10-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/BaranziniLab/tkoi/blob/HEAD/vignettes/getting-started-with-tkoi.Rmd" class="external-link"><code>vignettes/getting-started-with-tkoi.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started-with-tkoi.Rmd</code></div>
@@ -86,6 +87,57 @@ Line Tools on macOS, Rtools on Windows):</p>
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"BaranziniLab/tkoi"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="use-the-shiny-app">Use the Shiny App<a class="anchor" aria-label="anchor" href="#use-the-shiny-app"></a>
+</h2>
+<p>The package includes a Shiny interface for uploading expression data,
+running the analysis, exploring results, and exporting tables and plots.
+Install its optional dependencies once, then launch it from R:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"shiny"</span>, <span class="st">"shinythemes"</span>, <span class="st">"data.table"</span>, <span class="st">"readxl"</span>, <span class="st">"openxlsx"</span>, <span class="st">"plotly"</span>, <span class="st">"DT"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">tkoi</span><span class="fu">::</span><span class="fu"><a href="../reference/run_tkoi_app.html">run_tkoi_app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Upload a CSV, TSV, or Excel file with <code>gene_name</code> (Ensembl
+gene ID), <code>logfc</code>, and <code>pvalue</code> columns, or use
+the app’s example input. The app uses the installed tkoi package and its
+bundled knowledge graph.</p>
+<p>For a server process, choose the interface and port and disable the
+browser:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">tkoi</span><span class="fu">::</span><span class="fu"><a href="../reference/run_tkoi_app.html">run_tkoi_app</a></span><span class="op">(</span>host <span class="op">=</span> <span class="st">"0.0.0.0"</span>, port <span class="op">=</span> <span class="fl">3838</span>, launch_browser <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>The default host is <code>127.0.0.1</code>; the default port is
+chosen by Shiny. The app runs until you interrupt R. Its source, assets,
+and example input are maintained under <code>inst/shiny/tkoi</code> in
+the <a href="https://github.com/BaranziniLab/tkoi" class="external-link">tkoi
+repository</a>.</p>
+<div class="section level3">
+<h3 id="host-a-standalone-release">Host a Standalone Release<a class="anchor" aria-label="anchor" href="#host-a-standalone-release"></a>
+</h3>
+<p>The same repository’s <a href="https://github.com/BaranziniLab/tkoi/releases" class="external-link">GitHub releases</a>
+provide <code>tkoi-shiny-1.2.0.zip</code> and
+<code>tkoi-shiny-1.2.0.tar.gz</code>. Extract either archive, open a
+terminal in the extracted directory, and install the dependencies:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">Rscript</span> install.R</span></code></pre></div>
+<p>The bundle includes <code>app.R</code>, the app sources and assets,
+and the matching tkoi source package at
+<code>vendor/tkoi_1.2.0.tar.gz</code>. The installer installs that
+package and downloads its other dependencies from CRAN and Bioconductor.
+It requires R 4.1 or later, a C++ compiler, and internet access during
+setup. On Linux, the R dependencies also require system development
+libraries such as curl, OpenSSL, and libxml2. Install the dependencies
+into an R library that the server account can read.</p>
+<p>Launch locally at <code>http://127.0.0.1:3838</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">Rscript</span> run_app.R</span></code></pre></div>
+<p>To serve on a network interface:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">Rscript</span> run_app.R 3838 0.0.0.0</span></code></pre></div>
+<p>For Shiny Server, place the extracted app directory under its
+configured app root, for example <code>/srv/shiny-server/tkoi</code>.
+For Posit Connect, publish the extracted directory as a Shiny
+application. In both cases, <code>app.R</code> is the entry point; the
+bundle’s README contains the deployment instructions.</p>
+</div>
+</div>
+<div class="section level2">
 <h2 id="step-by-step-example">Step-by-Step Example<a class="anchor" aria-label="anchor" href="#step-by-step-example"></a>
 </h2>
 <p>This vignette demonstrates a complete workflow using the
@@ -93,8 +145,8 @@ Line Tools on macOS, Rtools on Windows):</p>
 <div class="section level3">
 <h3 id="load-example-expression-data">Load Example Expression Data<a class="anchor" aria-label="anchor" href="#load-example-expression-data"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BaranziniLab/tkoi" class="external-link">tkoi</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://baranzinilab.github.io/tkoi/">tkoi</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">file_path</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_data.csv"</span>, package <span class="op">=</span> <span class="st">"tkoi"</span><span class="op">)</span></span>
 <span><span class="va">expression_data</span> <span class="op">=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="va">file_path</span><span class="op">)</span></span>
@@ -110,7 +162,7 @@ duplicated gene is used. The downstream functions
 <div class="section level3">
 <h3 id="run-tkoi-analysis">Run tKOI Analysis<a class="anchor" aria-label="anchor" href="#run-tkoi-analysis"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">tkoi_result</span> <span class="op">=</span> <span class="fu"><a href="../reference/run_tkoi.html">run_tkoi</a></span><span class="op">(</span></span>
@@ -208,21 +260,21 @@ would not fit.</p>
 <div class="section level3">
 <h3 id="perform-gene-ontology-enrichment">Perform Gene Ontology Enrichment<a class="anchor" aria-label="anchor" href="#perform-gene-ontology-enrichment"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tkoi_result</span> <span class="op">=</span> <span class="fu"><a href="../reference/run_gene_enrichment.html">run_gene_enrichment</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualize-go-vs-graph-enrichment">Visualize GO vs Graph Enrichment<a class="anchor" aria-label="anchor" href="#visualize-go-vs-graph-enrichment"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tkoi_result</span><span class="op">@</span><span class="va">gene_enrichment_comparison</span><span class="op">$</span><span class="va">comparison_scatter1</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tkoi_result</span><span class="op">@</span><span class="va">gene_enrichment_comparison</span><span class="op">$</span><span class="va">comparison_scatter2</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="gene-level-network-visualization">Gene-Level Network Visualization<a class="anchor" aria-label="anchor" href="#gene-level-network-visualization"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt1</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_gene_exploration_plot.html">make_gene_exploration_plot</a></span><span class="op">(</span></span>
 <span>  tkoi_list <span class="op">=</span> <span class="va">tkoi_result</span>,</span>
 <span>  sig_color <span class="op">=</span> <span class="st">"#F39B7FB2"</span>,</span>
@@ -233,18 +285,18 @@ would not fit.</p>
 <div class="section level3">
 <h3 id="export-enrichment-summary-table">Export Enrichment Summary Table<a class="anchor" aria-label="anchor" href="#export-enrichment-summary-table"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gene_data</span> <span class="op">=</span> <span class="fu"><a href="../reference/export_gene_exploration_data.html">export_gene_exploration_data</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene_data</span><span class="op">)</span></span></code></pre></div>
 <p>The node-level tables for every node type can be written to an Excel
 workbook, one sheet per node type:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export_network_summary_statistics.html">export_network_summary_statistics</a></span><span class="op">(</span><span class="va">tkoi_result</span>, filename <span class="op">=</span> <span class="st">"tkoi_network_statistics.xlsx"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualize-top-enriched-genes">Visualize Top Enriched Genes<a class="anchor" aria-label="anchor" href="#visualize-top-enriched-genes"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt2</span> <span class="op">=</span> <span class="fu"><a href="../reference/visualize_topn.html">visualize_topn</a></span><span class="op">(</span></span>
 <span>  tkoi_list <span class="op">=</span> <span class="va">tkoi_result</span>,</span>
 <span>  category <span class="op">=</span> <span class="st">"Gene"</span>,</span>
@@ -263,7 +315,7 @@ that links a target node to the significant genes within
 (blue down, red up), the target is orange, and node size follows
 <code>beta</code>. Pass the same <code>subnetwork</code> that was used
 in <code><a href="../reference/run_tkoi.html">run_tkoi()</a></code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">top_term</span> <span class="op">=</span> <span class="va">tkoi_result</span><span class="op">@</span><span class="va">network_summary_statistics</span><span class="op">$</span><span class="va">BiologicalProcess</span><span class="op">$</span><span class="va">node_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span></span>
@@ -280,25 +332,25 @@ in <code><a href="../reference/run_tkoi.html">run_tkoi()</a></code>.</p>
 <div class="section level3">
 <h3 id="save-analysis-result-optional">Save Analysis Result (Optional)<a class="anchor" aria-label="anchor" href="#save-analysis-result-optional"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">tkoi_result</span>, file <span class="op">=</span> <span class="st">"tkoi_result.rda"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.4.3 (2025-02-28)</span></span>
+<span><span class="co">#&gt; R version 4.5.0 (2025-04-11)</span></span>
 <span><span class="co">#&gt; Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">#&gt; Running under: macOS 26.6.2</span></span>
+<span><span class="co">#&gt; Running under: macOS 26.7.1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
-<span><span class="co">#&gt; BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>
-<span><span class="co">#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; BLAS:   /opt/homebrew/Cellar/openblas/0.3.34/lib/libopenblasp-r0.3.34.dylib </span></span>
+<span><span class="co">#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; locale:</span></span>
-<span><span class="co">#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
+<span><span class="co">#&gt; [1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; time zone: America/Los_Angeles</span></span>
 <span><span class="co">#&gt; tzcode source: internal</span></span>
@@ -308,12 +360,12 @@ in <code><a href="../reference/run_tkoi.html">run_tkoi()</a></code>.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] digest_0.6.39     desc_1.4.3        R6_2.6.1          fastmap_1.2.0    </span></span>
-<span><span class="co">#&gt;  [5] xfun_0.57         cachem_1.1.0      knitr_1.51        htmltools_0.5.9  </span></span>
-<span><span class="co">#&gt;  [9] rmarkdown_2.31    lifecycle_1.0.5   cli_3.6.6         sass_0.4.10      </span></span>
-<span><span class="co">#&gt; [13] pkgdown_2.2.0     textshaping_1.0.5 jquerylib_0.1.4   systemfonts_1.3.2</span></span>
-<span><span class="co">#&gt; [17] compiler_4.4.3    tools_4.4.3       ragg_1.5.2        bslib_0.10.0     </span></span>
+<span><span class="co">#&gt;  [5] xfun_0.61         cachem_1.1.0      knitr_1.52        htmltools_0.5.9  </span></span>
+<span><span class="co">#&gt;  [9] rmarkdown_2.32    lifecycle_1.0.5   cli_3.6.6         sass_0.4.10      </span></span>
+<span><span class="co">#&gt; [13] pkgdown_2.2.1     textshaping_1.0.5 jquerylib_0.1.4   systemfonts_1.3.2</span></span>
+<span><span class="co">#&gt; [17] compiler_4.5.0    tools_4.5.0       ragg_1.5.2        bslib_0.12.0     </span></span>
 <span><span class="co">#&gt; [21] evaluate_1.0.5    yaml_2.3.12       otel_0.2.0        jsonlite_2.0.0   </span></span>
-<span><span class="co">#&gt; [25] rlang_1.1.7       fs_2.1.0          htmlwidgets_1.6.4</span></span></code></pre></div>
+<span><span class="co">#&gt; [25] rlang_1.3.0       fs_2.1.0          htmlwidgets_1.6.4</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -326,7 +378,7 @@ in <code><a href="../reference/run_tkoi.html">run_tkoi()</a></code>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

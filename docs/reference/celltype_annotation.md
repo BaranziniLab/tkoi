@@ -52,8 +52,9 @@ analysis.
 
 ## See also
 
-[`anatomy_annotation`](anatomy_annotation.md),
-[`go_annotation`](go_annotation.md), [`run_tkoi`](run_tkoi.md)
+[`anatomy_annotation`](https://baranzinilab.github.io/tkoi/reference/anatomy_annotation.md),
+[`go_annotation`](https://baranzinilab.github.io/tkoi/reference/go_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
 
 ## Examples
 

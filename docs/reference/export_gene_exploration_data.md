@@ -1,9 +1,9 @@
 # Export Gene Exploration Data
 
 Combines the differential expression table of a
-[`run_tkoi()`](run_tkoi.md) result with the tKOI network statistics of
-every gene node, so that experimental and network evidence can be
-compared gene by gene.
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+result with the tKOI network statistics of every gene node, so that
+experimental and network evidence can be compared gene by gene.
 
 ## Usage
 
@@ -15,8 +15,9 @@ export_gene_exploration_data(tkoi_list)
 
 - tkoi_list:
 
-  A `tKOIList` object returned by [`run_tkoi()`](run_tkoi.md). Two slots
-  are used:
+  A `tKOIList` object returned by
+  [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md).
+  Two slots are used:
 
   - `expression_data`: the input table, with columns `gene_name`
     (Ensembl gene IDs), `logfc`, and `pvalue`.
@@ -54,18 +55,20 @@ A data frame with one row per row of the `Gene` table and columns:
 ## Details
 
 `expression_data` is cleaned the same way as in
-[`run_tkoi()`](run_tkoi.md): rows with a missing or blank `gene_name`
-are dropped, and only the first row of each gene is used. Genes are
-matched to network nodes through their Ensembl IDs (see
-[genes](genes.md)). Every row of the `Gene` table is kept, so network
-genes that are not in `expression_data` have `NA` in `gene_name`,
-`experimental_logfc`, and `experimental_pvalue`.
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md):
+rows with a missing or blank `gene_name` are dropped, and only the first
+row of each gene is used. Genes are matched to network nodes through
+their Ensembl IDs (see
+[genes](https://baranzinilab.github.io/tkoi/reference/genes.md)). Every
+row of the `Gene` table is kept, so network genes that are not in
+`expression_data` have `NA` in `gene_name`, `experimental_logfc`, and
+`experimental_pvalue`.
 
 ## See also
 
-[`make_gene_exploration_plot()`](make_gene_exploration_plot.md) to plot
-the same data,
-[`export_network_summary_statistics()`](export_network_summary_statistics.md)
+[`make_gene_exploration_plot()`](https://baranzinilab.github.io/tkoi/reference/make_gene_exploration_plot.md)
+to plot the same data,
+[`export_network_summary_statistics()`](https://baranzinilab.github.io/tkoi/reference/export_network_summary_statistics.md)
 to export every node type.
 
 ## Examples

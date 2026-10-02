@@ -43,9 +43,9 @@ regions, and uncharacterized conserved segments (e.g., DUFs).
 
 ## See also
 
-[`protein_annotation`](protein_annotation.md),
-[`proteinfamily_annotation`](proteinfamily_annotation.md),
-[`run_tkoi`](run_tkoi.md)
+[`protein_annotation`](https://baranzinilab.github.io/tkoi/reference/protein_annotation.md),
+[`proteinfamily_annotation`](https://baranzinilab.github.io/tkoi/reference/proteinfamily_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
 
 ## Examples
 

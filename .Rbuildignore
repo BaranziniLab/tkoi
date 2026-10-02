@@ -12,3 +12,9 @@
 ^\.github$
 ^Rplots\.pdf$
 ^\.lintr$
+^AGENTS\.md$
+^scripts$
+^release$
+^\.shiny-r-library$
+^\.biorouter$
+^\.codegraph$

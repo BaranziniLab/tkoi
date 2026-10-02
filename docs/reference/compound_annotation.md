@@ -2,11 +2,12 @@
 
 A curated annotation table for small molecules and chemical compounds
 used in pharmacological, biochemical, or research contexts. It has one
-row per Compound node of [`tkoi_net`](tkoi_net.md), with the node's
-identifier (an InChIKey, a ChEBI ID, or a ChEMBL ID) and the compound
-name, when available. This dataset is used within the tKOI framework to
-annotate nodes representing chemical entities or drugs in biological
-knowledge graphs.
+row per Compound node of
+[`tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md),
+with the node's identifier (an InChIKey, a ChEBI ID, or a ChEMBL ID) and
+the compound name, when available. This dataset is used within the tKOI
+framework to annotate nodes representing chemical entities or drugs in
+biological knowledge graphs.
 
 ## Usage
 
@@ -44,18 +45,22 @@ environmental exposures. It can be joined to tKOI network results using
 the `identifier` field to enrich nodes of type "Compound" with
 interpretable names.
 
-[`run_tkoi`](run_tkoi.md) reports only Compound nodes whose identifier
-is in [`human_metabolites`](human_metabolites.md). That vector matches
-Compound nodes only through InChIKeys, so the `Compound` table of a
-[`run_tkoi()`](run_tkoi.md) result lists InChIKey compounds only; the
-ChEBI and ChEMBL rows of this table annotate Compound nodes that
-[`run_tkoi()`](run_tkoi.md) does not report.
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+reports only Compound nodes whose identifier is in
+[`human_metabolites`](https://baranzinilab.github.io/tkoi/reference/human_metabolites.md).
+That vector matches Compound nodes only through InChIKeys, so the
+`Compound` table of a
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+result lists InChIKey compounds only; the ChEBI and ChEMBL rows of this
+table annotate Compound nodes that
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+does not report.
 
 ## See also
 
-[`complex_annotation`](complex_annotation.md),
-[`clinicallab_annotation`](clinicallab_annotation.md),
-[`run_tkoi`](run_tkoi.md)
+[`complex_annotation`](https://baranzinilab.github.io/tkoi/reference/complex_annotation.md),
+[`clinicallab_annotation`](https://baranzinilab.github.io/tkoi/reference/clinicallab_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
 
 ## Examples
 

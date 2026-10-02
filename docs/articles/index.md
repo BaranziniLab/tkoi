@@ -3,4 +3,4 @@
 ### Getting Started
 
 - [Transcriptomic Knowledge Graph Integration with
-  tKOI](getting-started-with-tkoi.md):
+  tKOI](https://baranzinilab.github.io/tkoi/articles/getting-started-with-tkoi.md):

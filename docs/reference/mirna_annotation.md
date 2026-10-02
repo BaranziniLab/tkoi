@@ -39,8 +39,8 @@ matrices, differential analysis tools, or network analysis pipelines.
 
 ## See also
 
-[`run_tkoi`](run_tkoi.md),
-[`reaction_annotation`](reaction_annotation.md)
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md),
+[`reaction_annotation`](https://baranzinilab.github.io/tkoi/reference/reaction_annotation.md)
 
 ## Examples
 

@@ -1,3 +1,5 @@
+url: https://baranzinilab.github.io/tkoi/
+
 template:
   bootstrap: 5
   bootswatch: flatly
@@ -11,6 +13,8 @@ home:
   links:
     - text: GitHub
       href: https://github.com/BaranziniLab/tkoi
+    - text: Standalone Shiny releases
+      href: https://github.com/BaranziniLab/tkoi/releases
 
 navbar:
   structure:
@@ -18,16 +22,24 @@ navbar:
       - home
       - reference
       - articles
+    right:
+      - search
+      - releases
+      - github
   components:
     articles:
       text: Vignettes
       href: articles/index.html
+    releases:
+      text: Releases
+      href: https://github.com/BaranziniLab/tkoi/releases
 
 reference:
   - title: Main Functions
     desc: Core methods for network-based transcriptomic analysis
     contents:
       - run_tkoi
+      - run_tkoi_app
       - run_gene_enrichment
       - get_neighboring_nodes
       - make_gene_exploration_plot

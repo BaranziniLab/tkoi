@@ -20,8 +20,9 @@ make_gene_exploration_plot(
 
 - tkoi_list:
 
-  A `tKOIList` object returned by [`run_tkoi()`](run_tkoi.md). It uses
-  the `expression_data` slot (columns `gene_name`, `logfc`, and
+  A `tKOIList` object returned by
+  [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md).
+  It uses the `expression_data` slot (columns `gene_name`, `logfc`, and
   `pvalue`), the `Gene` table of `network_summary_statistics` (columns
   `node_id`, `name`, and `fdr`), and the `pvalue_threshold` and
   `logfc_threshold` of the run.
@@ -42,11 +43,12 @@ A `ggplot` object.
 ## Details
 
 `expression_data` is cleaned the same way as in
-[`run_tkoi()`](run_tkoi.md): rows with a missing or blank `gene_name`
-are dropped, and only the first row of each gene is used. Genes are
-matched to network nodes through their Ensembl IDs (see
-[genes](genes.md)); network genes without expression data are not
-plotted.
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md):
+rows with a missing or blank `gene_name` are dropped, and only the first
+row of each gene is used. Genes are matched to network nodes through
+their Ensembl IDs (see
+[genes](https://baranzinilab.github.io/tkoi/reference/genes.md));
+network genes without expression data are not plotted.
 
 In the plot:
 
@@ -62,8 +64,8 @@ In the plot:
 
 ## See also
 
-[`export_gene_exploration_data()`](export_gene_exploration_data.md) for
-the underlying table.
+[`export_gene_exploration_data()`](https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.md)
+for the underlying table.
 
 ## Examples
 

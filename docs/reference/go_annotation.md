@@ -45,14 +45,15 @@ Gene Ontology Consortium <http://geneontology.org/>
 The dataset enables mapping of functional annotations to nodes in a
 biological knowledge graph and is particularly useful for characterizing
 enriched terms from network-based analyses such as those performed with
-[`run_tkoi`](run_tkoi.md). GO terms marked as "obsolete" are included
-for completeness but may require special handling during analysis.
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md).
+GO terms marked as "obsolete" are included for completeness but may
+require special handling during analysis.
 
 ## See also
 
-[`anatomy_annotation`](anatomy_annotation.md),
-[`celltype_annotation`](celltype_annotation.md),
-[`run_tkoi`](run_tkoi.md)
+[`anatomy_annotation`](https://baranzinilab.github.io/tkoi/reference/anatomy_annotation.md),
+[`celltype_annotation`](https://baranzinilab.github.io/tkoi/reference/celltype_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
 
 ## Examples
 

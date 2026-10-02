@@ -45,9 +45,9 @@ results.
 
 ## See also
 
-[`pathway_annotation`](pathway_annotation.md),
-[`reaction_annotation`](reaction_annotation.md),
-[`run_tkoi`](run_tkoi.md)
+[`pathway_annotation`](https://baranzinilab.github.io/tkoi/reference/pathway_annotation.md),
+[`reaction_annotation`](https://baranzinilab.github.io/tkoi/reference/reaction_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
 
 ## Examples
 

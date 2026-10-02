@@ -62,20 +62,21 @@ types, pathways).
 ### S4 Object: `tKOIList`
 
 All analysis state lives in a single S4 object defined in
-[R/tKOIList.R](R/tKOIList.R). Key slots: - `expression_data` — input
-differential expression table - `pagerank_data` — gene-level PageRank
-scores after network propagation - `network_summary_statistics` —
-per-node enrichment results, split by node type (GO, Disease, CellType,
-Pathway, etc.) - `subnetwork` — `igraph` object of the propagated
-subnetwork - `gene_enrichment_comparison` — integrated clusterProfiler
-GO results
+[R/tKOIList.R](https://baranzinilab.github.io/tkoi/R/tKOIList.R). Key
+slots: - `expression_data` — input differential expression table -
+`pagerank_data` — gene-level PageRank scores after network propagation -
+`network_summary_statistics` — per-node enrichment results, split by
+node type (GO, Disease, CellType, Pathway, etc.) - `subnetwork` —
+`igraph` object of the propagated subnetwork -
+`gene_enrichment_comparison` — integrated clusterProfiler GO results
 
 ### Main Pipeline: `run_tkoi()`
 
-[R/run_tkoi.R](R/run_tkoi.R) is the primary entry point. Execution
-order: 1. Filter genes by `pvalue_threshold` and `logfc_threshold` 2.
-Map filtered genes to the knowledge graph via Ensembl IDs 3. Draw
-`n_permutation` degree-matched null seed sets (C++, R’s RNG, so
+[R/run_tkoi.R](https://baranzinilab.github.io/tkoi/R/run_tkoi.R) is the
+primary entry point. Execution order: 1. Filter genes by
+`pvalue_threshold` and `logfc_threshold` 2. Map filtered genes to the
+knowledge graph via Ensembl IDs 3. Draw `n_permutation` degree-matched
+null seed sets (C++, R’s RNG, so
 [`set.seed()`](https://rdrr.io/r/base/Random.html) applies) 4. Run
 personalized PageRank for the observed seeds and every null set in one
 batched, multithreaded C++ solve 5. Compute Z-scores, p-values, and
@@ -84,10 +85,11 @@ order tables, and annotate nodes from the `.rda` datasets
 
 ### Native Engine
 
-[src/tkoi_engine.cpp](src/tkoi_engine.cpp) (Rcpp) holds the
-performance-critical code; [R/engine.R](R/engine.R) prepares its
-inputs. - `.tkoi_build_csr()` builds the symmetric normalized matrix;
-`.tkoi_prepare_network()` caches it per
+[src/tkoi_engine.cpp](https://baranzinilab.github.io/tkoi/src/tkoi_engine.cpp)
+(Rcpp) holds the performance-critical code;
+[R/engine.R](https://baranzinilab.github.io/tkoi/R/engine.R) prepares
+its inputs. - `.tkoi_build_csr()` builds the symmetric normalized
+matrix; `.tkoi_prepare_network()` caches it per
 [`igraph::graph_id()`](https://r.igraph.org/reference/graph_id.html). -
 `.tkoi_ppr_null()` solves personalized PageRank with block conjugate
 gradient, 16 vectors per pass, on `n_cores` threads. It matches
@@ -116,22 +118,26 @@ used to annotate network nodes after PageRank.
 
 `data/tkoi_net.rda` is the plain `igraph` network (939,059 nodes,
 10,622,200 undirected edges, xz-compressed, ~55 MB). It lazy-loads as
-[`tkoi::tkoi_net`](reference/tkoi_net.md). There is no encryption.
+[`tkoi::tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md).
+There is no encryption.
 
 ### Visualization & Export
 
-- [R/visualize_topn.R](R/visualize_topn.R) — bar plots of top-ranked
-  enriched terms
-- [R/make_gene_exploration_plot.R](R/make_gene_exploration_plot.R) —
-  per-gene scatter plot
-- [R/plot_network.R](R/plot_network.R) — network subgraph visualization
-- [R/export_gene_exploration_data.R](R/export_gene_exploration_data.R) /
-  [R/export_network_summary_statistics.R](R/export_network_summary_statistics.R)
+- [R/visualize_topn.R](https://baranzinilab.github.io/tkoi/R/visualize_topn.R)
+  — bar plots of top-ranked enriched terms
+- [R/make_gene_exploration_plot.R](https://baranzinilab.github.io/tkoi/R/make_gene_exploration_plot.R)
+  — per-gene scatter plot
+- [R/plot_network.R](https://baranzinilab.github.io/tkoi/R/plot_network.R)
+  — network subgraph visualization
+- [R/export_gene_exploration_data.R](https://baranzinilab.github.io/tkoi/R/export_gene_exploration_data.R)
+  /
+  [R/export_network_summary_statistics.R](https://baranzinilab.github.io/tkoi/R/export_network_summary_statistics.R)
   — table exports
 
 ### Reference Workflow
 
-See [example/example.R](example/example.R) for a complete end-to-end
-run, and
-[vignettes/getting-started-with-tkoi.Rmd](vignettes/getting-started-with-tkoi.Rmd)
+See
+[example/example.R](https://baranzinilab.github.io/tkoi/example/example.R)
+for a complete end-to-end run, and
+[vignettes/getting-started-with-tkoi.Rmd](https://baranzinilab.github.io/tkoi/vignettes/getting-started-with-tkoi.Rmd)
 for the narrative tutorial.

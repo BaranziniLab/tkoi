@@ -48,8 +48,9 @@ protein-related nodes in the tKOI network output, while the
 
 ## See also
 
-[`proteinfamily_annotation`](proteinfamily_annotation.md),
-[`run_tkoi`](run_tkoi.md), [`complex_annotation`](complex_annotation.md)
+[`proteinfamily_annotation`](https://baranzinilab.github.io/tkoi/reference/proteinfamily_annotation.md),
+[`run_tkoi`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md),
+[`complex_annotation`](https://baranzinilab.github.io/tkoi/reference/complex_annotation.md)
 
 ## Examples
 

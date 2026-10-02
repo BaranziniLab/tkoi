@@ -1,8 +1,9 @@
 # Export Network Summary Statistics to Excel
 
 Writes the `network_summary_statistics` slot of a
-[`run_tkoi()`](run_tkoi.md) result to an Excel workbook, with one sheet
-per node type (for example `Gene`, `BiologicalProcess`, `Disease`).
+[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md)
+result to an Excel workbook, with one sheet per node type (for example
+`Gene`, `BiologicalProcess`, `Disease`).
 
 ## Usage
 
@@ -14,7 +15,8 @@ export_network_summary_statistics(tkoi_result, filename = "tkoi_result.xlsx")
 
 - tkoi_result:
 
-  A `tKOIList` object returned by [`run_tkoi()`](run_tkoi.md).
+  A `tKOIList` object returned by
+  [`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md).
 
 - filename:
 
@@ -29,8 +31,8 @@ The function is called for its side effect of writing the workbook.
 
 ## See also
 
-[`export_gene_exploration_data()`](export_gene_exploration_data.md) for
-a gene-level table.
+[`export_gene_exploration_data()`](https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.md)
+for a gene-level table.
 
 ## Examples
 
