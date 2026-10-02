@@ -40,6 +40,7 @@ reference:
     contents:
       - run_tkoi
       - run_tkoi_app
+      - get_analysis_graph
       - run_gene_enrichment
       - get_neighboring_nodes
       - make_gene_exploration_plot
@@ -75,6 +76,7 @@ articles:
   - title: Getting Started
     contents:
       - getting-started-with-tkoi
+      - agent-workflows
 
 news:
   one_page: true

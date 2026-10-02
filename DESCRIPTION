@@ -1,6 +1,6 @@
 Package: tkoi
 Title: Transcriptomic Knowledge-Graph Omics Integration for Human Pathway Analysis
-Version: 1.2.0
+Version: 1.3.0
 Authors@R: 
     person("Wanjun", "Gu", ,email = "wanjun.gu@ucsf.edu", role = c("aut", "cre"), 
            comment = c(ORCID = "0000-0002-7342-7000"))

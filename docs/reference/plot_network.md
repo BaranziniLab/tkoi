@@ -14,7 +14,7 @@ plot_network(
   target_node_id,
   degree_expansion = 2,
   network_layout_type = c("kk", "fr", "gem", "graphopt", "lgl", "mds"),
-  subnetwork = tkoi::tkoi_net
+  subnetwork = NULL
 )
 ```
 
@@ -40,8 +40,11 @@ plot_network(
 
 - subnetwork:
 
-  The igraph network used for the analysis. Default
-  [`tkoi::tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md).
+  The igraph network used for the analysis. When `NULL`, uses the graph
+  retained in `tkoi_result` via
+  [`get_analysis_graph()`](https://baranzinilab.github.io/tkoi/reference/get_analysis_graph.md).
+  For older results without a stored graph, supply the original analysis
+  graph explicitly.
 
 ## Value
 

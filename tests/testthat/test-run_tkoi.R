@@ -187,7 +187,7 @@ test_that("run_tkoi() returns a valid tKOIList that stores its parameters", {
   expect_identical(result@n_permutation, 5)
   expect_identical(result@damping_factor, 0.8)
   expect_identical(result@maximum_iteration, 300)
-  expect_null(result@subnetwork)
+  expect_identical(result@subnetwork, toy_network())
   expect_identical(result@gene_enrichment_comparison, list())
   expect_identical(names(result@pagerank_data), c("node_id", "pagerank", paste0("perm.", 1:5)))
   expect_output(methods::show(result), "tKOIList")

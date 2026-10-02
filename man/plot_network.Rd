@@ -9,7 +9,7 @@ plot_network(
   target_node_id,
   degree_expansion = 2,
   network_layout_type = c("kk", "fr", "gem", "graphopt", "lgl", "mds"),
-  subnetwork = tkoi::tkoi_net
+  subnetwork = NULL
 )
 }
 \arguments{
@@ -24,8 +24,10 @@ gene. Default \code{2}.}
 (Kamada-Kawai, the default), \code{"fr"} (Fruchterman-Reingold),
 \code{"gem"}, \code{"graphopt"}, \code{"lgl"}, or \code{"mds"}.}
 
-\item{subnetwork}{The igraph network used for the analysis. Default
-\code{tkoi::tkoi_net}.}
+\item{subnetwork}{The igraph network used for the analysis. When \code{NULL},
+uses the graph retained in \code{tkoi_result} via \code{\link[=get_analysis_graph]{get_analysis_graph()}}.
+For older results without a stored graph, supply the original analysis
+graph explicitly.}
 }
 \value{
 The plotted igraph subgraph, invisibly.

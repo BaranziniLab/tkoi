@@ -8,6 +8,8 @@ Core methods for network-based transcriptomic analysis
   : Run tKOI Analysis
 - [`run_tkoi_app()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi_app.md)
   : Launch the tKOI Shiny App
+- [`get_analysis_graph()`](https://baranzinilab.github.io/tkoi/reference/get_analysis_graph.md)
+  : Retrieve the Graph Used for a tKOI Analysis
 - [`run_gene_enrichment()`](https://baranzinilab.github.io/tkoi/reference/run_gene_enrichment.md)
   : Run Gene Enrichment and Compare with TKOI Data
 - [`get_neighboring_nodes()`](https://baranzinilab.github.io/tkoi/reference/get_neighboring_nodes.md)

@@ -18,3 +18,4 @@
 ^\.shiny-r-library$
 ^\.biorouter$
 ^\.codegraph$
+^README\.html$

@@ -52,7 +52,7 @@ repository](https://github.com/BaranziniLab/tkoi).
 
 The same repository’s [GitHub
 releases](https://github.com/BaranziniLab/tkoi/releases) provide
-`tkoi-shiny-1.2.0.zip` and `tkoi-shiny-1.2.0.tar.gz`. Extract either
+`tkoi-shiny-1.3.0.zip` and `tkoi-shiny-1.3.0.tar.gz`. Extract either
 archive, open a terminal in the extracted directory, and install the
 dependencies:
 
@@ -61,7 +61,7 @@ Rscript install.R
 ```
 
 The bundle includes `app.R`, the app sources and assets, and the
-matching tkoi source package at `vendor/tkoi_1.2.0.tar.gz`. The
+matching tkoi source package at `vendor/tkoi_1.3.0.tar.gz`. The
 installer installs that package and downloads its other dependencies
 from CRAN and Bioconductor. It requires R 4.1 or later, a C++ compiler,
 and internet access during setup. On Linux, the R dependencies also
@@ -133,6 +133,12 @@ Genes are kept as seeds when `pvalue <= pvalue_threshold` and
 `abs(logfc)`. `indirect_link_threshold` does not filter anything: it
 only orders each result table, listing first the nodes within two hops
 of at least that many seed genes. No node is excluded.
+
+Since version 1.3.0, the result also stores the exact igraph passed as
+`subnetwork`, including its attributes. Use
+`tkoi::get_analysis_graph(tkoi_result)` to retrieve it. This keeps later
+plots, helper traversals, and agent queries on the same graph as the
+analysis, including when you supply a custom graph.
 
 The arguments added in version 1.1.0 control how the analysis runs and
 what it stores; the statistics themselves do not depend on them beyond
@@ -253,8 +259,7 @@ workbook, one sheet per node type:
 draws the part of the knowledge graph that links a target node to the
 significant genes within `degree_expansion` hops. Genes are colored by
 log fold change (blue down, red up), the target is orange, and node size
-follows `beta`. Pass the same `subnetwork` that was used in
-[`run_tkoi()`](https://baranzinilab.github.io/tkoi/reference/run_tkoi.md).
+follows `beta`. By default, it uses the graph stored in `tkoi_result`.
 
 \
 `top_term`` ``=`` ``tkoi_result``@``network_summary_statistics``$``BiologicalProcess``$``node_id``[``1``]`\
@@ -263,17 +268,41 @@ follows `beta`. Pass the same `subnetwork` that was used in
 `  tkoi_result ``=`` ``tkoi_result``,`\
 `  target_node_id ``=`` ``top_term``,`\
 `  degree_expansion ``=`` ``2``,`\
-`  network_layout_type ``=`` ``"kk"``,`\
-`  subnetwork ``=`` ``tkoi``::`[`tkoi_net`](https://baranzinilab.github.io/tkoi/reference/tkoi_net.md)\
+`  network_layout_type ``=`` ``"kk"`\
 `)`\
 \
 `# Every node within one hop of the term, including the term itself`\
-`neighbors`` ``=`` `[`get_neighboring_nodes`](https://baranzinilab.github.io/tkoi/reference/get_neighboring_nodes.md)`(``top_term``, degree_expansion ``=`` ``1``)`
+`graph`` ``=`` ``tkoi``::`[`get_analysis_graph`](https://baranzinilab.github.io/tkoi/reference/get_analysis_graph.md)`(``tkoi_result``)`\
+`neighbors`` ``=`` `[`get_neighboring_nodes`](https://baranzinilab.github.io/tkoi/reference/get_neighboring_nodes.md)`(``top_term``, degree_expansion ``=`` ``1``, subnetwork ``=`` ``graph``)`
 
 ### Save Analysis Result (Optional)
 
 \
-[`save`](https://rdrr.io/r/base/save.html)`(``tkoi_result``, file ``=`` ``"tkoi_result.rda"``)`
+[`saveRDS`](https://rdrr.io/r/base/readRDS.html)`(``tkoi_result``, ``"analysis.rds"``)`\
+`tkoi_result`` ``=`` `[`readRDS`](https://rdrr.io/r/base/readRDS.html)`(``"analysis.rds"``)`
+
+This file includes both the results and their analysis graph. A legacy
+result without its original graph is rejected by
+[`get_analysis_graph()`](https://baranzinilab.github.io/tkoi/reference/get_analysis_graph.md);
+recreate the analysis with the original graph before saving it for graph
+exploration.
+
+### Continue with an Agent
+
+The [tKOIAgent plugin](https://github.com/BaranziniLab/tKOIAgent)
+includes `tkoi-analysis` for input preparation and analysis and
+`tkoi-knowledge-graph` for local graph exploration. Follow its README
+for Codex, Claude Code, or BioRouter setup, then connect its
+`connect_analysis` tool to the absolute path of `analysis.rds`. The
+connection uses the graph saved in that result. Supply the returned
+`analysis_id` as the first argument to every subsequent MCP tool call;
+stale IDs or changed files are rejected.
+
+The [agent workflow
+guide](https://baranzinilab.github.io/tkoi/articles/agent-workflows.md)
+describes the available tools, direct R alternatives, and interpretation
+limits. Enrichment and graph paths prioritize associations and
+hypotheses; they do not establish causality.
 
 ## Session Info
 

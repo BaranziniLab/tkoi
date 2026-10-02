@@ -45,7 +45,7 @@ also use the [hosted app](https://comphealth.ucsf.edu/app/tkoi).
 
 ### Standalone Server Deployment
 
-Download `tkoi-shiny-1.2.0.zip` or `tkoi-shiny-1.2.0.tar.gz` from the
+Download `tkoi-shiny-1.3.0.zip` or `tkoi-shiny-1.3.0.tar.gz` from the
 [GitHub releases](https://github.com/BaranziniLab/tkoi/releases),
 extract it, and run these commands from the extracted app directory:
 
@@ -55,7 +55,7 @@ Rscript run_app.R 3838 0.0.0.0
 ```
 
 The bundle includes the complete app and the matching R package at
-`vendor/tkoi_1.2.0.tar.gz`. The installer uses that archive and
+`vendor/tkoi_1.3.0.tar.gz`. The installer uses that archive and
 downloads its other dependencies from CRAN and Bioconductor. Setup
 requires R 4.1 or later, a C++ compiler, and internet access for those
 dependencies.
@@ -68,11 +68,38 @@ application. `app.R` is the entry point. The bundle’s README and the
 guide](https://baranzinilab.github.io/tkoi/articles/getting-started-with-tkoi.html)
 provide more detail.
 
-## Contextualization Agent
+## Agent Workflows
 
-For subsequent analysis upon getting network enrichment statistics,
-please use **[tKOIAgent](https://github.com/BaranziniLab/tKOIAgent)**
-for contextualization and network traversal.
+[tKOIAgent](https://github.com/BaranziniLab/tKOIAgent) provides the
+`tkoi-agent` plugin for Codex, Claude Code, and BioRouter. Its
+`tkoi-analysis` skill guides input preparation and analysis; its
+`tkoi-knowledge-graph` skill explores the graph through a local MCP
+connection. Follow the plugin’s
+[README](https://github.com/BaranziniLab/tKOIAgent/blob/main/README.md),
+[setup
+guide](https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/setup.md),
+and [preprocessing
+guide](https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/preprocessing.md).
+
+Since version 1.3.0, `run_tkoi()` keeps the exact input graph in its
+result. Save the result and connect the plugin’s `connect_analysis` tool
+to the absolute RDS path so enrichment and traversal use that same
+graph:
+
+``` r
+graph = tkoi::get_analysis_graph(tkoi_result)
+saveRDS(tkoi_result, "analysis.rds")
+normalizePath("analysis.rds")
+```
+
+Keep the `analysis_id` returned by `connect_analysis` and supply it to
+every subsequent MCP tool call. The server rejects stale IDs or changed
+files rather than silently switching graphs.
+
+Graph paths and enrichment scores support associations and hypotheses;
+they do not establish causality. See the [agent workflow
+guide](https://baranzinilab.github.io/tkoi/articles/agent-workflows.html)
+for the MCP tools, direct R use, and graph attribute limits.
 
 ## Documentation
 
@@ -233,7 +260,9 @@ tkoi_result = run_tkoi(
 ```
 
 The result is an S4 object (`tKOIList`) that stores PageRank scores,
-permutation statistics, and network annotations.
+permutation statistics, network annotations, and the exact graph
+supplied as `subnetwork`. Retrieve that graph with
+`tkoi::get_analysis_graph(tkoi_result)` for later traversal.
 
 A few notes on the run settings:
 
@@ -333,7 +362,8 @@ Use `plot_network()` to draw the part of the knowledge graph that links
 an enriched node (for example the top biological process) to the
 significant genes near it. Genes are colored by log fold change, the
 target node is orange, and node size follows the tKOI effect size
-(`beta`).
+(`beta`). By default, the plot uses the graph stored in the analysis
+result.
 
 ``` r
 top_term = tkoi_result@network_summary_statistics$BiologicalProcess$node_id[1]
@@ -342,22 +372,31 @@ plot_network(
   tkoi_result = tkoi_result,
   target_node_id = top_term,
   degree_expansion = 2,          # Maximum number of hops between the target and a gene
-  network_layout_type = "kk",    # Also "fr", "gem", "graphopt", "lgl", or "mds"
-  subnetwork = tkoi::tkoi_net    # Use the same network as in run_tkoi()
+  network_layout_type = "kk"     # Also "fr", "gem", "graphopt", "lgl", or "mds"
 )
 ```
 
-`plot_network()` returns the plotted `igraph` subgraph invisibly. To
-list the nodes around any node, use
-`get_neighboring_nodes(top_term, degree_expansion = 1)`.
+`plot_network()` returns the plotted `igraph` subgraph invisibly. Pass
+the stored graph explicitly to traversal helpers:
+
+``` r
+graph = tkoi::get_analysis_graph(tkoi_result)
+get_neighboring_nodes(top_term, degree_expansion = 1, subnetwork = graph)
+```
 
 ### Step 9: (Optional) Save the Analysis Result
 
 Save your full analysis object for future use:
 
 ``` r
-save(tkoi_result, file = "tkoi_result.rda")
+saveRDS(tkoi_result, "analysis.rds")
+tkoi_result = readRDS("analysis.rds")
 ```
+
+The RDS preserves the analysis graph alongside the results. Older
+results that lack a stored graph are rejected by `get_analysis_graph()`;
+rerun the analysis with its original graph rather than substituting the
+current package graph.
 
 The node-level enrichment tables can also be written to an Excel
 workbook, one sheet per node type:
@@ -372,6 +411,8 @@ export_network_summary_statistics(tkoi_result, filename = "tkoi_network_statisti
 slots:
 
 - `expression_data`: Input transcriptomic measurements
+- `subnetwork`: The exact igraph supplied to `run_tkoi()`, including its
+  vertex and edge attributes; accessed with `get_analysis_graph()`
 - `pagerank_data`: A data frame with one row per network node (row names
   are node IDs): `node_id`, the observed `pagerank`, and either every
   permutation’s PageRank (`perm.1`, `perm.2`, …) or, with

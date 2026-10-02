@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">tkoi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,13 +114,13 @@ repository</a>.</p>
 <h3 id="host-a-standalone-release">Host a Standalone Release<a class="anchor" aria-label="anchor" href="#host-a-standalone-release"></a>
 </h3>
 <p>The same repository’s <a href="https://github.com/BaranziniLab/tkoi/releases" class="external-link">GitHub releases</a>
-provide <code>tkoi-shiny-1.2.0.zip</code> and
-<code>tkoi-shiny-1.2.0.tar.gz</code>. Extract either archive, open a
+provide <code>tkoi-shiny-1.3.0.zip</code> and
+<code>tkoi-shiny-1.3.0.tar.gz</code>. Extract either archive, open a
 terminal in the extracted directory, and install the dependencies:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">Rscript</span> install.R</span></code></pre></div>
 <p>The bundle includes <code>app.R</code>, the app sources and assets,
 and the matching tkoi source package at
-<code>vendor/tkoi_1.2.0.tar.gz</code>. The installer installs that
+<code>vendor/tkoi_1.3.0.tar.gz</code>. The installer installs that
 package and downloads its other dependencies from CRAN and Bioconductor.
 It requires R 4.1 or later, a C++ compiler, and internet access during
 setup. On Linux, the R dependencies also require system development
@@ -185,6 +185,11 @@ by <code>abs(logfc)</code>. <code>indirect_link_threshold</code> does
 not filter anything: it only orders each result table, listing first the
 nodes within two hops of at least that many seed genes. No node is
 excluded.</p>
+<p>Since version 1.3.0, the result also stores the exact igraph passed
+as <code>subnetwork</code>, including its attributes. Use
+<code>tkoi::get_analysis_graph(tkoi_result)</code> to retrieve it. This
+keeps later plots, helper traversals, and agent queries on the same
+graph as the analysis, including when you supply a custom graph.</p>
 <p>The arguments added in version 1.1.0 control how the analysis runs
 and what it stores; the statistics themselves do not depend on them
 beyond numerical precision:</p>
@@ -313,8 +318,8 @@ workbook, one sheet per node type:</p>
 that links a target node to the significant genes within
 <code>degree_expansion</code> hops. Genes are colored by log fold change
 (blue down, red up), the target is orange, and node size follows
-<code>beta</code>. Pass the same <code>subnetwork</code> that was used
-in <code><a href="../reference/run_tkoi.html">run_tkoi()</a></code>.</p>
+<code>beta</code>. By default, it uses the graph stored in
+<code>tkoi_result</code>.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">top_term</span> <span class="op">=</span> <span class="va">tkoi_result</span><span class="op">@</span><span class="va">network_summary_statistics</span><span class="op">$</span><span class="va">BiologicalProcess</span><span class="op">$</span><span class="va">node_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span></span>
@@ -322,18 +327,40 @@ in <code><a href="../reference/run_tkoi.html">run_tkoi()</a></code>.</p>
 <span>  tkoi_result <span class="op">=</span> <span class="va">tkoi_result</span>,</span>
 <span>  target_node_id <span class="op">=</span> <span class="va">top_term</span>,</span>
 <span>  degree_expansion <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  network_layout_type <span class="op">=</span> <span class="st">"kk"</span>,</span>
-<span>  subnetwork <span class="op">=</span> <span class="fu">tkoi</span><span class="fu">::</span><span class="va"><a href="../reference/tkoi_net.html">tkoi_net</a></span></span>
+<span>  network_layout_type <span class="op">=</span> <span class="st">"kk"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Every node within one hop of the term, including the term itself</span></span>
-<span><span class="va">neighbors</span> <span class="op">=</span> <span class="fu"><a href="../reference/get_neighboring_nodes.html">get_neighboring_nodes</a></span><span class="op">(</span><span class="va">top_term</span>, degree_expansion <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">graph</span> <span class="op">=</span> <span class="fu">tkoi</span><span class="fu">::</span><span class="fu"><a href="../reference/get_analysis_graph.html">get_analysis_graph</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span>
+<span><span class="va">neighbors</span> <span class="op">=</span> <span class="fu"><a href="../reference/get_neighboring_nodes.html">get_neighboring_nodes</a></span><span class="op">(</span><span class="va">top_term</span>, degree_expansion <span class="op">=</span> <span class="fl">1</span>, subnetwork <span class="op">=</span> <span class="va">graph</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="save-analysis-result-optional">Save Analysis Result (Optional)<a class="anchor" aria-label="anchor" href="#save-analysis-result-optional"></a>
 </h3>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">tkoi_result</span>, file <span class="op">=</span> <span class="st">"tkoi_result.rda"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">tkoi_result</span>, <span class="st">"analysis.rds"</span><span class="op">)</span></span>
+<span><span class="va">tkoi_result</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"analysis.rds"</span><span class="op">)</span></span></code></pre></div>
+<p>This file includes both the results and their analysis graph. A
+legacy result without its original graph is rejected by
+<code><a href="../reference/get_analysis_graph.html">get_analysis_graph()</a></code>; recreate the analysis with the
+original graph before saving it for graph exploration.</p>
+</div>
+<div class="section level3">
+<h3 id="continue-with-an-agent">Continue with an Agent<a class="anchor" aria-label="anchor" href="#continue-with-an-agent"></a>
+</h3>
+<p>The <a href="https://github.com/BaranziniLab/tKOIAgent" class="external-link">tKOIAgent
+plugin</a> includes <code>tkoi-analysis</code> for input preparation and
+analysis and <code>tkoi-knowledge-graph</code> for local graph
+exploration. Follow its README for Codex, Claude Code, or BioRouter
+setup, then connect its <code>connect_analysis</code> tool to the
+absolute path of <code>analysis.rds</code>. The connection uses the
+graph saved in that result. Supply the returned <code>analysis_id</code>
+as the first argument to every subsequent MCP tool call; stale IDs or
+changed files are rejected.</p>
+<p>The <a href="agent-workflows.html">agent workflow guide</a> describes
+the available tools, direct R alternatives, and interpretation limits.
+Enrichment and graph paths prioritize associations and hypotheses; they
+do not establish causality.</p>
 </div>
 </div>
 <div class="section level2">

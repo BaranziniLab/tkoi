@@ -197,3 +197,11 @@ and change `network_summary_statistics` compared with tkoi 1.0.0:
 # tkoi 1.0.0
 
 * Initial release.
+# tkoi 1.3.0
+
+* Analysis results now retain the exact input igraph network, including vertex
+  and edge attributes. `get_analysis_graph()` retrieves it for reproducible
+  contextualization, and `plot_network()` uses this stored graph by default.
+* tKOIAgent is now a skill and local knowledge-graph plugin for Codex, Claude
+  Code, and BioRouter. Its tools traverse the saved analysis graph instead of
+  connecting to a separate Neo4j database.

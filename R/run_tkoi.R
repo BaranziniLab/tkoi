@@ -296,6 +296,7 @@ run_tkoi = function(
     expression_data = expression_data,
     pagerank_data = pagerank_data,
     network_summary_statistics = node_statistics,
+    subnetwork = subnetwork,
     pvalue_threshold = pvalue_threshold,
     logfc_threshold = logfc_threshold,
     topology_similarity = topology_similarity,

@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">tkoi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,17 +79,24 @@
 <div class="section level3">
 <h3 id="standalone-server-deployment">Standalone Server Deployment<a class="anchor" aria-label="anchor" href="#standalone-server-deployment"></a>
 </h3>
-<p>Download <code>tkoi-shiny-1.2.0.zip</code> or <code>tkoi-shiny-1.2.0.tar.gz</code> from the <a href="https://github.com/BaranziniLab/tkoi/releases" class="external-link">GitHub releases</a>, extract it, and run these commands from the extracted app directory:</p>
+<p>Download <code>tkoi-shiny-1.3.0.zip</code> or <code>tkoi-shiny-1.3.0.tar.gz</code> from the <a href="https://github.com/BaranziniLab/tkoi/releases" class="external-link">GitHub releases</a>, extract it, and run these commands from the extracted app directory:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">Rscript</span> install.R</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">Rscript</span> run_app.R 3838 0.0.0.0</span></code></pre></div>
-<p>The bundle includes the complete app and the matching R package at <code>vendor/tkoi_1.2.0.tar.gz</code>. The installer uses that archive and downloads its other dependencies from CRAN and Bioconductor. Setup requires R 4.1 or later, a C++ compiler, and internet access for those dependencies.</p>
+<p>The bundle includes the complete app and the matching R package at <code>vendor/tkoi_1.3.0.tar.gz</code>. The installer uses that archive and downloads its other dependencies from CRAN and Bioconductor. Setup requires R 4.1 or later, a C++ compiler, and internet access for those dependencies.</p>
 <p>For Shiny Server, place the extracted directory in its configured app directory and install the dependencies for the account running the service. For Posit Connect, publish the extracted directory as a Shiny application. <code>app.R</code> is the entry point. The bundle’s README and the <a href="https://baranzinilab.github.io/tkoi/articles/getting-started-with-tkoi.html">getting started guide</a> provide more detail.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="contextualization-agent">Contextualization Agent<a class="anchor" aria-label="anchor" href="#contextualization-agent"></a>
+<h2 id="agent-workflows">Agent Workflows<a class="anchor" aria-label="anchor" href="#agent-workflows"></a>
 </h2>
-<p>For subsequent analysis upon getting network enrichment statistics, please use <strong><a href="https://github.com/BaranziniLab/tKOIAgent" class="external-link">tKOIAgent</a></strong> for contextualization and network traversal.</p>
+<p><a href="https://github.com/BaranziniLab/tKOIAgent" class="external-link">tKOIAgent</a> provides the <code>tkoi-agent</code> plugin for Codex, Claude Code, and BioRouter. Its <code>tkoi-analysis</code> skill guides input preparation and analysis; its <code>tkoi-knowledge-graph</code> skill explores the graph through a local MCP connection. Follow the plugin’s <a href="https://github.com/BaranziniLab/tKOIAgent/blob/main/README.md" class="external-link">README</a>, <a href="https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/setup.md" class="external-link">setup guide</a>, and <a href="https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/preprocessing.md" class="external-link">preprocessing guide</a>.</p>
+<p>Since version 1.3.0, <code><a href="reference/run_tkoi.html">run_tkoi()</a></code> keeps the exact input graph in its result. Save the result and connect the plugin’s <code>connect_analysis</code> tool to the absolute RDS path so enrichment and traversal use that same graph:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">graph</span> <span class="op">=</span> <span class="fu">tkoi</span><span class="fu">::</span><span class="fu"><a href="reference/get_analysis_graph.html">get_analysis_graph</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">tkoi_result</span>, <span class="st">"analysis.rds"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/normalizePath.html" class="external-link">normalizePath</a></span><span class="op">(</span><span class="st">"analysis.rds"</span><span class="op">)</span></span></code></pre></div>
+<p>Keep the <code>analysis_id</code> returned by <code>connect_analysis</code> and supply it to every subsequent MCP tool call. The server rejects stale IDs or changed files rather than silently switching graphs.</p>
+<p>Graph paths and enrichment scores support associations and hypotheses; they do not establish causality. See the <a href="https://baranzinilab.github.io/tkoi/articles/agent-workflows.html">agent workflow guide</a> for the MCP tools, direct R use, and graph attribute limits.</p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
@@ -100,7 +107,7 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>To install the development version from GitHub:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install devtools if necessary</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
 <span></span>
@@ -117,7 +124,7 @@
 <strong>Linux</strong>: a C++ compiler, e.g. <code>build-essential</code> on Debian/Ubuntu</li>
 </ul>
 <p>The Bioconductor dependencies (<code>clusterProfiler</code>, <code>org.Hs.eg.db</code>) are installed automatically. If that step fails, install them first with <code>BiocManager</code> and then install <code>tkoi</code> again:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"clusterProfiler"</span>, <span class="st">"org.Hs.eg.db"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -161,7 +168,7 @@
 <h3 id="step-1-load-example-gene-expression-data">Step 1: Load Example Gene Expression Data<a class="anchor" aria-label="anchor" href="#step-1-load-example-gene-expression-data"></a>
 </h3>
 <p>The <code>tkoi</code> package includes a small example CSV file containing simulated gene expression results. We’ll read it using <code>data.table</code> for performance.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://baranzinilab.github.io/tkoi/">tkoi</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
@@ -186,7 +193,7 @@
 <h3 id="step-2-run-tkoi-network-enrichment-analysis">Step 2: Run tKOI Network Enrichment Analysis<a class="anchor" aria-label="anchor" href="#step-2-run-tkoi-network-enrichment-analysis"></a>
 </h3>
 <p><code>tKOI</code> integrates transcriptomic changes with a biological knowledge graph using a personalized PageRank algorithm. It also performs permutations to assess statistical enrichment.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>                       <span class="co"># Makes the permutation null reproducible</span></span>
 <span></span>
 <span><span class="va">tkoi_result</span> <span class="op">=</span> <span class="fu"><a href="reference/run_tkoi.html">run_tkoi</a></span><span class="op">(</span></span>
@@ -202,7 +209,7 @@
 <span>  n_cores <span class="op">=</span> <span class="cn">NULL</span>,                 <span class="co"># CPU threads; NULL uses all available cores</span></span>
 <span>  keep_permutations <span class="op">=</span> <span class="cn">TRUE</span>        <span class="co"># FALSE keeps only the null mean and SD to save memory</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The result is an S4 object (<code>tKOIList</code>) that stores PageRank scores, permutation statistics, and network annotations.</p>
+<p>The result is an S4 object (<code>tKOIList</code>) that stores PageRank scores, permutation statistics, network annotations, and the exact graph supplied as <code>subnetwork</code>. Retrieve that graph with <code>tkoi::get_analysis_graph(tkoi_result)</code> for later traversal.</p>
 <p>A few notes on the run settings:</p>
 <ul>
 <li>
@@ -219,7 +226,7 @@
 <h3 id="step-3-perform-gene-ontology-go-enrichment">Step 3: Perform Gene Ontology (GO) Enrichment<a class="anchor" aria-label="anchor" href="#step-3-perform-gene-ontology-go-enrichment"></a>
 </h3>
 <p>You can extend the analysis by integrating GO term enrichment using <code>clusterProfiler</code>. This allows for side-by-side comparisons of ontology-based and graph-based enrichment.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tkoi_result</span> <span class="op">=</span> <span class="fu"><a href="reference/run_gene_enrichment.html">run_gene_enrichment</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span></code></pre></div>
 <p>This adds a <code>gene_enrichment_comparison</code> slot containing GO enrichment tables and visual summaries.</p>
 </div>
@@ -230,13 +237,13 @@
 <div class="section level4">
 <h4 id="scatter-plot-all-terms">Scatter Plot (All Terms)<a class="anchor" aria-label="anchor" href="#scatter-plot-all-terms"></a>
 </h4>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tkoi_result</span><span class="op">@</span><span class="va">gene_enrichment_comparison</span><span class="op">$</span><span class="va">comparison_scatter1</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="scatter-plot-faceted-by-go-namespace">Scatter Plot (Faceted by GO Namespace)<a class="anchor" aria-label="anchor" href="#scatter-plot-faceted-by-go-namespace"></a>
 </h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tkoi_result</span><span class="op">@</span><span class="va">gene_enrichment_comparison</span><span class="op">$</span><span class="va">comparison_scatter2</span></span></code></pre></div>
 <p>These plots compare tKOI network enrichment (<code>beta</code>) with gene ontology q-values.</p>
 </div>
@@ -245,7 +252,7 @@
 <h3 id="step-5-visualize-differential-genes-in-the-network">Step 5: Visualize Differential Genes in the Network<a class="anchor" aria-label="anchor" href="#step-5-visualize-differential-genes-in-the-network"></a>
 </h3>
 <p>The <code><a href="reference/make_gene_exploration_plot.html">make_gene_exploration_plot()</a></code> function highlights upregulated and downregulated genes in a scatter plot based on both experimental and network evidence.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt1</span> <span class="op">=</span> <span class="fu"><a href="reference/make_gene_exploration_plot.html">make_gene_exploration_plot</a></span><span class="op">(</span></span>
 <span>  tkoi_list <span class="op">=</span> <span class="va">tkoi_result</span>,</span>
 <span>  sig_color <span class="op">=</span> <span class="st">"#F39B7FB2"</span>,</span>
@@ -257,7 +264,7 @@
 <h3 id="step-6-export-gene-level-prioritization-table">Step 6: Export Gene-Level Prioritization Table<a class="anchor" aria-label="anchor" href="#step-6-export-gene-level-prioritization-table"></a>
 </h3>
 <p>This returns a data frame containing logFC, p-values, PageRank scores, and FDRs for each gene.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gene_data</span> <span class="op">=</span> <span class="fu"><a href="reference/export_gene_exploration_data.html">export_gene_exploration_data</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene_data</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -265,7 +272,7 @@
 <h3 id="step-7-visualize-top-n-enriched-nodes">Step 7: Visualize Top N Enriched Nodes<a class="anchor" aria-label="anchor" href="#step-7-visualize-top-n-enriched-nodes"></a>
 </h3>
 <p>Use <code><a href="reference/visualize_topn.html">visualize_topn()</a></code> to highlight the most significantly enriched genes, pathways, or biological concepts based on network-level statistics.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt2</span> <span class="op">=</span> <span class="fu"><a href="reference/visualize_topn.html">visualize_topn</a></span><span class="op">(</span></span>
 <span>  tkoi_list <span class="op">=</span> <span class="va">tkoi_result</span>,</span>
 <span>  category <span class="op">=</span> <span class="st">"Gene"</span>,       <span class="co"># Can also be "Pathway", "BiologicalProcess", etc.</span></span>
@@ -278,27 +285,31 @@
 <div class="section level3">
 <h3 id="step-8-optional-plot-the-network-around-an-enriched-node">Step 8: (Optional) Plot the Network Around an Enriched Node<a class="anchor" aria-label="anchor" href="#step-8-optional-plot-the-network-around-an-enriched-node"></a>
 </h3>
-<p>Use <code><a href="reference/plot_network.html">plot_network()</a></code> to draw the part of the knowledge graph that links an enriched node (for example the top biological process) to the significant genes near it. Genes are colored by log fold change, the target node is orange, and node size follows the tKOI effect size (<code>beta</code>).</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p>Use <code><a href="reference/plot_network.html">plot_network()</a></code> to draw the part of the knowledge graph that links an enriched node (for example the top biological process) to the significant genes near it. Genes are colored by log fold change, the target node is orange, and node size follows the tKOI effect size (<code>beta</code>). By default, the plot uses the graph stored in the analysis result.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">top_term</span> <span class="op">=</span> <span class="va">tkoi_result</span><span class="op">@</span><span class="va">network_summary_statistics</span><span class="op">$</span><span class="va">BiologicalProcess</span><span class="op">$</span><span class="va">node_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/plot_network.html">plot_network</a></span><span class="op">(</span></span>
 <span>  tkoi_result <span class="op">=</span> <span class="va">tkoi_result</span>,</span>
 <span>  target_node_id <span class="op">=</span> <span class="va">top_term</span>,</span>
 <span>  degree_expansion <span class="op">=</span> <span class="fl">2</span>,          <span class="co"># Maximum number of hops between the target and a gene</span></span>
-<span>  network_layout_type <span class="op">=</span> <span class="st">"kk"</span>,    <span class="co"># Also "fr", "gem", "graphopt", "lgl", or "mds"</span></span>
-<span>  subnetwork <span class="op">=</span> <span class="fu">tkoi</span><span class="fu">::</span><span class="va"><a href="reference/tkoi_net.html">tkoi_net</a></span>    <span class="co"># Use the same network as in run_tkoi()</span></span>
+<span>  network_layout_type <span class="op">=</span> <span class="st">"kk"</span>     <span class="co"># Also "fr", "gem", "graphopt", "lgl", or "mds"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="reference/plot_network.html">plot_network()</a></code> returns the plotted <code>igraph</code> subgraph invisibly. To list the nodes around any node, use <code>get_neighboring_nodes(top_term, degree_expansion = 1)</code>.</p>
+<p><code><a href="reference/plot_network.html">plot_network()</a></code> returns the plotted <code>igraph</code> subgraph invisibly. Pass the stored graph explicitly to traversal helpers:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">graph</span> <span class="op">=</span> <span class="fu">tkoi</span><span class="fu">::</span><span class="fu"><a href="reference/get_analysis_graph.html">get_analysis_graph</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/get_neighboring_nodes.html">get_neighboring_nodes</a></span><span class="op">(</span><span class="va">top_term</span>, degree_expansion <span class="op">=</span> <span class="fl">1</span>, subnetwork <span class="op">=</span> <span class="va">graph</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-9-optional-save-the-analysis-result">Step 9: (Optional) Save the Analysis Result<a class="anchor" aria-label="anchor" href="#step-9-optional-save-the-analysis-result"></a>
 </h3>
 <p>Save your full analysis object for future use:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">tkoi_result</span>, file <span class="op">=</span> <span class="st">"tkoi_result.rda"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">tkoi_result</span>, <span class="st">"analysis.rds"</span><span class="op">)</span></span>
+<span><span class="va">tkoi_result</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"analysis.rds"</span><span class="op">)</span></span></code></pre></div>
+<p>The RDS preserves the analysis graph alongside the results. Older results that lack a stored graph are rejected by <code><a href="reference/get_analysis_graph.html">get_analysis_graph()</a></code>; rerun the analysis with its original graph rather than substituting the current package graph.</p>
 <p>The node-level enrichment tables can also be written to an Excel workbook, one sheet per node type:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/export_network_summary_statistics.html">export_network_summary_statistics</a></span><span class="op">(</span><span class="va">tkoi_result</span>, filename <span class="op">=</span> <span class="st">"tkoi_network_statistics.xlsx"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -309,6 +320,9 @@
 <ul>
 <li>
 <code>expression_data</code>: Input transcriptomic measurements</li>
+<li>
+<code>subnetwork</code>: The exact igraph supplied to <code><a href="reference/run_tkoi.html">run_tkoi()</a></code>, including its vertex and edge attributes; accessed with <code><a href="reference/get_analysis_graph.html">get_analysis_graph()</a></code>
+</li>
 <li>
 <code>pagerank_data</code>: A data frame with one row per network node (row names are node IDs): <code>node_id</code>, the observed <code>pagerank</code>, and either every permutation’s PageRank (<code>perm.1</code>, <code>perm.2</code>, …) or, with <code>keep_permutations = FALSE</code>, only the null mean and standard deviation (<code>null_mean</code>, <code>null_sd</code>)</li>
 <li>
@@ -335,7 +349,7 @@
 <code>reaction_annotation</code>, <code>pathway_annotation</code>, <code>pwgroup_annotation</code>, etc.</li>
 </ul>
 <p>Inspect them like so:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">go_annotation</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">go_annotation</span><span class="op">)</span></span></code></pre></div>
 </div>

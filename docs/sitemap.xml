@@ -3,6 +3,7 @@
 <url><loc>https://baranzinilab.github.io/tkoi/CLAUDE.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/LICENSE-text.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/LICENSE.html</loc></url>
+<url><loc>https://baranzinilab.github.io/tkoi/articles/agent-workflows.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/articles/getting-started-with-tkoi.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/articles/index.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/authors.html</loc></url>
@@ -19,6 +20,7 @@
 <url><loc>https://baranzinilab.github.io/tkoi/reference/export_gene_exploration_data.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/reference/export_network_summary_statistics.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/reference/genes.html</loc></url>
+<url><loc>https://baranzinilab.github.io/tkoi/reference/get_analysis_graph.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/reference/get_neighboring_nodes.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/reference/go_annotation.html</loc></url>
 <url><loc>https://baranzinilab.github.io/tkoi/reference/human_metabolites.html</loc></url>

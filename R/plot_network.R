@@ -13,8 +13,10 @@
 #' @param network_layout_type Layout algorithm: \code{"kk"}
 #'   (Kamada-Kawai, the default), \code{"fr"} (Fruchterman-Reingold),
 #'   \code{"gem"}, \code{"graphopt"}, \code{"lgl"}, or \code{"mds"}.
-#' @param subnetwork The igraph network used for the analysis. Default
-#'   \code{tkoi::tkoi_net}.
+#' @param subnetwork The igraph network used for the analysis. When \code{NULL},
+#'   uses the graph retained in \code{tkoi_result} via [get_analysis_graph()].
+#'   For older results without a stored graph, supply the original analysis
+#'   graph explicitly.
 #'
 #' @details
 #' Significant genes pass the p-value and log fold change thresholds stored
@@ -42,9 +44,12 @@ plot_network = function(
   target_node_id,
   degree_expansion = 2,
   network_layout_type = c("kk", "fr", "gem", "graphopt", "lgl", "mds"),
-  subnetwork = tkoi::tkoi_net
+  subnetwork = NULL
 ) {
   network_layout_type = match.arg(network_layout_type)
+  if (is.null(subnetwork)) {
+    subnetwork = get_analysis_graph(tkoi_result)
+  }
   if (!igraph::is_igraph(subnetwork)) {
     stop("`subnetwork` must be an igraph object.", call. = FALSE)
   }
