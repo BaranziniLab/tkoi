@@ -292,7 +292,9 @@ exploration.
 The [tKOIAgent plugin](https://github.com/BaranziniLab/tKOIAgent)
 includes `tkoi-analysis` for input preparation and analysis and
 `tkoi-knowledge-graph` for local graph exploration. Follow its README
-for Codex, Claude Code, or BioRouter setup, then connect its
+for [Codex](https://openai.com/codex/), [Claude
+Code](https://claude.com/product/claude-code), or
+[BioRouter](https://biorouter.ucsf.edu/) setup, then connect its
 `connect_analysis` tool to the absolute path of `analysis.rds`. The
 connection uses the graph saved in that result. Supply the returned
 `analysis_id` as the first argument to every subsequent MCP tool call;

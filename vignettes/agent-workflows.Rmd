@@ -21,7 +21,8 @@ tKOI analysis:
 * `tkoi-knowledge-graph` searches nodes, follows connections, and reads enrichment
   results from the graph saved with that analysis.
 
-For Codex, Claude Code, or BioRouter, follow the plugin's
+For [Codex](https://openai.com/codex/), [Claude Code](https://claude.com/product/claude-code), or
+[BioRouter](https://biorouter.ucsf.edu/), follow the plugin's
 [README](https://github.com/BaranziniLab/tKOIAgent/blob/main/README.md) and
 [setup guide](https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/setup.md)
 to install and configure the plugin. Use its

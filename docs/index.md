@@ -65,10 +65,11 @@ provide more detail.
 ## Agent Workflows
 
 [tKOIAgent](https://github.com/BaranziniLab/tKOIAgent) provides the
-`tkoi-agent` plugin for Codex, Claude Code, and BioRouter. Its
-`tkoi-analysis` skill guides input preparation and analysis; its
-`tkoi-knowledge-graph` skill explores the graph through a local MCP
-connection. Follow the plugin’s
+`tkoi-agent` plugin for [Codex](https://openai.com/codex/), [Claude
+Code](https://claude.com/product/claude-code), and
+[BioRouter](https://biorouter.ucsf.edu/). Its `tkoi-analysis` skill
+guides input preparation and analysis; its `tkoi-knowledge-graph` skill
+explores the graph through a local MCP connection. Follow the plugin’s
 [README](https://github.com/BaranziniLab/tKOIAgent/blob/main/README.md),
 [setup
 guide](https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/setup.md),
@@ -453,9 +454,9 @@ MIT + file LICENSE
 
 ## Citation
 
-Gu, W., Bellucci, G., Peetoom, B., McDonagh, M., & Baranzini, S. (in
-preparation). Integrating Large-Scale Knowledge Graphs to Enhance
-Transcriptomics Analysis.
+Gu, W., Bellucci, G., Peetoom, B., & Baranzini, S. E. (under review).
+Enhanced Transcriptomics Analysis by Integration with Large-Scale
+Knowledge Graphs and large language models.
 
 ## Contact
 

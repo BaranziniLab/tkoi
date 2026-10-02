@@ -58,7 +58,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Transcriptomic Knowledge Graph Integration with tKOI</h1>
                         <h4 data-toc-skip class="author">Wanjun Gu</h4>
             
-            <h4 data-toc-skip class="date">2026-10-01</h4>
+            <h4 data-toc-skip class="date">2026-10-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/BaranziniLab/tkoi/blob/HEAD/vignettes/getting-started-with-tkoi.Rmd" class="external-link"><code>vignettes/getting-started-with-tkoi.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started-with-tkoi.Rmd</code></div>
@@ -351,12 +351,12 @@ original graph before saving it for graph exploration.</p>
 <p>The <a href="https://github.com/BaranziniLab/tKOIAgent" class="external-link">tKOIAgent
 plugin</a> includes <code>tkoi-analysis</code> for input preparation and
 analysis and <code>tkoi-knowledge-graph</code> for local graph
-exploration. Follow its README for Codex, Claude Code, or BioRouter
-setup, then connect its <code>connect_analysis</code> tool to the
-absolute path of <code>analysis.rds</code>. The connection uses the
-graph saved in that result. Supply the returned <code>analysis_id</code>
-as the first argument to every subsequent MCP tool call; stale IDs or
-changed files are rejected.</p>
+exploration. Follow its README for <a href="https://openai.com/codex/" class="external-link">Codex</a>, <a href="https://claude.com/product/claude-code" class="external-link">Claude Code</a>, or <a href="https://biorouter.ucsf.edu/" class="external-link">BioRouter</a> setup, then connect its
+<code>connect_analysis</code> tool to the absolute path of
+<code>analysis.rds</code>. The connection uses the graph saved in that
+result. Supply the returned <code>analysis_id</code> as the first
+argument to every subsequent MCP tool call; stale IDs or changed files
+are rejected.</p>
 <p>The <a href="agent-workflows.html">agent workflow guide</a> describes
 the available tools, direct R alternatives, and interpretation limits.
 Enrichment and graph paths prioritize associations and hypotheses; they

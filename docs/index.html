@@ -89,7 +89,7 @@
 <div class="section level2">
 <h2 id="agent-workflows">Agent Workflows<a class="anchor" aria-label="anchor" href="#agent-workflows"></a>
 </h2>
-<p><a href="https://github.com/BaranziniLab/tKOIAgent" class="external-link">tKOIAgent</a> provides the <code>tkoi-agent</code> plugin for Codex, Claude Code, and BioRouter. Its <code>tkoi-analysis</code> skill guides input preparation and analysis; its <code>tkoi-knowledge-graph</code> skill explores the graph through a local MCP connection. Follow the plugin’s <a href="https://github.com/BaranziniLab/tKOIAgent/blob/main/README.md" class="external-link">README</a>, <a href="https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/setup.md" class="external-link">setup guide</a>, and <a href="https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/preprocessing.md" class="external-link">preprocessing guide</a>.</p>
+<p><a href="https://github.com/BaranziniLab/tKOIAgent" class="external-link">tKOIAgent</a> provides the <code>tkoi-agent</code> plugin for <a href="https://openai.com/codex/" class="external-link">Codex</a>, <a href="https://claude.com/product/claude-code" class="external-link">Claude Code</a>, and <a href="https://biorouter.ucsf.edu/" class="external-link">BioRouter</a>. Its <code>tkoi-analysis</code> skill guides input preparation and analysis; its <code>tkoi-knowledge-graph</code> skill explores the graph through a local MCP connection. Follow the plugin’s <a href="https://github.com/BaranziniLab/tKOIAgent/blob/main/README.md" class="external-link">README</a>, <a href="https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/setup.md" class="external-link">setup guide</a>, and <a href="https://github.com/BaranziniLab/tKOIAgent/blob/main/skills/tkoi-analysis/references/preprocessing.md" class="external-link">preprocessing guide</a>.</p>
 <p>Since version 1.3.0, <code><a href="reference/run_tkoi.html">run_tkoi()</a></code> keeps the exact input graph in its result. Save the result and connect the plugin’s <code>connect_analysis</code> tool to the absolute RDS path so enrichment and traversal use that same graph:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">graph</span> <span class="op">=</span> <span class="fu">tkoi</span><span class="fu">::</span><span class="fu"><a href="reference/get_analysis_graph.html">get_analysis_graph</a></span><span class="op">(</span><span class="va">tkoi_result</span><span class="op">)</span></span>
@@ -361,7 +361,7 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>Gu, W., Bellucci, G., Peetoom, B., McDonagh, M., &amp; Baranzini, S. (in preparation). Integrating Large-Scale Knowledge Graphs to Enhance Transcriptomics Analysis.</p>
+<p>Gu, W., Bellucci, G., Peetoom, B., &amp; Baranzini, S. E. (under review). Enhanced Transcriptomics Analysis by Integration with Large-Scale Knowledge Graphs and large language models.</p>
 </div>
 <div class="section level2">
 <h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
