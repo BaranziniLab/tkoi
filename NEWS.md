@@ -1,3 +1,17 @@
+# tkoi 1.3.1
+
+* Normal upper-tail inference retains unfloored natural log probabilities and
+  computes within-type BH adjustment in log space. Numeric P and Q values use
+  `.Machine$double.xmin` as a positive representation bound, with explicit flags.
+  Zero-spread and invalid null moments remain untestable.
+* `compute_network_enrichment()` accepts saved null means and standard deviations,
+  so inference can be refreshed without repeating network propagation.
+* Result printing and Excel display columns use scientific notation. Reusable
+  plain-text and HTML formatters preserve numeric probability columns and do not
+  change global R display options. Gene exports retain log probabilities and flags.
+* The optimized C++ propagation and sampling engine, graph, and default draw
+  budget are unchanged.
+
 # tkoi 1.2.0
 
 * The Shiny interface is now developed and distributed in this repository.

@@ -277,11 +277,20 @@ A few notes on the run settings:
 - `keep_permutations = FALSE` stores only the null mean and standard
   deviation instead of every permutation, which saves memory for large
   `n_permutation`.
-- The PageRank solver stops when its relative residual is at most
-  `tolerance` (default `1e-14`, about 55 iterations per vector on
-  `tkoi_net`). A warning is raised if a PageRank vector does not
-  converge within `maximum_iteration` iterations.
-- Set `verbose = FALSE` to silence the progress messages.
+
+Normal upper-tail P-values and within-type BH adjustment are computed in
+log space. Result tables retain `log_p_value` and `log_fdr`; positive
+numeric P/Q columns use `.Machine$double.xmin` as their minimum
+representation, with explicit `p_value_bounded` and `fdr_bounded` flags.
+Zero-spread nulls remain untestable. Printing uses scientific notation
+without changing R’s global options. Use `tkoi_probability_table(table)`
+to add scientific display columns for CSV output, or
+`tkoi_format_probability(p, log_p, format = "html")` for HTML exponents.
+\* The PageRank solver stops when its relative residual is at most
+`tolerance` (default `1e-14`, about 55 iterations per vector on
+`tkoi_net`). A warning is raised if a PageRank vector does not converge
+within `maximum_iteration` iterations. \* Set `verbose = FALSE` to
+silence the progress messages.
 
 ### Step 3: Perform Gene Ontology (GO) Enrichment
 

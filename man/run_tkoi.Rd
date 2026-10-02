@@ -122,6 +122,14 @@ for multiple testing (Benjamini-Hochberg FDR over the reported
 nodes of each type), and ranked.
 }
 
+Normal upper-tail probabilities are calculated with \code{pnorm(..., log.p = TRUE)}.
+BH adjustment is performed in log space within each complete reported node
+type, preserving the default unavailable-value handling of \code{stats::p.adjust}.
+\code{log_p_value} and \code{log_fdr} retain the unfloored natural logarithms. Numeric
+\code{p_value} and \code{fdr} use \code{.Machine$double.xmin} as their smallest representation,
+with \code{p_value_bounded} and \code{fdr_bounded} marking values below that bound.
+Zero-spread or invalid null distributions remain untestable.
+
 \strong{Speed.} The PageRank solver is written in C++. It solves the
 symmetric form of the personalized PageRank system with conjugate
 gradient, up to 16 PageRank vectors per pass over the network, on

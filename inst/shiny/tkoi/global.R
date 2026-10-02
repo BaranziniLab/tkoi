@@ -1,7 +1,7 @@
 # The installed tkoi library owns computation, the S4 class, and graph data.
 if (!requireNamespace("tkoi", quietly = TRUE)) {
   stop(
-    "The tKOI Shiny app requires tkoi >= 1.2.0. Run Rscript install.R from the release bundle, then restart R.",
+    "The tKOI Shiny app requires tkoi >= 1.3.1. Run Rscript install.R from the release bundle, then restart R.",
     call. = FALSE
   )
 }
@@ -11,9 +11,15 @@ if (getNamespaceVersion("tkoi") != utils::packageVersion("tkoi")) {
     call. = FALSE
   )
 }
-if (getNamespaceVersion("tkoi") < "1.2.0") {
+if (getNamespaceVersion("tkoi") < "1.3.1") {
   stop(
-    "The tKOI Shiny app requires tkoi >= 1.2.0. Run Rscript install.R from the release bundle, then restart R.",
+    "The tKOI Shiny app requires tkoi >= 1.3.1. Run Rscript install.R from the release bundle, then restart R.",
+    call. = FALSE
+  )
+}
+if (!"tkoi_format_probability" %in% getNamespaceExports("tkoi")) {
+  stop(
+    "The installed tkoi library needs the probability-formatting update. Reinstall tkoi, then restart R.",
     call. = FALSE
   )
 }

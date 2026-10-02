@@ -1,8 +1,13 @@
 # Comparison of run_tkoi() results with legacy_run_tkoi() (tkoi 1.0.0), shared
 # by test-run_tkoi.R and test-extended.R.
 
+normal_inference_columns = c(
+  "log_p_value", "log_fdr", "p_value_bounded", "fdr_bounded", "inference_status"
+)
+
 statistic_columns = c(
   "node_id", "node_type", "identifier", "pagerank", "beta", "p_value", "fdr",
+  normal_inference_columns,
   "direct_links", "indirect_links", "valency"
 )
 
@@ -76,7 +81,14 @@ expect_matches_legacy = function(result, legacy, indirect_link_threshold = 3, pa
   for (type in names(legacy_tables)) {
     new_table = new_tables[[type]]
     legacy_table = legacy_tables[[type]]
-    expect_identical(names(new_table), names(legacy_table), label = paste(type, "columns"))
+    expect_identical(
+      names(new_table)[!names(new_table) %in% normal_inference_columns],
+      names(legacy_table), label = paste(type, "legacy columns retained in order")
+    )
+    expect_identical(
+      names(new_table)[names(new_table) %in% normal_inference_columns],
+      normal_inference_columns, label = paste(type, "normal inference metadata")
+    )
     expect_true(all(legacy_table$node_id %in% new_table$node_id), label = paste(type, "keeps 1.0.0 rows"))
 
     aligned = new_table[match(legacy_table$node_id, new_table$node_id), ]

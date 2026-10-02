@@ -72,6 +72,14 @@
 #' @param verbose If \code{TRUE} (the default), print progress messages.
 #'
 #' @details
+#' Normal upper-tail probabilities are calculated with `pnorm(..., log.p = TRUE)`.
+#' BH adjustment is performed in log space within each complete reported node
+#' type, preserving the default unavailable-value handling of `stats::p.adjust`.
+#' `log_p_value` and `log_fdr` retain the unfloored natural logarithms. Numeric
+#' `p_value` and `fdr` use `.Machine$double.xmin` as their smallest representation,
+#' with `p_value_bounded` and `fdr_bounded` marking values below that bound.
+#' Zero-spread or invalid null distributions remain untestable.
+#'
 #' \strong{Speed.} The PageRank solver is written in C++. It solves the
 #' symmetric form of the personalized PageRank system with conjugate
 #' gradient, up to 16 PageRank vectors per pass over the network, on
@@ -260,12 +268,7 @@ run_tkoi = function(
   # Statistics ----------------------------------------------------------------
   say("\nCalculating network enrichment statistics...")
   observed_pr = pagerank$observed
-  z_scores = (observed_pr - pagerank$null_mean) / pagerank$null_sd
-  # A null without variation cannot score a node: its z-score would be 0/0
-  # or infinite (e.g. a seed gene in a small component that no replacement
-  # gene reaches). Report such nodes as untestable (NaN).
-  z_scores[!is.na(pagerank$null_sd) & pagerank$null_sd == 0] = NaN
-  p_values = exp(stats::pnorm(z_scores, lower.tail = FALSE, log.p = TRUE))
+  inference = tkoi_normal_inference(observed_pr, pagerank$null_mean, pagerank$null_sd)
 
   reach = .tkoi_seed_reach(network$csr$row_ptr, network$csr$col, as.integer(seed_node), n_threads)
   direct_links = as.numeric(reach$direct)
@@ -283,13 +286,22 @@ run_tkoi = function(
     network = network,
     reported = reported,
     pagerank = observed_pr,
-    beta = z_scores,
-    p_value = p_values,
+    beta = inference$beta,
+    p_value = inference$p_value,
     direct_links = direct_links,
     indirect_links = indirect_links,
-    indirect_link_threshold = indirect_link_threshold
+    indirect_link_threshold = indirect_link_threshold,
+    log_p_value = inference$log_p_value,
+    inference_status = inference$inference_status
   )
   node_statistics = .tkoi_annotate(node_statistics)
+  node_statistics = lapply(node_statistics, .tkoi_statistics_table)
+  attr(pagerank_data, "tkoi_inference") = list(
+    method = "normal_upper_tail", probability_floor = .Machine$double.xmin,
+    log_probability_base = "e", adjustment = "BH within each complete reported node type",
+    unavailable_policy = "R p.adjust default NA handling", n_permutation = n_permutation,
+    package_version = as.character(utils::packageVersion("tkoi"))
+  )
 
   result = methods::new(
     "tKOIList",
@@ -444,14 +456,18 @@ run_tkoi = function(
   p_value,
   direct_links,
   indirect_links,
-  indirect_link_threshold
+  indirect_link_threshold,
+  log_p_value = log(p_value),
+  inference_status = ifelse(is.na(p_value), "untestable", "testable")
 ) {
   node_type = network$node_type
-  fdr = rep(NA_real_, length(p_value))
+  log_fdr = rep(NA_real_, length(p_value))
   by_type = split(which(reported), node_type[reported])
   for (rows in by_type) {
-    fdr[rows] = stats::p.adjust(p_value[rows], method = "fdr")
+    log_fdr[rows] = .tkoi_bh_log(log_p_value[rows])
   }
+  p_value = .tkoi_bounded_probability(log_p_value)
+  fdr = .tkoi_bounded_probability(log_fdr)
   met_threshold = as.numeric(indirect_links >= indirect_link_threshold)
 
   # Same ordering as the original two dplyr::arrange() passes, done once.
@@ -463,7 +479,7 @@ run_tkoi = function(
     row = keep,
     node_type = node_type[keep],
     met_threshold = met_threshold[keep],
-    fdr = signif(fdr[keep], 10),
+    fdr = signif(log_fdr[keep], 10),
     beta = signif(beta[keep], 10)
   ) |>
     dplyr::arrange(node_type, fdr, dplyr::desc(beta)) |>
@@ -482,6 +498,11 @@ run_tkoi = function(
       beta = beta[rows],
       p_value = p_value[rows],
       fdr = fdr[rows],
+      log_p_value = log_p_value[rows],
+      log_fdr = log_fdr[rows],
+      p_value_bounded = log_p_value[rows] < log(.Machine$double.xmin),
+      fdr_bounded = log_fdr[rows] < log(.Machine$double.xmin),
+      inference_status = inference_status[rows],
       direct_links = direct_links[rows],
       indirect_links = indirect_links[rows],
       valency = network$valency[rows],

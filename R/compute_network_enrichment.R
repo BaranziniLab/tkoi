@@ -10,11 +10,14 @@
 #'   the `pagerank_data` slot of a [run_tkoi()] result with
 #'   `keep_permutations = TRUE`. A list of equal-length vectors is treated as
 #'   such a data frame. `node` needs a `pagerank` value and at least two
-#'   `perm*` values, or an error is raised.
+#'   `perm*` values, or saved `null_mean` and `null_sd` columns.
 #'
 #' @return A data frame with one row per node and columns:
 #'   - `beta`: The computed z-score.
 #'   - `p_value`: The one-tailed p-value derived from the z-score.
+#'   - `log_p_value`: Unfloored natural log upper-tail probability.
+#'   - `p_value_bounded`: Whether the numeric value represents the positive bound.
+#'   - `inference_status`: Testable or the reason a score is unavailable.
 #'
 #' @details
 #' The function calculates the z-score as:
@@ -38,16 +41,23 @@ compute_network_enrichment = function(node) {
   if (is.matrix(node) || (is.list(node) && !is.data.frame(node) && any(lengths(node) > 1))) {
     node = as.data.frame(node)
   }
+  raw_columns = grep("^perm", names(node))
+  moments = all(c("null_mean", "null_sd") %in% names(node))
   if (is.null(names(node)) || !"pagerank" %in% names(node) ||
-    length(grep("^perm", names(node))) < 2) {
-    stop("`node` needs a `pagerank` value and at least two `perm*` values.", call. = FALSE)
+    (!moments && length(raw_columns) < 2)) {
+    stop("`node` needs a `pagerank` value and at least two `perm*` values or saved null_mean/null_sd.", call. = FALSE)
   }
 
+  if (moments && length(raw_columns) < 2) {
+    return(tkoi_normal_inference(node[["pagerank"]], node[["null_mean"]], node[["null_sd"]]))
+  }
   if (is.data.frame(node)) {
-    perm_values = as.matrix(node[, grep("^perm", names(node)), drop = FALSE])
+    perm_values = as.matrix(node[, raw_columns, drop = FALSE])
     pagerank = node[["pagerank"]]
     perm_mean = rowMeans(perm_values)
     perm_sd = sqrt(rowSums((perm_values - perm_mean)^2) / (ncol(perm_values) - 1))
+    constant = apply(perm_values, 1L, function(x) all(is.finite(x)) && all(x == x[1L]))
+    perm_sd[constant] = 0
   } else {
     pagerank = as.numeric(node[["pagerank"]])
     perm_values = as.numeric(unlist(node[grep("^perm", names(node))]))
@@ -55,9 +65,5 @@ compute_network_enrichment = function(node) {
     perm_sd = stats::sd(perm_values)
   }
 
-  z_score = (pagerank - perm_mean) / perm_sd
-  # A constant null cannot score a node (as in run_tkoi()).
-  z_score[!is.na(perm_sd) & perm_sd == 0] = NaN
-  p_value = exp(stats::pnorm(z_score, lower.tail = FALSE, log.p = TRUE))
-  data.frame(beta = z_score, p_value = p_value)
+  tkoi_normal_inference(pagerank, perm_mean, perm_sd)
 }

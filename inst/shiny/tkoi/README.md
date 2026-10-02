@@ -78,3 +78,5 @@ and engine version, or as an Excel workbook with one sheet per node type.
 Source code is MIT licensed; see `LICENSE.md`. The knowledge graph is subject
 to the licenses of its data sources. Contact Wanjun Gu or Sergio Baranzini at
 UCSF about graph data use.
+
+Probability displays use scientific notation with HTML exponents, retain numeric sorting, and export numeric P/Q values alongside log probabilities, bound flags and plain-text display columns. Stored zeros are recovered from available logs; a zero without its logarithm is labelled unresolved. Requires tkoi 1.3.1 or later.

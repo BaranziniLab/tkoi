@@ -7,6 +7,8 @@
 #' @param tkoi_result A `tKOIList` object returned by [run_tkoi()].
 #' @param filename Path of the Excel file to write. An existing file is
 #'   overwritten. Default `"tkoi_result.xlsx"`.
+#' @param scientific_display Add `*_display` scientific-notation columns beside
+#'   numeric probabilities and their unfloored logarithms. Default `TRUE`.
 #'
 #' @return The path of the written file, invisibly, as returned by
 #'   [writexl::write_xlsx()]. The function is called for its side effect of
@@ -32,7 +34,10 @@
 #'
 #' @importFrom writexl write_xlsx
 #' @export
-export_network_summary_statistics = function(tkoi_result, filename = "tkoi_result.xlsx") {
+export_network_summary_statistics = function(tkoi_result, filename = "tkoi_result.xlsx", scientific_display = TRUE) {
   network_summary_statistics = tkoi_result@network_summary_statistics
+  if (scientific_display) {
+    network_summary_statistics = lapply(network_summary_statistics, tkoi_probability_table)
+  }
   write_xlsx(network_summary_statistics, path = filename)
 }

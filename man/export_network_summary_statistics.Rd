@@ -4,13 +4,20 @@
 \alias{export_network_summary_statistics}
 \title{Export Network Summary Statistics to Excel}
 \usage{
-export_network_summary_statistics(tkoi_result, filename = "tkoi_result.xlsx")
+export_network_summary_statistics(
+  tkoi_result,
+  filename = "tkoi_result.xlsx",
+  scientific_display = TRUE
+)
 }
 \arguments{
 \item{tkoi_result}{A \code{tKOIList} object returned by \code{\link[=run_tkoi]{run_tkoi()}}.}
 
 \item{filename}{Path of the Excel file to write. An existing file is
 overwritten. Default \code{"tkoi_result.xlsx"}.}
+
+\item{scientific_display}{Add \verb{*_display} scientific-notation columns beside
+numeric probabilities and their unfloored logarithms. Default \code{TRUE}.}
 }
 \value{
 The path of the written file, invisibly, as returned by

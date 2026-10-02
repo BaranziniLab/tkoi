@@ -32,6 +32,9 @@ table).
 \item \code{tkoi_pvalue}: Unadjusted one-sided tKOI p-value.
 \item \code{tkoi_fdr}: tKOI false discovery rate (Benjamini-Hochberg, among gene
 nodes).
+New inference results also retain \code{tkoi_log_p_value}, \code{tkoi_log_fdr},
+\code{tkoi_pvalue_bounded}, \code{tkoi_fdr_bounded}, and \code{inference_status}.
+Printing uses scientific notation while the probability columns stay numeric.
 }
 }
 \description{

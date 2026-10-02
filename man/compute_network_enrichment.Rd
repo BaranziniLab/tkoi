@@ -13,13 +13,16 @@ permutation values whose names start with \code{"perm"} (e.g. \code{perm.1},
 the \code{pagerank_data} slot of a \code{\link[=run_tkoi]{run_tkoi()}} result with
 \code{keep_permutations = TRUE}. A list of equal-length vectors is treated as
 such a data frame. \code{node} needs a \code{pagerank} value and at least two
-\verb{perm*} values, or an error is raised.}
+\verb{perm*} values, or saved \code{null_mean} and \code{null_sd} columns.}
 }
 \value{
 A data frame with one row per node and columns:
 \itemize{
 \item \code{beta}: The computed z-score.
 \item \code{p_value}: The one-tailed p-value derived from the z-score.
+\item \code{log_p_value}: Unfloored natural log upper-tail probability.
+\item \code{p_value_bounded}: Whether the numeric value represents the positive bound.
+\item \code{inference_status}: Testable or the reason a score is unavailable.
 }
 }
 \description{

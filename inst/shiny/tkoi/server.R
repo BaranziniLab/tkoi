@@ -113,8 +113,7 @@ create_server = function(subnetwork = tkoi::tkoi_net) {
           data = dplyr::filter(data, fdr <= 0.05)
         }
         sheet = gsub("[\\/:*?\"<>|]", "_", substr(name, 1, 31))
-        openxlsx::addWorksheet(workbook, sheetName = sheet)
-        openxlsx::writeData(workbook, sheet = sheet, x = data)
+        write_result_worksheet(workbook, sheet, data)
       }
       openxlsx::saveWorkbook(workbook, file, overwrite = TRUE)
     }
@@ -130,17 +129,13 @@ create_server = function(subnetwork = tkoi::tkoi_net) {
       req(tkoi_output(), input$result_category)
       data = tkoi_output()@network_summary_statistics[[input$result_category]]
       req(data)
-      DT::datatable(format_result_table(data),
-        options = list(pageLength = 10, scrollX = TRUE), rownames = FALSE
-      )
+      probability_datatable(data, page_length = 10)
     })
     output$tkoi_result_table_lookup = DT::renderDataTable({
       req(tkoi_output(), input$lookup_category)
       data = tkoi_output()@network_summary_statistics[[input$lookup_category]]
       req(data)
-      DT::datatable(format_result_table(data),
-        options = list(pageLength = 5, scrollX = TRUE), rownames = FALSE
-      )
+      probability_datatable(data, page_length = 5)
     })
     observeEvent(input$run_tkoi_analysis, {
       tkoi_output(NULL)
@@ -195,8 +190,8 @@ create_server = function(subnetwork = tkoi::tkoi_net) {
       showModal(modalDialog(
         title = "tKOI analysis complete.",
         glue::glue(
-          "Computed with tkoi {tkoi_version} in {round(elapsed, 2)} seconds using ",
-          "{result@n_permutation} permutations."
+          "Computed with tkoi {tkoi_version} in {round(elapsed, 2)} seconds ",
+          "using {result@n_permutation} permutations."
         ),
         easyClose = TRUE,
         footer = modalButton("Close")
@@ -204,7 +199,11 @@ create_server = function(subnetwork = tkoi::tkoi_net) {
     })
     output$download_example = downloadHandler(
       filename = function() "example_data.csv",
-      content = function(file) write.csv(example_data, file, row.names = FALSE)
+      content = function(file) {
+        data = example_data
+        data$pvalue = formatC(data$pvalue, format = "e", digits = 16)
+        write.csv(data, file, row.names = FALSE)
+      }
     )
     processed_data = reactive({
       parameters = analysis_parameters()
@@ -224,11 +223,10 @@ create_server = function(subnetwork = tkoi::tkoi_net) {
         dplyr::arrange(pvalue) |>
         dplyr::inner_join(tkoi::genes, by = dplyr::join_by("gene_name" == "ensembl")) |>
         dplyr::mutate(
-          logfc = formatC(logfc, format = "e", digits = 3),
-          pvalue = formatC(pvalue, format = "e", digits = 2)
+          logfc = formatC(logfc, format = "e", digits = 3)
         ) |>
         dplyr::select(gene_name, symbol = name, logfc, pvalue)
-      DT::datatable(data, options = list(pageLength = 10), rownames = FALSE)
+      probability_datatable(data, page_length = 10)
     })
     output$significance_summary = renderTable({
       req(processed_data())

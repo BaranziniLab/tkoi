@@ -217,7 +217,8 @@ test_that("export_gene_exploration_data() returns one row per Gene node with the
   expect_named(exported, c(
     "gene_name", "gene_symbol", "id", "identifier",
     "experimental_logfc", "experimental_pvalue",
-    "pagerank", "tkoi_beta", "tkoi_pvalue", "tkoi_fdr"
+    "pagerank", "tkoi_beta", "tkoi_pvalue", "tkoi_fdr",
+    "tkoi_log_p_value", "tkoi_log_fdr", "tkoi_pvalue_bounded", "tkoi_fdr_bounded", "inference_status"
   ))
   # The toy input repeats one gene; it must still give a single row per node.
   expect_equal(nrow(exported), nrow(genes))
@@ -237,6 +238,17 @@ test_that("export_gene_exploration_data() carries the tKOI statistics of each Ge
   expect_identical(exported$tkoi_beta, genes$beta[rows])
   expect_identical(exported$tkoi_pvalue, genes$p_value[rows])
   expect_identical(exported$tkoi_fdr, genes$fdr[rows])
+  expect_identical(exported$tkoi_log_p_value, genes$log_p_value[rows])
+  expect_identical(exported$tkoi_log_fdr, genes$log_fdr[rows])
+  expect_identical(exported$tkoi_pvalue_bounded, genes$p_value_bounded[rows])
+  expect_identical(exported$tkoi_fdr_bounded, genes$fdr_bounded[rows])
+  expect_identical(exported$inference_status, genes$inference_status[rows])
+  expect_type(exported$tkoi_pvalue, "double")
+  expect_type(exported$tkoi_fdr, "double")
+  expect_type(exported$tkoi_log_p_value, "double")
+  expect_type(exported$tkoi_log_fdr, "double")
+  expect_type(exported$tkoi_pvalue_bounded, "logical")
+  expect_type(exported$tkoi_fdr_bounded, "logical")
 })
 
 test_that("export_gene_exploration_data() reports the input values, and NA for genes not in the input", {
@@ -587,8 +599,43 @@ test_that("export_network_summary_statistics() writes every row and column of ea
     size = range_size(sheets$range[i])
     # One header row, then one row per node.
     expect_equal(unname(size["rows"]) - 1, nrow(table), label = paste(sheets$sheet[i], "data rows"))
-    expect_equal(unname(size["columns"]), ncol(table), label = paste(sheets$sheet[i], "columns"))
+    expect_equal(unname(size["columns"]), ncol(tkoi_probability_table(table)),
+      label = paste(sheets$sheet[i], "columns"))
   }
+})
+
+test_that("Excel scientific display adds text columns while preserving every numeric source column", {
+  result = toy_result()
+  original = result@network_summary_statistics
+  captured = NULL
+  local_mocked_bindings(
+    write_xlsx = function(x, path) {
+      captured <<- x
+      invisible(path)
+    },
+    .package = "tkoi"
+  )
+  export_network_summary_statistics(result, filename = "unused.xlsx")
+  expect_identical(names(captured), names(original))
+  for (type in names(original)) {
+    before = original[[type]]
+    after = captured[[type]]
+    expect_identical(names(after), c(names(before), "p_value_display", "fdr_display"))
+    for (column in names(before)) {
+      expect_identical(after[[column]], before[[column]], label = paste(type, column))
+    }
+    expect_type(after$p_value, "double")
+    expect_type(after$fdr, "double")
+    expect_identical(after$p_value_display, tkoi_format_probability(
+      before$p_value, log_p = before$log_p_value, bounded = before$p_value_bounded
+    ))
+    expect_identical(after$fdr_display, tkoi_format_probability(
+      before$fdr, log_p = before$log_fdr, bounded = before$fdr_bounded
+    ))
+  }
+  expect_identical(result@network_summary_statistics, original)
+  export_network_summary_statistics(result, filename = "unused.xlsx", scientific_display = FALSE)
+  expect_identical(captured, original)
 })
 
 # compute_network_enrichment() ---------------------------------------------------------
@@ -596,7 +643,7 @@ test_that("export_network_summary_statistics() writes every row and column of ea
 test_that("compute_network_enrichment() computes the z-score and upper-tail p-value", {
   enrichment = compute_network_enrichment(list(pagerank = 0.3, perm.1 = 0.1, perm.2 = 0.2, perm.3 = 0.15))
   expect_s3_class(enrichment, "data.frame")
-  expect_named(enrichment, c("beta", "p_value"))
+  expect_named(enrichment, c("beta", "p_value", "log_p_value", "p_value_bounded", "inference_status"))
   expect_equal(enrichment$beta, 3)
   expect_equal(enrichment$p_value, stats::pnorm(3, lower.tail = FALSE))
 
@@ -613,7 +660,7 @@ test_that("compute_network_enrichment() reproduces the run's beta and p-value fo
   enrichment = compute_network_enrichment(pagerank_data)
 
   expect_s3_class(enrichment, "data.frame")
-  expect_named(enrichment, c("beta", "p_value"))
+  expect_named(enrichment, c("beta", "p_value", "log_p_value", "p_value_bounded", "inference_status"))
   expect_equal(nrow(enrichment), nrow(pagerank_data))
 
   statistics = all_node_statistics(result)
@@ -668,8 +715,8 @@ test_that("compute_network_enrichment() treats a list of equal-length vectors as
   expect_equal(unname(from_list$p_value), unname(from_table$p_value))
 })
 
-test_that("compute_network_enrichment() needs pagerank and at least two perm values", {
-  message = "`node` needs a `pagerank` value and at least two `perm*` values."
+test_that("compute_network_enrichment() needs pagerank and either null draws or saved moments", {
+  message = "`node` needs a `pagerank` value and at least two `perm*` values or saved null_mean/null_sd."
   # Data frames.
   expect_error(compute_network_enrichment(data.frame(pagerank = 0.3, perm.1 = 0.1)), message, fixed = TRUE)
   expect_error(compute_network_enrichment(data.frame(pagerank = 0.3)), message, fixed = TRUE)
@@ -690,11 +737,26 @@ test_that("compute_network_enrichment() needs pagerank and at least two perm val
     fixed = TRUE
   )
 
-  # The layout of pagerank_data from run_tkoi(keep_permutations = FALSE).
-  summary_only = toy_result()@pagerank_data[, c("node_id", "pagerank")]
-  summary_only$null_mean = 0
-  summary_only$null_sd = 1
-  expect_error(compute_network_enrichment(summary_only), message, fixed = TRUE)
+  # Incomplete saved moments still cannot establish a null standard deviation.
+  expect_error(compute_network_enrichment(list(pagerank = 0.3, null_mean = 0.1)), message, fixed = TRUE)
+  expect_error(compute_network_enrichment(list(pagerank = 0.3, null_sd = 0.1)), message, fixed = TRUE)
+})
+
+test_that("compute_network_enrichment() recovers the same Gaussian inference from saved null moments", {
+  pagerank_data = toy_result()@pagerank_data
+  null = as.matrix(pagerank_data[, grep("^perm", names(pagerank_data)), drop = FALSE])
+  summary_only = pagerank_data[, c("node_id", "pagerank")]
+  summary_only$null_mean = rowMeans(null)
+  summary_only$null_sd = apply(null, 1, stats::sd)
+  from_saved = compute_network_enrichment(summary_only)
+  from_draws = compute_network_enrichment(pagerank_data)
+  expect_equal(from_saved, from_draws, tolerance = 1e-10)
+  expect_equal(compute_network_enrichment(as.list(summary_only)), from_saved, tolerance = 0)
+  expect_equal(
+    compute_network_enrichment(as.list(summary_only[1, ])),
+    compute_network_enrichment(summary_only[1, , drop = FALSE]),
+    tolerance = 0
+  )
 })
 
 test_that("compute_network_enrichment() accepts a numeric matrix with pagerank and perm columns", {

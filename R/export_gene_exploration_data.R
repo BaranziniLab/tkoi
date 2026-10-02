@@ -33,6 +33,9 @@
 #'   - `tkoi_pvalue`: Unadjusted one-sided tKOI p-value.
 #'   - `tkoi_fdr`: tKOI false discovery rate (Benjamini-Hochberg, among gene
 #'     nodes).
+#'   New inference results also retain `tkoi_log_p_value`, `tkoi_log_fdr`,
+#'   `tkoi_pvalue_bounded`, `tkoi_fdr_bounded`, and `inference_status`.
+#'   Printing uses scientific notation while the probability columns stay numeric.
 #'
 #' @examples
 #' \dontrun{
@@ -64,13 +67,18 @@ export_gene_exploration_data = function(tkoi_list) {
   ) |>
     dplyr::select(-identifier, -name) |>
     dplyr::right_join(network_data, by = dplyr::join_by("id" == "node_id")) |>
-    dplyr::select(gene_name, name, id, identifier, logfc, pvalue, pagerank, beta, p_value, fdr)
+    dplyr::select(gene_name, name, id, identifier, logfc, pvalue, pagerank, beta, p_value, fdr,
+      dplyr::any_of(c("log_p_value", "log_fdr", "p_value_bounded", "fdr_bounded", "inference_status")))
 
-  names(gene_data) = c(
+  names(gene_data)[seq_len(10L)] = c(
     "gene_name", "gene_symbol", "id", "identifier",
     "experimental_logfc", "experimental_pvalue",
     "pagerank", "tkoi_beta", "tkoi_pvalue", "tkoi_fdr"
   )
-
-  return(gene_data)
+  extra = c(log_p_value = "tkoi_log_p_value", log_fdr = "tkoi_log_fdr",
+    p_value_bounded = "tkoi_pvalue_bounded", fdr_bounded = "tkoi_fdr_bounded")
+  for (column in intersect(names(extra), names(gene_data))) {
+    names(gene_data)[names(gene_data) == column] = extra[[column]]
+  }
+  .tkoi_statistics_table(gene_data)
 }
